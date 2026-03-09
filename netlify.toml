@@ -1,9 +1,0 @@
-[build]
-  publish = "dist"
-  command = "npm run build"
-
-# Redirect all routes to index.html (single-page application)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
