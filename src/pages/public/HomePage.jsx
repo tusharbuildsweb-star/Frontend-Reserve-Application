@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, MapPin, Calendar, Clock, Users, ArrowRight, Star, CheckCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -42,6 +42,13 @@ const WHY_ITEMS = [
   { title: 'Exclusive Access', desc: 'Members gain priority access to chef tables, private events and tasting menus.' },
 ];
 
+const INDIAN_CITIES = [
+  'Mumbai', 'Delhi', 'Bengaluru', 'Chennai', 'Hyderabad', 'Kolkata',
+  'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Surat', 'Chandigarh',
+  'Kochi', 'Coimbatore', 'Indore', 'Nagpur', 'Visakhapatnam', 'Bhopal',
+  'Goa', 'Agra', 'Varanasi', 'Mysuru', 'Thiruvananthapuram', 'Patna',
+];
+
 const HomePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -49,9 +56,42 @@ const HomePage = () => {
 
   const [searchParams, setSearchParams] = useState({ query: '', location: '', date: '', time: '', guests: '' });
 
+  // Autocomplete state
+  const [queryFocused, setQueryFocused] = useState(false);
+  const [locationFocused, setLocationFocused] = useState(false);
+  const queryRef = useRef(null);
+  const locationRef = useRef(null);
+
   useEffect(() => { dispatch(fetchRestaurants()); }, [dispatch]);
 
   const featured = (list || []).slice(0, 3);
+
+  // Filter suggestions
+  const restaurantSuggestions = useMemo(() => {
+    if (!searchParams.query || searchParams.query.length < 1) return [];
+    const q = searchParams.query.toLowerCase();
+    return (list || [])
+      .filter(r => r.name?.toLowerCase().includes(q) || r.cuisine?.toLowerCase().includes(q))
+      .slice(0, 6);
+  }, [searchParams.query, list]);
+
+  const locationSuggestions = useMemo(() => {
+    if (!searchParams.location || searchParams.location.length < 1) return [];
+    const q = searchParams.location.toLowerCase();
+    const fromRestaurants = [...new Set((list || []).map(r => r.location).filter(Boolean))];
+    const allCities = [...new Set([...fromRestaurants, ...INDIAN_CITIES])];
+    return allCities.filter(c => c.toLowerCase().includes(q)).slice(0, 6);
+  }, [searchParams.location, list]);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (queryRef.current && !queryRef.current.contains(e.target)) setQueryFocused(false);
+      if (locationRef.current && !locationRef.current.contains(e.target)) setLocationFocused(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const handleChange = (e) => setSearchParams(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -125,7 +165,19 @@ const HomePage = () => {
               style={{ fontSize: 'clamp(48px, 8vw, 92px)', fontWeight: 500, letterSpacing: '0.3px' }}
             >
               Reserve<br />
-              <em style={{ color: '#F5B942', fontStyle: 'italic' }}>Extraordinary</em><br />
+              {/* ── Cinematic shimmer on "Extraordinary" ── */}
+              <em
+                style={{
+                  fontStyle: 'italic',
+                  background: 'linear-gradient(90deg, #C79B32 0%, #F5D67B 40%, #FFF3C4 50%, #F5D67B 60%, #C79B32 100%)',
+                  backgroundSize: '200% auto',
+                  animation: 'shimmer 4s linear infinite',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  display: 'inline-block',
+                }}
+              >Extraordinary</em><br />
               Dining
             </h1>
 
@@ -144,70 +196,133 @@ const HomePage = () => {
             transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
             <div
-              className="w-full shadow-[0_40px_80px_rgba(0,0,0,0.7)]"
-              style={{ background: 'rgba(11,11,11,0.92)', backdropFilter: 'blur(28px)', border: '1px solid #1F1F1F' }}
+              className="w-full shadow-[0_40px_80px_rgba(0,0,0,0.7)] relative overflow-visible group/searchbar"
+              style={{
+                background: 'rgba(12,12,12,0.90)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: 14,
+              }}
             >
-              <div className="flex flex-col lg:flex-row">
-                {/* Restaurant field */}
-                <div className="flex items-center gap-3 px-6 py-5 flex-1 border-b lg:border-b-0 lg:border-r hover:bg-white/[0.025] transition-colors" style={{ borderColor: '#1F1F1F' }}>
-                  <Search size={14} style={{ color: '#F5B942', flexShrink: 0 }} />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[9px] uppercase tracking-[0.18em] font-semibold mb-1" style={{ color: '#A1A1A1' }}>Restaurant</div>
+              {/* Hover highlight border */}
+              <div className="absolute inset-0 border border-transparent group-hover/searchbar:border-[rgba(245,185,66,0.2)] pointer-events-none transition-all duration-300" style={{ borderRadius: 14 }} />
+
+              <div className="grid grid-cols-1 lg:grid-cols-[2fr_2fr_1.5fr_1fr_auto] items-stretch">
+
+                {/* ─── Restaurant field ─── */}
+                <div ref={queryRef} className="relative flex items-center h-[64px] border-b lg:border-b-0 lg:border-r" style={{ borderColor: 'rgba(255,255,255,0.06)', gap: 10, padding: '0 18px' }}>
+                  <Search size={15} style={{ color: '#F5B942', flexShrink: 0, marginTop: 1 }} />
+                  <div className="flex-1 min-w-0 flex flex-col justify-center" style={{ lineHeight: 1.2 }}>
+                    <div style={{ fontSize: 11, letterSpacing: '1px', color: 'rgba(255,255,255,0.55)', marginBottom: 2, textTransform: 'uppercase', fontWeight: 500 }}>Restaurant</div>
                     <input
                       type="text" name="query" value={searchParams.query} onChange={handleChange}
+                      onFocus={() => setQueryFocused(true)}
                       placeholder="Cuisine or venue name"
-                      className="w-full bg-transparent outline-none font-light text-sm placeholder:text-[#2e2e2e]"
-                      style={{ color: '#F5F5F5' }}
+                      className="w-full bg-transparent outline-none"
+                      style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 400, letterSpacing: '0.3px' }}
+                      autoComplete="off"
                     />
                   </div>
+                  {/* Autocomplete dropdown */}
+                  {queryFocused && restaurantSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-[10px] overflow-hidden shadow-2xl" style={{ background: '#0E0E0E', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      {restaurantSuggestions.map((r) => (
+                        <button
+                          key={r._id}
+                          onMouseDown={() => { setSearchParams(p => ({ ...p, query: r.name })); setQueryFocused(false); }}
+                          className="w-full text-left px-4 py-3 text-sm transition-colors"
+                          style={{ color: '#A1A1A1' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,185,66,0.08)'; e.currentTarget.style.color = '#F5B942'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#A1A1A1'; }}
+                        >
+                          <span className="font-medium">{r.name}</span>
+                          <span className="text-xs ml-2 opacity-50">{r.cuisine}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Location field */}
-                <div className="flex items-center gap-3 px-6 py-5 flex-1 border-b lg:border-b-0 lg:border-r hover:bg-white/[0.025] transition-colors" style={{ borderColor: '#1F1F1F' }}>
-                  <MapPin size={14} style={{ color: '#F5B942', flexShrink: 0 }} />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[9px] uppercase tracking-[0.18em] font-semibold mb-1" style={{ color: '#A1A1A1' }}>Location</div>
+                {/* ─── Location field ─── */}
+                <div ref={locationRef} className="relative flex items-center h-[64px] border-b lg:border-b-0 lg:border-r" style={{ borderColor: 'rgba(255,255,255,0.06)', gap: 10, padding: '0 18px' }}>
+                  <MapPin size={15} style={{ color: '#F5B942', flexShrink: 0, marginTop: 1 }} />
+                  <div className="flex-1 min-w-0 flex flex-col justify-center" style={{ lineHeight: 1.2 }}>
+                    <div style={{ fontSize: 11, letterSpacing: '1px', color: 'rgba(255,255,255,0.55)', marginBottom: 2, textTransform: 'uppercase', fontWeight: 500 }}>Location</div>
                     <input
                       type="text" name="location" value={searchParams.location} onChange={handleChange}
+                      onFocus={() => setLocationFocused(true)}
                       placeholder="City or neighbourhood"
-                      className="w-full bg-transparent outline-none font-light text-sm placeholder:text-[#2e2e2e]"
-                      style={{ color: '#F5F5F5' }}
+                      className="w-full bg-transparent outline-none"
+                      style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 400, letterSpacing: '0.3px' }}
+                      autoComplete="off"
                     />
                   </div>
+                  {/* Location autocomplete */}
+                  {locationFocused && locationSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-[10px] overflow-hidden shadow-2xl" style={{ background: '#0E0E0E', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      {locationSuggestions.map((city, i) => (
+                        <button
+                          key={i}
+                          onMouseDown={() => { setSearchParams(p => ({ ...p, location: city })); setLocationFocused(false); }}
+                          className="w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2"
+                          style={{ color: '#A1A1A1' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,185,66,0.08)'; e.currentTarget.style.color = '#F5B942'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#A1A1A1'; }}
+                        >
+                          <MapPin size={11} style={{ flexShrink: 0, opacity: 0.5 }} />
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Date field */}
-                <div className="flex items-center gap-3 px-6 py-5 border-b lg:border-b-0 lg:border-r hover:bg-white/[0.025] transition-colors" style={{ borderColor: '#1F1F1F' }}>
-                  <Calendar size={14} style={{ color: '#F5B942', flexShrink: 0 }} />
-                  <div>
-                    <div className="text-[9px] uppercase tracking-[0.18em] font-semibold mb-1" style={{ color: '#A1A1A1' }}>Date</div>
+                {/* ─── Date field ─── */}
+                <div className="flex items-center h-[64px] border-b lg:border-b-0 lg:border-r" style={{ borderColor: 'rgba(255,255,255,0.06)', gap: 10, padding: '0 18px' }}>
+                  <Calendar size={15} style={{ color: '#F5B942', flexShrink: 0, marginTop: 1 }} />
+                  <div className="flex-1 flex flex-col justify-center" style={{ lineHeight: 1.2 }}>
+                    <div style={{ fontSize: 11, letterSpacing: '1px', color: 'rgba(255,255,255,0.55)', marginBottom: 2, textTransform: 'uppercase', fontWeight: 500 }}>Date</div>
                     <input
                       type="date" name="date" value={searchParams.date} onChange={handleChange}
-                      className="bg-transparent outline-none font-light text-sm w-32"
-                      style={{ color: '#F5F5F5' }}
+                      min={new Date().toISOString().split('T')[0]}
+                      className="bg-transparent outline-none w-full cursor-pointer"
+                      style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 400, letterSpacing: '0.3px', colorScheme: 'dark' }}
                     />
                   </div>
                 </div>
 
-                {/* Guests field */}
-                <div className="flex items-center gap-3 px-6 py-5 border-b lg:border-b-0 lg:border-r hover:bg-white/[0.025] transition-colors" style={{ borderColor: '#1F1F1F' }}>
-                  <Users size={14} style={{ color: '#F5B942', flexShrink: 0 }} />
-                  <div>
-                    <div className="text-[9px] uppercase tracking-[0.18em] font-semibold mb-1" style={{ color: '#A1A1A1' }}>Guests</div>
+                {/* ─── Guests field ─── */}
+                <div className="flex items-center h-[64px] border-b lg:border-b-0 lg:border-r" style={{ borderColor: 'rgba(255,255,255,0.06)', gap: 10, padding: '0 18px' }}>
+                  <Users size={15} style={{ color: '#F5B942', flexShrink: 0, marginTop: 1 }} />
+                  <div className="flex-1 flex flex-col justify-center" style={{ lineHeight: 1.2 }}>
+                    <div style={{ fontSize: 11, letterSpacing: '1px', color: 'rgba(255,255,255,0.55)', marginBottom: 2, textTransform: 'uppercase', fontWeight: 500 }}>Guests</div>
                     <input
-                      type="number" name="guests" min="1" value={searchParams.guests} onChange={handleChange}
+                      type="number" name="guests" min="1" max="20" value={searchParams.guests} onChange={handleChange}
                       placeholder="2"
-                      className="bg-transparent outline-none font-light text-sm w-16 placeholder:text-[#2e2e2e]"
-                      style={{ color: '#F5F5F5' }}
+                      className="bg-transparent outline-none w-full"
+                      style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 400, letterSpacing: '0.3px' }}
                     />
                   </div>
                 </div>
 
-                {/* CTA */}
+                {/* ─── CTA ─── */}
                 <button
                   onClick={handleSubmit}
-                  className="btn-luxury flex items-center justify-center gap-2 px-10 py-5"
-                  style={{ background: 'linear-gradient(135deg, #F5B942, #D4A017)', minWidth: 160 }}
+                  className="flex items-center justify-center gap-2"
+                  style={{
+                    height: 64,
+                    padding: '0 28px',
+                    background: 'linear-gradient(135deg, #F5B942, #D4A017)',
+                    color: '#050505',
+                    minWidth: 152,
+                    borderRadius: '0 12px 12px 0',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    letterSpacing: '0.5px',
+                    transition: 'filter 0.2s ease, box-shadow 0.2s ease',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.08)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,185,66,0.35)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.filter = 'brightness(1)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
                   <Search size={13} />
                   Find Table

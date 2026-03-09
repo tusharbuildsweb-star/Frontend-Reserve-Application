@@ -177,14 +177,14 @@ const DetailsPage = () => {
         if (id) {
             dispatch(fetchRestaurantById(id));
             dispatch(fetchPackagesByRestaurant(id));
-            
+
             // Fetch similar restaurants
             setRecLoading(true);
             restaurantService.getRecommendations(id)
                 .then(data => setRecommendations(data))
                 .catch(err => console.error("Failed to fetch recommendations:", err))
                 .finally(() => setRecLoading(false));
-            
+
             // Reset state on ID change (e.g. clicking a recommendation)
             window.scrollTo({ top: 0, behavior: 'smooth' });
             setActiveTab('menu');
@@ -319,7 +319,7 @@ const DetailsPage = () => {
                     message: 'Thank you! Your review has been successfully posted.'
                 });
             }
-            
+
             setIsReviewModalOpen(false);
             setEditingReviewId(null);
             setReviewComment('');
@@ -416,7 +416,7 @@ const DetailsPage = () => {
                                 {restaurant.ambienceTags?.length > 0 && (
                                     <div className="flex flex-wrap gap-2 mt-4">
                                         {restaurant.ambienceTags.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] text-zinc-400 uppercase tracking-widest font-medium">
+                                            <span key={i} className="px-3 py-1 text-[10px] uppercase tracking-widest font-medium" style={{ background: 'rgba(245,185,66,0.1)', border: '1px solid rgba(245,185,66,0.2)', borderRadius: 20, color: '#F5B942' }}>
                                                 {tag}
                                             </span>
                                         ))}
@@ -527,84 +527,64 @@ const DetailsPage = () => {
 
                         {/* Menu Tab */}
                         {activeTab === 'menu' && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                                 {menuLoading ? (
                                     <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 text-amber-500 animate-spin" /></div>
                                 ) : Object.keys(liveMenu).length > 0 ? (
                                     Object.keys(liveMenu).map(category => (
                                         <div key={category}>
-                                            <h4 className="text-xl font-serif text-white mb-6 uppercase tracking-wider border-l-2 border-amber-500 pl-4">{category}</h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {liveMenu[category].map((item, idx) => (
-                                                    <div key={idx} className="bg-zinc-900/50 border border-white/5 p-4 rounded-xl hover:border-amber-500/30 transition-colors">
-                                                        <div className="flex justify-between items-start mb-2">
-                                                            <span className="text-white font-medium">{item.name}</span>
-                                                            <span className="text-amber-500">{item.price}</span>
+                                            <h4 className="text-sm font-bold text-amber-500 mb-4 uppercase tracking-[2px] border-l-2 border-amber-500 pl-3">{category}</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                {liveMenu[category].slice(0, 6).map((item, idx) => (
+                                                    <div key={idx}
+                                                        className="bg-zinc-900/40 border border-white/5 p-3 rounded-lg flex items-center justify-between group hover:border-[#F5B942]/20 transition-all"
+                                                    >
+                                                        <div className="flex-1 pr-4">
+                                                            <div className="flex justify-between items-baseline mb-0.5">
+                                                                <span className="text-zinc-100 font-medium text-sm">{item.name}</span>
+                                                                <span className="text-amber-500 text-xs font-bold">{item.price}</span>
+                                                            </div>
+                                                            <p className="text-[11px] text-zinc-500 font-light truncate max-w-[200px]">{item.desc || item.description}</p>
                                                         </div>
-                                                        <p className="text-sm text-zinc-400 font-light">{item.desc || item.description}</p>
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center py-20 text-zinc-500">
-                                        <ChefHat size={48} className="mb-4 opacity-20" />
-                                        <p className="font-light italic">Refining today's culinary offerings...</p>
+                                    <div className="flex flex-col items-center justify-center py-12 text-zinc-500">
+                                        <ChefHat size={32} className="mb-3 opacity-20" />
+                                        <p className="text-sm font-light italic">Refining offerings...</p>
                                     </div>
                                 )}
                             </motion.div>
                         )}
 
                         {activeTab === 'packages' && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
                                 {packLoading ? (
-                                    <p className="text-zinc-400 font-light text-center py-10">Loading packages...</p>
+                                    <p className="text-zinc-500 text-center py-10 text-xs">Loading experiences...</p>
                                 ) : packages && packages.length > 0 ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {packages.map(pkg => (
-                                            <div key={pkg._id} className="bg-zinc-900/50 border border-white/5 p-6 rounded-xl hover:border-amber-500/30 transition-all flex flex-col justify-between group">
-                                                <div>
-                                                    <div className="flex justify-between items-start mb-3">
-                                                        <h4 className="text-xl font-serif text-white group-hover:text-amber-500 transition-colors">{pkg.title}</h4>
-                                                        <div className="flex flex-col items-end">
-                                                            <span className="text-amber-500 font-medium px-3 py-1 bg-amber-500/10 rounded-full text-sm">Base: ₹{pkg.basePrice}</span>
-                                                            {pkg.advanceAmount > 0 && (
-                                                                <span className="text-[10px] text-zinc-500 mt-1 uppercase tracking-wider">₹{pkg.advanceAmount} Advance</span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-sm text-zinc-400 font-light mb-6 line-clamp-2">{pkg.description}</p>
-
-                                                    {pkg.guestOptions?.length > 0 && (
-                                                        <div className="space-y-2 mb-6">
-                                                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Tiered Pricing</p>
-                                                            <div className="grid grid-cols-2 gap-2">
-                                                                {pkg.guestOptions.map((opt, i) => (
-                                                                    <div key={i} className="bg-black/40 border border-white/5 p-2 rounded-lg flex justify-between items-center">
-                                                                        <span className="text-xs text-zinc-300">{opt.guests} Guests</span>
-                                                                        <span className="text-xs text-amber-500 font-bold">₹{opt.price}</span>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    )}
+                                            <div key={pkg._id} className="bg-zinc-900/40 border border-white/5 p-4 rounded-xl hover:border-amber-500/20 transition-all group">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h4 className="text-sm font-bold text-white group-hover:text-amber-500 transition-colors uppercase tracking-tight">{pkg.title}</h4>
+                                                    <span className="text-[#F5B942] font-black text-xs">₹{pkg.basePrice}</span>
                                                 </div>
+                                                <p className="text-[11px] text-zinc-500 font-light line-clamp-2 mb-4 leading-relaxed">{pkg.description}</p>
+
                                                 <button
-                                                    onClick={() => {
-                                                        setSelectedPackage(pkg._id.toString());
-                                                        // If it's a specific guest count package, we could auto-set guests here
-                                                        window.scrollTo({ top: 300, behavior: 'smooth' });
-                                                    }}
-                                                    className="w-full py-3 border border-amber-500/50 text-amber-500 hover:bg-amber-500 hover:text-black transition-all rounded-xl font-medium text-sm shadow-[0_0_15px_rgba(212,175,55,0.1)] group-hover:shadow-[0_0_20px_rgba(212,175,55,0.2)]"
+                                                    onClick={() => { setSelectedPackage(pkg._id.toString()); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                                                    className="w-full py-2 bg-[#F5B942]/5 border border-[#F5B942]/20 text-[#F5B942] hover:bg-[#F5B942] hover:text-black transition-all rounded-lg font-bold text-[10px] uppercase tracking-widest"
                                                 >
-                                                    Book this Experience
+                                                    Book Experience
                                                 </button>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-zinc-400 font-light">No special experiences or packages available at this time.</p>
+                                    <p className="text-zinc-500 italic text-sm py-10 text-center">No curated packages available.</p>
                                 )}
                             </motion.div>
                         )}
@@ -612,19 +592,19 @@ const DetailsPage = () => {
                         {/* Reviews Tab */}
                         {activeTab === 'reviews' && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-4">
-                                        <h2 className="text-5xl font-serif text-white">{avgRating || restaurant.rating || 0}</h2>
-                                        <div className="flex flex-col">
-                                            <div className="flex text-amber-500 mb-1">
-                                                {[1, 2, 3, 4, 5].map(n => (
-                                                    <Star key={n} className={`w-5 h-5 ${n <= Math.round(avgRating || restaurant.rating || 0) ? 'fill-current text-amber-500' : 'text-zinc-600'}`} />
-                                                ))}
-                                            </div>
-                                            <span className="text-sm text-zinc-400">{liveReviews.length} {liveReviews.length === 1 ? 'Review' : 'Reviews'}</span>
+                                <div className="flex items-center justify-between mb-6 bg-white/[0.02] p-4 rounded-xl border border-white/5">
+                                    <div className="flex items-center gap-6">
+                                        <div className="text-center">
+                                            <div className="text-3xl font-serif text-white leading-none">{avgRating || restaurant.rating || 0}</div>
+                                            <div className="text-[10px] text-amber-500 uppercase font-black tracking-widest mt-1">Rating</div>
+                                        </div>
+                                        <div className="h-8 w-px bg-white/10"></div>
+                                        <div className="text-center">
+                                            <div className="text-xl font-serif text-white leading-none">{liveReviews.length}</div>
+                                            <div className="text-[10px] text-zinc-500 uppercase font-medium tracking-widest mt-1">Reviews</div>
                                         </div>
                                     </div>
-                                    <button onClick={() => setIsReviewModalOpen(true)} className="px-6 py-2 border border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black transition-colors rounded-lg font-medium">Leave Review</button>
+                                    <button onClick={() => setIsReviewModalOpen(true)} className="px-5 py-2 bg-amber-500 text-black text-xs font-black uppercase tracking-widest rounded-lg hover:shadow-[0_0_20px_rgba(245,185,66,0.2)] transition-all">Write Review</button>
                                 </div>
 
                                 {reviewsLoading ? (
@@ -632,15 +612,15 @@ const DetailsPage = () => {
                                         <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
                                     </div>
                                 ) : (
-                                    <div className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {liveReviews.length > 0 ? (
-                                            liveReviews.map(review => {
+                                            liveReviews.slice(0, 4).map(review => {
                                                 const API_BASE = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
                                                 return (
-                                                    <div key={review._id} className="bg-zinc-900 border border-white/5 p-6 rounded-xl hover:border-amber-500/20 transition-colors">
-                                                        <div className="flex justify-between items-start mb-4">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-full bg-zinc-800 overflow-hidden border border-white/10 flex items-center justify-center">
+                                                    <div key={review._id} className="bg-zinc-900 border border-white/5 p-4 rounded-xl hover:border-amber-500/10 transition-colors">
+                                                        <div className="flex justify-between items-start mb-3">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-white/5 overflow-hidden flex-shrink-0">
                                                                     <img
                                                                         src={review.profileImage || (review.userId?.profileImage ? `${API_BASE}${review.userId.profileImage}` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${review.userName || 'Guest'}`)}
                                                                         alt={review.userName || 'Guest'}
@@ -648,46 +628,30 @@ const DetailsPage = () => {
                                                                     />
                                                                 </div>
                                                                 <div>
-                                                                    <span className="text-white font-medium block">{review.userName || review.userId?.name || 'Guest'}</span>
-                                                                    <span className="text-xs text-zinc-500">{new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                                                    <span className="text-white text-xs font-bold block leading-tight">{review.userName || review.userId?.name || 'Guest'}</span>
+                                                                    <span className="text-[9px] text-zinc-500 font-mono">{new Date(review.createdAt).toLocaleDateString()}</span>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex flex-col items-end gap-1">
-                                                                <div className="flex items-center gap-1 bg-amber-500/10 px-3 py-1 rounded-full">
-                                                                    <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
-                                                                    <span className="text-amber-500 text-sm font-bold">{review.rating}</span>
-                                                                </div>
-                                                                <div className="flex gap-2 text-[10px] text-zinc-500 uppercase tracking-tighter">
-                                                                    <span>Food: <b className="text-zinc-300">{review.foodRating || 0}/10</b></span>
-                                                                    <span>Ambience: <b className="text-zinc-300">{review.ambienceRating || 0}/10</b></span>
-                                                                    <span>Staff: <b className="text-zinc-300">{review.staffRating || 0}/10</b></span>
-                                                                </div>
+                                                            <div className="flex items-center gap-1 bg-amber-500/10 px-1.5 py-0.5 rounded text-amber-500">
+                                                                <Star className="w-2.5 h-2.5 fill-current" />
+                                                                <span className="text-[10px] font-black">{review.rating}</span>
                                                             </div>
                                                         </div>
-                                                        <p className="text-zinc-300 font-light leading-relaxed">{review.comment}</p>
-                                                        {review.ownerReply && (
-                                                            <div className="mt-4 pl-4 border-l-2 border-amber-500/30">
-                                                                <p className="text-xs text-amber-500 mb-1 font-medium">Owner's Reply</p>
-                                                                <p className="text-zinc-400 text-sm">{review.ownerReply}</p>
-                                                            </div>
-                                                        )}
+                                                        <p className="text-zinc-400 text-[11px] font-light leading-relaxed line-clamp-2 italic mb-3">"{review.comment}"</p>
                                                         {isAuthenticated && user?._id === (review.userId?._id || review.userId) && (
-                                                            <div className="mt-4 flex gap-3">
-                                                                <button
-                                                                    onClick={() => handleEditClick(review)}
-                                                                    className="px-3 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs rounded-lg transition-colors border border-blue-500/30"
-                                                                >
-                                                                    Edit Review
-                                                                </button>
-                                                            </div>
+                                                            <button
+                                                                onClick={() => handleEditClick(review)}
+                                                                className="text-[9px] text-[#F5B942] uppercase font-bold tracking-widest hover:underline"
+                                                            >
+                                                                Edit
+                                                            </button>
                                                         )}
                                                     </div>
                                                 );
                                             })
                                         ) : (
-                                            <div className="text-center py-12">
-                                                <Star className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-                                                <p className="text-zinc-400 font-light">No reviews yet. Be the first to share your experience!</p>
+                                            <div className="col-span-full text-center py-10">
+                                                <p className="text-zinc-600 text-xs italic font-light italic">No stories shared yet.</p>
                                             </div>
                                         )}
                                     </div>
@@ -725,16 +689,16 @@ const DetailsPage = () => {
                                     <button
                                         onClick={handleCancelBooking}
                                         disabled={cancelLoading}
-                                        className="w-full py-3 bg-transparent border border-white/10 text-zinc-400 font-medium rounded-xl hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/5 transition-all disabled:opacity-50"
+                                        className="w-full py-3 bg-transparent border border-white/10 text-zinc-400 font-medium rounded-xl hover:text-red-400 hover:border-red-500/30 transition-all disabled:opacity-50"
                                     >
                                         {cancelLoading ? 'Cancelling...' : 'Cancel Booking'}
                                     </button>
                                 </div>
                             </div>
                         ) : (
-                            <div className="sticky top-28 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl flex flex-col max-h-[calc(100vh-8rem)]">
+                            <div className="sticky top-28 border rounded-[18px] shadow-2xl flex flex-col max-h-[calc(100vh-8rem)]" style={{ background: 'rgba(18,18,18,0.85)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)' }}>
                                 <div className="p-6 pb-0 shrink-0">
-                                    <h3 className="text-2xl font-serif text-white mb-4 text-center border-b border-white/10 pb-4">Make a Reservation</h3>
+                                    <h3 className="text-2xl font-serif text-white mb-4 text-center border-b pb-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>Make a Reservation</h3>
                                 </div>
 
                                 <div className="px-6 pb-2 overflow-y-auto custom-scrollbar flex-1 space-y-5">
@@ -882,7 +846,7 @@ const DetailsPage = () => {
                                     )}
                                 </div>
 
-                                <div className="p-6 pt-4 border-t border-white/10 bg-zinc-900 shrink-0 rounded-b-2xl shadow-[0_-10px_20px_rgba(0,0,0,0.5)] z-10">
+                                <div className="p-6 pt-4 shrink-0 rounded-b-[18px] z-10" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(12,12,12,0.9)' }}>
                                     <button
                                         onClick={async () => {
                                             if (!isAuthenticated) {
@@ -949,7 +913,10 @@ const DetailsPage = () => {
                                             });
                                         }}
                                         disabled={bookingLoading}
-                                        className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-4 rounded-xl transition-all shadow-[0_0_15px_rgba(212,175,55,0.2)] hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] mt-4 disabled:opacity-50 flex items-center justify-center gap-2"
+                                        className="w-full font-semibold py-[14px] rounded-[10px] transition-all mt-4 disabled:opacity-50 flex items-center justify-center gap-2"
+                                        style={{ height: 52, background: 'linear-gradient(135deg, #F5B942, #D69E2E)', color: '#050505', boxShadow: '0 4px 16px rgba(245,185,66,0.25)' }}
+                                        onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,185,66,0.4)'; }}
+                                        onMouseLeave={e => { e.currentTarget.style.filter = 'brightness(1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(245,185,66,0.25)'; }}
                                     >
                                         {bookingLoading ? (
                                             <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -1027,7 +994,7 @@ const DetailsPage = () => {
                                 ></textarea>
                             </div>
                             <div className="flex gap-4 pt-4 border-t border-white/10 mt-6">
-                                <button type="button" onClick={() => { setIsReviewModalOpen(false); setEditingReviewId(null); }} className="flex-1 py-3 rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:bg-white/5 transition-colors font-medium">Cancel</button>
+                                <button type="button" onClick={() => { setIsReviewModalOpen(false); setEditingReviewId(null); }} className="flex-1 py-3 rounded-xl border border-white/10 text-zinc-400 hover:text-white transition-colors font-medium">Cancel</button>
                                 <button type="submit" disabled={reviewLoading} className="flex-1 py-3 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.2)] disabled:opacity-50">
                                     {reviewLoading ? 'Submitting...' : (editingReviewId ? 'Update Review' : 'Post Review')}
                                 </button>
@@ -1036,7 +1003,7 @@ const DetailsPage = () => {
                     </motion.div>
                 </div>
             )}
-            
+
             {/* Recommendations Section */}
             {!recLoading && recommendations.length > 0 && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-24 mb-10">

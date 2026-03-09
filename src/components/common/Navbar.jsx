@@ -183,7 +183,7 @@ const Navbar = () => {
                                                     <button
                                                         key={label}
                                                         onClick={action}
-                                                        className="w-full flex items-center gap-3 px-5 py-3.5 text-[11px] text-[#A1A1A1] hover:text-[#F5F5F5] hover:bg-white/[0.04] transition-colors tracking-wide"
+                                                        className="w-full flex items-center gap-3 px-5 py-3.5 text-[11px] text-[#A1A1A1] hover:text-[#F5B942] transition-colors duration-200 tracking-wide"
                                                     >
                                                         <Icon size={13} className="text-[#F5B942]" />
                                                         {label}
@@ -193,7 +193,7 @@ const Navbar = () => {
                                                 <div className="border-t border-[#1F1F1F]">
                                                     <button
                                                         onClick={handleLogout}
-                                                        className="w-full flex items-center gap-3 px-5 py-3.5 text-[11px] text-red-400/80 hover:text-red-400 hover:bg-red-500/5 transition-colors tracking-wide"
+                                                        className="w-full flex items-center gap-3 px-5 py-3.5 text-[11px] text-red-400/80 hover:text-red-400 transition-colors duration-200 tracking-wide"
                                                     >
                                                         <LogOut size={13} />
                                                         Sign Out

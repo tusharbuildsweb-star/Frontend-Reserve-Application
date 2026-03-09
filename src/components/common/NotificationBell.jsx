@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Bell, X, Check, CheckCheck, Calendar, CreditCard, Star, AlertTriangle, Info } from 'lucide-react';
+import { Bell, X, Check, CheckCheck, Calendar, CreditCard, Star, AlertTriangle, Info, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { io } from 'socket.io-client';
 import {
@@ -15,11 +15,11 @@ import {
 const typeIcon = (type) => {
     const cls = 'w-4 h-4 flex-shrink-0';
     switch (type) {
-        case 'reservation': return <Calendar className={`${cls} text-amber-500`} />;
-        case 'payment':     return <CreditCard className={`${cls} text-green-500`} />;
-        case 'subscription':return <AlertTriangle className={`${cls} text-red-400`} />;
-        case 'review':      return <Star className={`${cls} text-purple-400`} />;
-        default:            return <Info className={`${cls} text-blue-400`} />;
+        case 'reservation': return <Calendar className={`${cls} text-[#F5B942]`} />;
+        case 'payment': return <CreditCard className={`${cls} text-green-400`} />;
+        case 'subscription': return <AlertTriangle className={`${cls} text-[#F5B942]`} />;
+        case 'review': return <Star className={`${cls} text-[#F5B942]`} />;
+        default: return <Info className={`${cls} text-blue-400`} />;
     }
 };
 
@@ -104,15 +104,16 @@ const NotificationBell = () => {
             {/* Bell Button */}
             <button
                 onClick={() => setOpen(prev => !prev)}
-                className="relative p-2 text-zinc-400 hover:text-white transition-colors rounded-xl hover:bg-white/5"
+                className="relative p-2 text-[#A1A1A1] hover:text-[#F5B942] transition-all rounded-xl hover:bg-white/5 active:scale-95"
                 aria-label="Notifications"
             >
-                <Bell size={22} />
+                <Bell size={22} className={unreadCount > 0 ? 'animate-pulse' : ''} />
                 {unreadCount > 0 && (
                     <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"
+                        className="absolute top-1 right-1 min-w-[18px] h-[18px] text-black text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none shadow-[0_0_10px_rgba(245,185,66,0.5)]"
+                        style={{ background: 'linear-gradient(135deg, #F5B942, #D4A017)' }}
                     >
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </motion.span>
@@ -127,57 +128,65 @@ const NotificationBell = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -8, scale: 0.97 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute right-0 top-full mt-2 w-[360px] bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50"
+                        className="absolute right-0 top-full mt-3 w-[380px] bg-[#0C0C0C]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-50"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-                            <div className="flex items-center gap-2">
-                                <Bell size={16} className="text-amber-500" />
-                                <h3 className="text-white font-semibold text-sm">Notifications</h3>
+                        <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-1.5 bg-[#F5B942]/10 rounded-lg">
+                                    <Bell size={16} className="text-[#F5B942]" />
+                                </div>
+                                <h3 className="text-[#F5F5F5] font-serif text-lg tracking-tight">Notifications</h3>
                                 {unreadCount > 0 && (
-                                    <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold">{unreadCount}</span>
+                                    <span className="text-[10px] text-black px-2 py-0.5 rounded-full font-bold shadow-sm" style={{ background: 'linear-gradient(135deg, #F5B942, #D4A017)' }}>
+                                        {unreadCount} New
+                                    </span>
                                 )}
                             </div>
                             {unreadCount > 0 && (
                                 <button
                                     onClick={() => dispatch(markAllNotificationsAsRead())}
-                                    className="flex items-center gap-1 text-xs text-zinc-400 hover:text-amber-500 transition-colors"
+                                    className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest font-bold text-[#A1A1A1] hover:text-[#F5B942] transition-colors"
                                 >
-                                    <CheckCheck size={13} /> Mark all read
+                                    <CheckCheck size={14} /> Mark all
                                 </button>
                             )}
                         </div>
 
                         {/* List */}
-                        <div className="max-h-[400px] overflow-y-auto divide-y divide-white/5">
+                        <div className="max-h-[420px] overflow-y-auto custom-scrollbar divide-y divide-white/5">
                             {recent.length === 0 ? (
-                                <div className="py-10 text-center text-zinc-600 text-sm">
-                                    <Bell size={28} className="mx-auto mb-3 opacity-30" />
-                                    No notifications yet
+                                <div className="py-16 text-center">
+                                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
+                                        <Bell size={24} className="text-[#3a3a3a]" />
+                                    </div>
+                                    <p className="text-[#F5F5F5] font-serif text-lg">All caught up</p>
+                                    <p className="text-[#A1A1A1] text-xs mt-1">No new notifications at this time.</p>
                                 </div>
                             ) : (
                                 recent.map(n => (
                                     <div
                                         key={n._id}
                                         onClick={() => handleNotificationClick(n)}
-                                        className={`flex items-start gap-3 px-5 py-3.5 cursor-pointer transition-colors hover:bg-white/5 group relative ${!n.read ? 'bg-amber-500/5' : ''}`}
+                                        className={`flex items-start gap-4 px-6 py-4.5 cursor-pointer transition-all group relative border-l-2 ${!n.read ? 'bg-[#F5B942]/[0.03] border-[#F5B942]' : 'hover:bg-white/[0.02] border-transparent'}`}
                                     >
-                                        <div className={`mt-0.5 p-1.5 rounded-lg flex-shrink-0 ${!n.read ? 'bg-amber-500/10' : 'bg-white/5'}`}>
+                                        <div className={`mt-0.5 p-2 rounded-xl flex-shrink-0 border transition-colors ${!n.read ? 'bg-[#F5B942]/10 border-[#F5B942]/20' : 'bg-white/5 border-white/5 group-hover:border-white/10'}`}>
                                             {typeIcon(n.type)}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className={`text-sm font-medium truncate ${!n.read ? 'text-white' : 'text-zinc-300'}`}>
-                                                {n.title}
-                                                {!n.read && <span className="ml-1.5 inline-block w-1.5 h-1.5 rounded-full bg-amber-500 align-middle" />}
-                                            </p>
-                                            <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2 leading-relaxed">{n.message}</p>
-                                            <p className="text-[10px] text-zinc-600 mt-1">{timeAgo(n.createdAt)}</p>
+                                            <div className="flex justify-between items-start gap-2">
+                                                <p className={`text-sm font-semibold leading-tight ${!n.read ? 'text-[#F5F5F5]' : 'text-[#A1A1A1]'}`}>
+                                                    {n.title}
+                                                </p>
+                                                <span className="text-[10px] text-[#3a3a3a] whitespace-nowrap font-mono">{timeAgo(n.createdAt)}</span>
+                                            </div>
+                                            <p className={`text-xs mt-1.5 leading-relaxed line-clamp-2 ${!n.read ? 'text-[#D1D1D1]' : 'text-[#717171]'}`}>{n.message}</p>
                                         </div>
                                         <button
                                             onClick={(e) => handleDelete(e, n._id)}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-zinc-600 hover:text-red-400 flex-shrink-0"
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-[#3a3a3a] hover:text-red-400 flex-shrink-0 hover:bg-red-500/10 rounded-lg"
                                         >
-                                            <X size={13} />
+                                            <X size={14} />
                                         </button>
                                     </div>
                                 ))
@@ -185,15 +194,15 @@ const NotificationBell = () => {
                         </div>
 
                         {/* Footer */}
-                        <div className="px-5 py-3 border-t border-white/10 flex items-center justify-between">
+                        <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between bg-black/20">
                             <button
                                 onClick={() => { navigate('/notifications'); setOpen(false); }}
-                                className="text-xs text-amber-500 hover:text-white transition-colors font-medium"
+                                className="text-xs text-[#F5B942] hover:text-white transition-all font-bold uppercase tracking-widest flex items-center gap-2 group/btn"
                             >
-                                See all notifications →
+                                See All <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                             </button>
                             {list.length > 8 && (
-                                <span className="text-[10px] text-zinc-600">{list.length - 8} more</span>
+                                <span className="text-[10px] text-[#3a3a3a] font-medium tracking-wide">{list.length - 8} additional updates</span>
                             )}
                         </div>
                     </motion.div>

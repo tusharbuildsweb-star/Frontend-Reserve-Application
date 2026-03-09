@@ -639,14 +639,15 @@ const OwnerDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] pt-32 pb-16">
+        <div className="min-h-screen bg-transparent pt-32 pb-16 relative z-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Dashboard Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-12 flex flex-col md:flex-row items-center md:items-start justify-between bg-[#0B0B0B]/40 backdrop-blur-xl border border-[#1F1F1F] rounded-3xl p-10 shadow-2xl relative overflow-hidden group"
+                    transition={{ duration: 0.4 }}
+                    className="mb-12 flex flex-col md:flex-row items-center md:items-start justify-between bg-[#0B0B0B]/60 backdrop-blur-xl border border-[rgba(255,255,255,0.06)] rounded-3xl p-10 shadow-2xl relative overflow-hidden group"
                 >
                     {/* Decorative Background Element */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#F5B942]/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none group-hover:bg-[#F5B942]/10 transition-all duration-700" />
@@ -683,7 +684,7 @@ const OwnerDashboard = () => {
                     <div className="mt-8 md:mt-0 flex gap-4 relative z-10">
                         <button
                             onClick={() => { dispatch(logout()); navigate('/'); }}
-                            className="px-6 py-4 bg-white/5 border border-[#1F1F1F] rounded-2xl text-[#A1A1A1] hover:text-red-400 hover:border-red-400/30 hover:bg-red-500/5 transition-all duration-300 flex items-center group font-medium"
+                            className="px-6 py-4 bg-white/5 border border-[#1F1F1F] rounded-2xl text-[#A1A1A1] hover:text-red-400 hover:border-red-400/30 transition-all duration-300 flex items-center group font-medium"
                         >
                             <LogOut size={16} className="mr-3 transform group-hover:-translate-x-1 transition-transform" /> Sign Out
                         </button>
@@ -694,41 +695,41 @@ const OwnerDashboard = () => {
 
                     {/* Sidebar Navigation */}
                     <div className="w-full lg:w-1/4">
-                        <div className="bg-[#0B0B0B]/50 backdrop-blur-xl border border-[#1F1F1F] rounded-3xl p-5 sticky top-32 space-y-2 shadow-2xl">
+                        <div className="bg-[#0B0B0B]/50 backdrop-blur-xl border border-[rgba(255,255,255,0.05)] rounded-3xl p-5 sticky top-32 space-y-2 shadow-2xl">
                             <div className="px-4 py-2 mb-2">
                                 <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#3a3a3a]">Enterprise</span>
                             </div>
                             <button
                                 onClick={() => setActiveTab('analytics')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'analytics' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'analytics' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><BarChart3 size={20} className={`mr-4 ${activeTab === 'analytics' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Analytics</span>
                                 {activeTab === 'analytics' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('reservations')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reservations' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reservations' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><CalendarDays size={20} className={`mr-4 ${activeTab === 'reservations' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Reservations</span>
                                 {activeTab === 'reservations' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('menu')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'menu' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'menu' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><UtensilsCrossed size={20} className={`mr-4 ${activeTab === 'menu' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Menu & Slots</span>
                                 {activeTab === 'menu' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('reviews')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reviews' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reviews' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><MessageSquare size={20} className={`mr-4 ${activeTab === 'reviews' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Reviews & Management</span>
                                 {activeTab === 'reviews' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('promotions')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'promotions' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'promotions' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><Star size={20} className={`mr-4 ${activeTab === 'promotions' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Promotions</span>
                                 {activeTab === 'promotions' && <ChevronRight size={16} />}
@@ -739,21 +740,21 @@ const OwnerDashboard = () => {
                             </div>
                             <button
                                 onClick={() => setActiveTab('subscription')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'subscription' ? 'bg-[#121212] text-[#F5B942] border border-[#F5B942]/20 shadow-lg' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'subscription' ? 'bg-[#121212] text-[#F5B942] border border-[#F5B942]/20 shadow-lg' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><CreditCard size={20} className="mr-4 text-[#A1A1A1] group-hover:text-[#F5B942] transition-colors" /> Subscription</span>
                                 {activeTab === 'subscription' && <div className="w-2 h-2 rounded-full bg-[#F5B942] animate-pulse" />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('support')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'support' ? 'bg-[#121212] text-[#F5F5F5] border border-[#1F1F1F]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'support' ? 'bg-[#121212] text-[#F5F5F5] border border-[#1F1F1F]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><ShieldAlert size={20} className="mr-4 text-[#A1A1A1] group-hover:text-[#F5B942] transition-colors" /> Support</span>
                                 {activeTab === 'support' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('settings')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'settings' ? 'bg-[#121212] text-[#F5F5F5] border border-[#1F1F1F]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'settings' ? 'bg-[#121212] text-[#F5F5F5] border border-[#1F1F1F]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><Settings size={20} className="mr-4 text-[#A1A1A1] group-hover:text-[#F5B942] transition-colors" /> Settings</span>
                                 {activeTab === 'settings' && <ChevronRight size={16} />}
@@ -765,10 +766,10 @@ const OwnerDashboard = () => {
                     <div className="w-full lg:w-3/4">
                         <motion.div
                             key={activeTab}
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.4 }}
-                            className="bg-[#0B0B0B]/40 backdrop-blur-xl border border-[#1F1F1F] rounded-3xl p-10 min-h-[600px] shadow-2xl"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                            className="bg-[#0C0C0C]/90 backdrop-blur-[14px] border border-[rgba(255,255,255,0.05)] rounded-[18px] p-6 lg:p-10 min-h-[600px] shadow-[0_20px_60px_rgba(0,0,0,0.7)]"
                         >
 
                             {/* Analytics Tab */}
@@ -827,7 +828,7 @@ const OwnerDashboard = () => {
                                 <div>
                                     <div className="flex justify-between items-center mb-8">
                                         <h2 className="text-2xl font-serif text-[#F5F5F5]">Live Reservations</h2>
-                                        <button className="bg-white/10 text-[#F5F5F5] px-4 py-2 rounded-lg text-sm hover:bg-white/20 transition-colors">Export CSV</button>
+                                        <button className="bg-white/10 text-[#F5F5F5] px-4 py-2 rounded-lg text-sm transition-colors">Export CSV</button>
                                     </div>
 
                                     <div className="overflow-x-auto">
@@ -848,7 +849,7 @@ const OwnerDashboard = () => {
                                                     <tr><td colSpan="7" className="text-center py-4 text-[#A1A1A1]">Loading reservations...</td></tr>
                                                 ) : reservations?.length > 0 ? (
                                                     reservations.map(res => (
-                                                        <tr key={res._id} className="border-b border-[#1F1F1F] hover:bg-white/5 transition-colors group">
+                                                        <tr key={res._id} className="border-b border-[#1F1F1F] transition-colors group">
                                                             <td className="py-4 text-[#F5F5F5] font-mono">
                                                                 <div>{res._id.slice(-6).toUpperCase()}</div>
                                                                 <div className="text-[10px] text-[#A1A1A1]">{res.razorpayOrderId || 'No Order ID'}</div>
@@ -895,7 +896,7 @@ const OwnerDashboard = () => {
                                                                 {res.status === 'pending' && (
                                                                     <div className="flex gap-2 justify-end">
                                                                         <button onClick={() => dispatch(approveReservation(res._id))} className="text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-2 py-1 rounded transition-colors text-xs font-medium border border-green-500/20">Approve</button>
-                                                                        <button onClick={() => dispatch(rejectReservation(res._id))} className="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-2 py-1 rounded transition-colors text-xs font-medium border border-red-500/20">Reject</button>
+                                                                        <button onClick={() => dispatch(rejectReservation(res._id))} className="text-red-400 hover:text-red-300 bg-red-500/10 px-2 py-1 rounded transition-colors text-xs font-medium border border-red-500/20">Reject</button>
                                                                     </div>
                                                                 )}
                                                             </td>
@@ -1016,14 +1017,14 @@ const OwnerDashboard = () => {
                                                                                 <div className="flex gap-2">
                                                                                     <button
                                                                                         onClick={() => setEditingItemId(item.id)}
-                                                                                        className="p-2 bg-[#F5B942]/10 rounded hover:bg-[#F5B942]/20 text-[#F5B942] transition-colors"
+                                                                                        className="p-2 bg-[#F5B942]/10 rounded hover:bg-[#F5B942]/10 text-[#F5B942] transition-colors"
                                                                                         title="Edit item"
                                                                                     >
                                                                                         <Edit2 size={13} />
                                                                                     </button>
                                                                                     <button
                                                                                         onClick={() => handleDeleteMenuItem(item.id)}
-                                                                                        className="p-2 bg-red-500/10 rounded hover:bg-red-500/20 text-red-500 transition-colors"
+                                                                                        className="p-2 bg-red-500/10 rounded text-red-500 transition-colors"
                                                                                         title="Delete item"
                                                                                     >
                                                                                         <Trash2 size={13} />
@@ -1163,7 +1164,7 @@ const OwnerDashboard = () => {
                                                     <div className="flex items-center gap-6">
                                                         <span className="text-[#F5B942] font-serif">₹{item.basePrice}</span>
                                                         <div className="flex gap-2">
-                                                            <button onClick={() => handleDeletePackage(item._id)} className="p-2 bg-red-500/10 rounded hover:bg-red-500/20 text-red-500 transition-colors"><Trash2 size={14} /></button>
+                                                            <button onClick={() => handleDeletePackage(item._id)} className="p-2 bg-red-500/10 rounded text-red-500 transition-colors"><Trash2 size={14} /></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1275,7 +1276,7 @@ const OwnerDashboard = () => {
                                                             const bkd = slot.booked || {};
                                                             const totalBooked = (bkd.twoSeater || 0) + (bkd.fourSeater || 0) + (bkd.sixSeater || 0) + (bkd.groupTable || 0);
                                                             return (
-                                                                <tr key={slot._id} className="hover:bg-white/[0.02] transition-colors">
+                                                                <tr key={slot._id} className=" transition-colors">
                                                                     <td className="py-4 text-[#F5F5F5] whitespace-nowrap">
                                                                         {new Date(slot.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                                     </td>
@@ -1299,7 +1300,7 @@ const OwnerDashboard = () => {
                                                                             onClick={() => handleDeleteSlot(slot._id)}
                                                                             disabled={totalBooked > 0}
                                                                             title={totalBooked > 0 ? 'Cannot delete: has bookings' : 'Delete Slot'}
-                                                                            className="p-2 bg-red-500/10 rounded hover:bg-red-500/20 text-red-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                                                            className="p-2 bg-red-500/10 rounded text-red-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                                                                         >
                                                                             <Trash2 size={14} />
                                                                         </button>
@@ -1418,7 +1419,7 @@ const OwnerDashboard = () => {
                                                                     />
                                                                     <div className="flex gap-2">
                                                                         <button onClick={() => handlePostReply(review._id)} className="bg-[#F5B942] text-black px-4 py-2 rounded-lg text-xs font-bold hover:bg-amber-400 transition-colors">Post Reply</button>
-                                                                        <button onClick={() => { setReplyingTo(null); setReplyText(''); }} className="bg-white/5 text-[#A1A1A1] px-4 py-2 rounded-lg text-xs hover:bg-white/10 transition-colors">Cancel</button>
+                                                                        <button onClick={() => { setReplyingTo(null); setReplyText(''); }} className="bg-white/5 text-[#A1A1A1] px-4 py-2 rounded-lg text-xs transition-colors">Cancel</button>
                                                                     </div>
                                                                 </div>
                                                             ) : (
@@ -1698,7 +1699,7 @@ const OwnerDashboard = () => {
                                         </div>
                                         <div className="pt-2 flex justify-end">
                                             <button type="submit"
-                                                className="bg-white/10 text-[#F5F5F5] px-8 py-3 rounded-lg font-medium hover:bg-white/20 transition-colors border border-[#1F1F1F]"
+                                                className="bg-white/10 text-[#F5F5F5] px-8 py-3 rounded-lg font-medium transition-colors border border-[#1F1F1F]"
                                             >
                                                 Update Password
                                             </button>
@@ -1813,7 +1814,7 @@ const OwnerDashboard = () => {
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-3 mt-8">
-                                                    <button onClick={() => setIsTicketModalOpen(false)} className="flex-1 px-4 py-3 bg-white/5 text-[#F5F5F5] rounded-xl hover:bg-white/10 transition-colors border border-[#1F1F1F]">Cancel</button>
+                                                    <button onClick={() => setIsTicketModalOpen(false)} className="flex-1 px-4 py-3 bg-white/5 text-[#F5F5F5] rounded-xl transition-colors border border-[#1F1F1F]">Cancel</button>
                                                     <button onClick={handleCreateTicket} className="flex-1 px-4 py-3 bg-[#F5B942] text-black rounded-xl font-medium hover:bg-amber-400 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]">Submit Ticket</button>
                                                 </div>
                                             </motion.div>
@@ -1944,7 +1945,7 @@ const OwnerDashboard = () => {
                                                                     const days = durationMap[plan.type] || 7;
                                                                     const startDate = new Date();
                                                                     const endDate = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
-                                                                    
+
                                                                     await dispatch(createPromotion({
                                                                         restaurantId: restaurant._id,
                                                                         promotionType: plan.type,

@@ -93,7 +93,7 @@ const UserReviewsPage = () => {
                         <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sticky top-32 space-y-2 shadow-2xl">
                             <button
                                 onClick={() => navigate('/dashboard/user')}
-                                className="w-full flex items-center justify-between p-4 rounded-2xl text-zinc-400 hover:bg-white/5 hover:text-white transition-all group"
+                                className="w-full flex items-center justify-between p-4 rounded-2xl text-zinc-400 hover:text-[#F5B942] transition-all group"
                             >
                                 <span className="flex items-center font-semibold"><Calendar size={20} className="mr-4 text-amber-500" /> Reservations</span>
                                 <ChevronRight size={16} />
@@ -107,7 +107,7 @@ const UserReviewsPage = () => {
                             </button>
                             <button
                                 onClick={() => { dispatch(logout()); navigate('/'); }}
-                                className="w-full flex items-center justify-between p-4 rounded-2xl text-zinc-400 hover:bg-red-500/5 hover:text-red-400 transition-all group"
+                                className="w-full flex items-center justify-between p-4 rounded-2xl text-zinc-400 hover:text-red-400 transition-all group"
                             >
                                 <span className="flex items-center font-semibold"><LogOut size={20} className="mr-4 text-zinc-500 group-hover:text-red-400" /> Sign Out</span>
                             </button>

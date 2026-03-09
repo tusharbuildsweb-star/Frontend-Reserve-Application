@@ -75,7 +75,7 @@ const FAQPage = () => {
                         >
                             <button
                                 onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-                                className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+                                className="w-full px-8 py-6 flex items-center justify-between text-left transition-colors"
                             >
                                 <span className="text-white font-medium pr-8">{faq.question}</span>
                                 {openIdx === idx ? <Minus size={18} className="text-amber-500" /> : <Plus size={18} className="text-zinc-600" />}

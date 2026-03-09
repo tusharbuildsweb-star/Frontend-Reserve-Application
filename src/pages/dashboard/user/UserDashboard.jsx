@@ -318,7 +318,8 @@ const UserDashboard = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-12 flex flex-col md:flex-row items-center md:items-start justify-between bg-[#0B0B0B]/40 backdrop-blur-xl border border-[#1F1F1F] rounded-3xl p-10 shadow-2xl relative overflow-hidden group"
+                    transition={{ duration: 0.4 }}
+                    className="mb-12 flex flex-col md:flex-row items-center md:items-start justify-between bg-[#0B0B0B]/60 backdrop-blur-xl border border-[rgba(255,255,255,0.06)] rounded-3xl p-10 shadow-2xl relative overflow-hidden group"
                 >
                     {/* Decorative Background Element */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#F5B942]/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none group-hover:bg-[#F5B942]/10 transition-all duration-700" />
@@ -327,7 +328,7 @@ const UserDashboard = () => {
                         <div className="relative">
                             <div className="w-28 h-28 rounded-full bg-[#121212] overflow-hidden flex items-center justify-center shadow-[0_0_30px_rgba(245,185,66,0.2)] border-2 border-[#F5B942]/50">
                                 {user?.profileImage ? (
-                                    <img src={`http://localhost:5000${user.profileImage}`} alt={user.name} className="w-full h-full object-cover" />
+                                    <img src={`${API_BASE}${user.profileImage.startsWith('/') ? '' : '/'}${user.profileImage}`} alt={user.name} className="w-full h-full object-cover" />
                                 ) : (
                                     <span className="text-4xl font-serif text-[#F5B942]">{user?.name?.charAt(0) || 'U'}</span>
                                 )}
@@ -355,7 +356,7 @@ const UserDashboard = () => {
                     <div className="mt-8 md:mt-0 flex gap-4 relative z-10">
                         <button
                             onClick={() => { dispatch(logout()); navigate('/'); }}
-                            className="px-6 py-3 bg-white/5 border border-[#1F1F1F] rounded-2xl text-[#A1A1A1] hover:text-red-400 hover:border-red-400/30 hover:bg-red-500/5 transition-all duration-300 flex items-center group font-medium"
+                            className="px-6 py-3 bg-white/5 border border-[#1F1F1F] rounded-2xl text-[#A1A1A1] hover:text-red-400 hover:border-red-400/30 transition-all duration-300 flex items-center group font-medium"
                         >
                             <LogOut size={16} className="mr-3 transform group-hover:-translate-x-1 transition-transform" /> Sign Out
                         </button>
@@ -372,28 +373,28 @@ const UserDashboard = () => {
                             </div>
                             <button
                                 onClick={() => setActiveTab('reservations')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reservations' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reservations' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><Calendar size={20} className={`mr-4 ${activeTab === 'reservations' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Reservations</span>
                                 {activeTab === 'reservations' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('favorites')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'favorites' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'favorites' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><Heart size={20} className={`mr-4 ${activeTab === 'favorites' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Favorites</span>
                                 {activeTab === 'favorites' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('reviews')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reviews' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reviews' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><Star size={20} className={`mr-4 ${activeTab === 'reviews' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> My Reviews</span>
                                 {activeTab === 'reviews' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('support')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'support' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'support' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><Ticket size={20} className={`mr-4 ${activeTab === 'support' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Support</span>
                                 {activeTab === 'support' && <ChevronRight size={16} />}
@@ -403,7 +404,7 @@ const UserDashboard = () => {
                             </div>
                             <button
                                 onClick={() => setActiveTab('settings')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'settings' ? 'bg-[#121212] text-[#F5F5F5] border border-[#1F1F1F]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'settings' ? 'bg-[#121212] text-[#F5F5F5] border border-[#1F1F1F]' : 'text-[#A1A1A1] hover:text-[#F5B942]'}`}
                             >
                                 <span className="flex items-center font-semibold"><Settings size={20} className="mr-4 text-[#A1A1A1] group-hover:text-[#F5B942] transition-colors" /> Settings</span>
                                 {activeTab === 'settings' && <ChevronRight size={16} />}
@@ -415,10 +416,10 @@ const UserDashboard = () => {
                     <div className="w-full lg:w-3/4">
                         <motion.div
                             key={activeTab}
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.4 }}
-                            className="bg-[#0B0B0B]/40 backdrop-blur-xl border border-[#1F1F1F] rounded-3xl p-10 min-h-[600px] shadow-2xl"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                            className="bg-[#0C0C0C]/90 backdrop-blur-[14px] border border-[rgba(255,255,255,0.05)] rounded-[18px] p-6 lg:p-10 min-h-[600px] shadow-[0_20px_60px_rgba(0,0,0,0.7)]"
                         >
                             {/* Reservations Tab */}
                             {activeTab === 'reservations' && (
@@ -455,69 +456,58 @@ const UserDashboard = () => {
                                         ) : (() => {
                                             const displayList = reservationTab === 'upcoming' ? (reservations || []) : (reservationHistory || []);
                                             return displayList.length > 0 ? displayList.map(res => (
-                                                <div key={res._id} className="flex flex-col md:flex-row gap-6 p-4 border border-[#1F1F1F] rounded-xl hover:border-[#F5B942]/30 transition-colors bg-[#0B0B0B]">
-                                                    <img src={res.restaurantId?.images?.[0] || "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070"} alt={res.restaurantId?.name} className="w-full md:w-48 h-32 object-cover rounded-lg" />
-                                                    <div className="flex-1 flex flex-col justify-between py-1">
+                                                <motion.div
+                                                    key={res._id}
+                                                    whileHover={{ y: -4, borderColor: 'rgba(245,185,66,0.25)', boxShadow: '0 10px 35px rgba(0,0,0,0.7)' }}
+                                                    className="flex flex-col md:flex-row gap-6 p-5 border border-[rgba(255,255,255,0.06)] rounded-[14px] transition-all bg-[#0F0F0F]/90 overflow-hidden relative group/rescard"
+                                                >
+                                                    {/* Gold glow effect on hover */}
+                                                    <div className="absolute inset-0 opacity-0 group-hover/rescard:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ boxShadow: 'inset 0 0 15px rgba(245,185,66,0.05)' }} />
+
+                                                    <img
+                                                        src={res.restaurantId?.images?.[0]
+                                                            ? `${API_BASE}${res.restaurantId.images[0].startsWith('/') ? '' : '/'}${res.restaurantId.images[0]}`
+                                                            : "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070"
+                                                        }
+                                                        alt={res.restaurantId?.name}
+                                                        className="w-full md:w-48 h-32 object-cover rounded-lg"
+                                                    />
+                                                    <div className="flex-1 flex flex-col justify-between py-1 relative z-10">
                                                         <div>
                                                             <div className="flex justify-between items-start mb-2">
-                                                                <h3 className="text-xl font-serif text-[#F5F5F5]">{res.restaurantId?.name || 'Restaurant'}</h3>
-                                                                <span className={`px-3 py-1 text-xs rounded-full border ${
-                                                                    res.status === 'confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/30' :
+                                                                <h3 className="text-xl font-serif text-[#F5F5F5] group-hover/rescard:text-[#F5B942] transition-colors">{res.restaurantId?.name || 'Restaurant'}</h3>
+                                                                <span className={`px-3 py-1 text-[10px] uppercase tracking-widest rounded-full border ${res.status === 'confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/30' :
                                                                     res.status === 'approved' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30 animate-pulse' :
-                                                                    res.status === 'pending' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' :
-                                                                    res.status === 'payment_initiated' ? 'bg-[#F5B942]/10 text-[#F5B942] border-[#F5B942]/30 animate-pulse' :
-                                                                    res.status === 'payment_failed' ? 'bg-red-500/10 text-red-500 border-red-500/30' :
-                                                                    (res.status === 'cancelled' || res.status === 'rejected') ? 'bg-red-500/5 text-red-400 border-red-500/10' :
-                                                                    'bg-white/5 text-[#A1A1A1] border-[#1F1F1F]'}`}>
-                                                                    {res.status === 'payment_initiated' ? 'Initializing Payment' : 
-                                                                     res.status === 'approved' ? 'Awaiting Payment' :
-                                                                     res.status === 'pending' ? 'Awaiting Approval' :
-                                                                     res.status.replace('_', ' ')}
+                                                                        res.status === 'pending' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' :
+                                                                            res.status === 'payment_initiated' ? 'bg-[#F5B942]/10 text-[#F5B942] border-[#F5B942]/30 animate-pulse' :
+                                                                                res.status === 'payment_failed' ? 'bg-red-500/10 text-red-500 border-red-500/30' :
+                                                                                    (res.status === 'cancelled' || res.status === 'rejected') ? 'bg-red-500/5 text-red-400 border-red-500/10' :
+                                                                                        'bg-white/5 text-[#A1A1A1] border-[#1F1F1F]'}`}>
+                                                                    {res.status === 'payment_initiated' ? 'Initializing Payment' :
+                                                                        res.status === 'approved' ? 'Awaiting Payment' :
+                                                                            res.status === 'pending' ? 'Awaiting Approval' :
+                                                                                res.status.replace('_', ' ')}
                                                                 </span>
                                                             </div>
-                                                            <div className="flex flex-wrap gap-4 text-sm text-[#A1A1A1]">
-                                                                <span className="flex items-center"><Calendar size={14} className="mr-1.5 text-[#F5F5F5]/50" /> {new Date(res.date).toLocaleDateString()}</span>
-                                                                <span className="flex items-center"><Clock size={14} className="mr-1.5 text-[#F5F5F5]/50" /> {res.time}</span>
-                                                                <span className="flex items-center"><Users size={14} className="mr-1.5 text-[#F5F5F5]/50" /> {res.guests} Guests</span>
+                                                            <div className="flex flex-wrap gap-4 text-xs text-[#A1A1A1]">
+                                                                <span className="flex items-center"><Calendar size={13} className="mr-1.5 text-[#F5F5F5]/50" /> {new Date(res.date).toLocaleDateString()}</span>
+                                                                <span className="flex items-center"><Clock size={13} className="mr-1.5 text-[#F5F5F5]/50" /> {res.time}</span>
+                                                                <span className="flex items-center"><Users size={13} className="mr-1.5 text-[#F5F5F5]/50" /> {res.guests} Guests</span>
                                                             </div>
-                                                            {res.selectedPackage?.title && (
-                                                                <div className="mt-3 inline-flex items-center px-2.5 py-1 rounded-md bg-[#F5B942]/10 text-xs text-[#F5B942] font-medium border border-[#F5B942]/20">
-                                                                    <Star size={12} className="mr-1.5 fill-current" />
-                                                                    {res.selectedPackage.title}
-                                                                </div>
-                                                            )}
-                                                            {res.status === 'Confirmed' && (
-                                                                <div className="mt-4">
-                                                                    <CountdownTimer targetDate={res.bookingDateTime} />
-                                                                </div>
-                                                            )}
-                                                            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs text-[#A1A1A1] bg-[#050505] p-3 rounded-lg border border-[#1F1F1F]">
+
+                                                            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-[10px] text-[#A1A1A1] bg-black/40 backdrop-blur-md p-3 rounded-lg border border-white/5">
                                                                 <div className="flex justify-between">
                                                                     <span>Order ID:</span>
                                                                     <span className="text-[#F5F5F5] font-mono">{res.razorpayOrderId || 'Pending...'}</span>
                                                                 </div>
-                                                                <div className="flex justify-between">
+                                                                <div className="flex justify-between items-center">
                                                                     <span>Advance:</span>
                                                                     <span className="text-[#F5F5F5]">₹{res.advancePaid || 0}</span>
                                                                 </div>
-                                                                <div className="flex justify-between">
-                                                                    <span>Total Paid:</span>
-                                                                    <span className="text-[#F5B942] font-medium">₹{res.totalPaidNow || 0}</span>
-                                                                </div>
-                                                                <div className="flex justify-between">
-                                                                    <span>Platform Fee:</span>
-                                                                    <span className="text-[#F5F5F5]">₹{res.platformFee || 0}</span>
-                                                                </div>
-                                                                {res.preorderItems?.length > 0 && (
-                                                                    <div className="col-span-1 sm:col-span-2 mt-2 pt-2 border-t border-[#1F1F1F] flex justify-between">
-                                                                        <span>Preordered Items:</span>
-                                                                        <span className="text-[#F5F5F5]">{res.preorderItems.reduce((acc, curr) => acc + (curr.quantity || 1), 0)} items (₹{res.preorderTotal || 0})</span>
-                                                                    </div>
-                                                                )}
                                                             </div>
                                                         </div>
                                                         <div className="flex gap-3 mt-4 flex-wrap">
-                                                             {(res.status === 'approved' || res.status === 'payment_initiated' || res.status === 'payment_failed') && (
+                                                            {(res.status === 'approved' || res.status === 'payment_initiated' || res.status === 'payment_failed') && (
                                                                 <button
                                                                     onClick={() => navigate('/checkout', {
                                                                         state: {
@@ -534,14 +524,14 @@ const UserDashboard = () => {
                                                                             reservationId: res._id // Link existing reservation
                                                                         }
                                                                     })}
-                                                                    className="px-4 py-2 bg-[#F5B942] text-black text-sm rounded-lg font-bold transition-all shadow-lg shadow-[#F5B942]/20"
+                                                                    className="px-5 py-2.5 bg-[#F5B942] hover:bg-[#D4A017] text-[#050505] text-[11px] rounded-[10px] font-bold transition-all shadow-lg hover:shadow-[#F5B942]/30 active:scale-95 uppercase tracking-wider"
                                                                 >
                                                                     {res.status === 'approved' ? 'Proceed to Payment' : 'Complete Payment'}
                                                                 </button>
                                                             )}
                                                             {res.status === 'Completed' && (
-                                                                <button onClick={() => navigate(`/reservations/${res._id}/review`)} className="px-4 py-2 bg-[#F5B942]/10 hover:bg-[#F5B942]/20 text-[#F5B942] text-sm rounded-lg transition-colors border border-[#F5B942]/30 flex items-center">
-                                                                    <Star size={14} className="mr-1.5" /> Leave Review
+                                                                <button onClick={() => navigate(`/reservations/${res._id}/review`)} className="px-4 py-2 bg-[#F5B942]/10 hover:bg-[#F5B942]/10 text-[#F5B942] text-[11px] rounded-lg transition-colors border border-[#F5B942]/30 flex items-center uppercase font-bold tracking-wider">
+                                                                    <Star size={12} className="mr-1.5" /> Leave Review
                                                                 </button>
                                                             )}
                                                             {res.status === 'confirmed' && new Date(res.bookingDateTime) > new Date() && (
@@ -550,22 +540,22 @@ const UserDashboard = () => {
                                                                         setSelectedReservation(res);
                                                                         setIsRescheduleModalOpen(true);
                                                                     }}
-                                                                    className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm rounded-lg transition-all border border-blue-500/20 hover:border-blue-500/40 flex items-center gap-1.5 font-medium"
+                                                                    className="px-4 py-2 bg-blue-500/10 text-blue-400 text-[11px] rounded-lg transition-all border border-blue-500/20 hover:border-blue-500/40 flex items-center gap-1.5 font-bold uppercase tracking-wider"
                                                                 >
-                                                                    <Calendar size={14} /> Reschedule
+                                                                    <Calendar size={12} /> Reschedule
                                                                 </button>
                                                             )}
-                                                            {(res.status === 'confirmed' || res.status === 'payment_initiated') && (
+                                                            {(res.status === 'confirmed' || res.status === 'pending' || res.status === 'approved' || res.status === 'payment_failed') && new Date(res.bookingDateTime) > new Date() && (
                                                                 <button
                                                                     onClick={() => handleCancelClick(res)}
-                                                                    className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm rounded-lg transition-all border border-red-500/20 hover:border-red-500/40 flex items-center gap-1.5 font-medium"
+                                                                    className="px-4 py-2 bg-red-500/10 text-red-500 text-[11px] rounded-lg transition-all border border-red-500/20 hover:border-red-500/40 flex items-center gap-1.5 font-bold uppercase tracking-wider"
                                                                 >
-                                                                    <XCircle size={14} /> Cancel Reservation
+                                                                    <XCircle size={12} /> {res.status === 'confirmed' ? 'Cancel Booking' : 'Cancel Request'}
                                                                 </button>
                                                             )}
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </motion.div>
                                             )) : (
                                                 <p className="text-[#A1A1A1] text-center py-10 border border-dashed border-[#1F1F1F] rounded-2xl">
                                                     {reservationTab === 'upcoming' ? "You're all caught up. No active reservations." : "No past reservations found."}
@@ -573,7 +563,7 @@ const UserDashboard = () => {
                                             );
                                         })()}
                                     </div>
-                                    
+
                                     {/* Recommendations Section */}
                                     <div className="mt-12 pt-8 border-t border-[#1F1F1F]">
                                         <div className="flex items-center gap-3 mb-6">
@@ -588,7 +578,14 @@ const UserDashboard = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 {recommendations.map(restaurant => (
                                                     <div key={restaurant._id} className="bg-[#0B0B0B] border border-[#1F1F1F] rounded-2xl p-4 flex gap-4 hover:border-[#F5B942]/30 transition-all cursor-pointer group" onClick={() => navigate(`/restaurants/${restaurant._id}`)}>
-                                                        <img src={restaurant.images?.[0] ? `${API_BASE}${restaurant.images[0]}` : "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070"} alt={restaurant.name} className="w-24 h-24 object-cover rounded-xl" />
+                                                        <img
+                                                            src={restaurant.images?.[0]
+                                                                ? `${API_BASE}${restaurant.images[0].startsWith('/') ? '' : '/'}${restaurant.images[0]}`
+                                                                : "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070"
+                                                            }
+                                                            alt={restaurant.name}
+                                                            className="w-24 h-24 object-cover rounded-xl"
+                                                        />
                                                         <div className="flex-1 py-1 flex flex-col justify-between">
                                                             <div>
                                                                 <h3 className="text-lg font-serif text-[#F5F5F5] group-hover:text-[#F5B942] transition-colors line-clamp-1">{restaurant.name}</h3>
@@ -622,7 +619,14 @@ const UserDashboard = () => {
                                                     <div className="flex justify-between items-start mb-4">
                                                         <div className="flex gap-4">
                                                             <div className="w-12 h-12 rounded-lg bg-[#121212] overflow-hidden flex-shrink-0">
-                                                                <img src={review.restaurantId?.images?.[0] ? `${API_BASE}${review.restaurantId.images[0]}` : "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070"} alt={review.restaurantId?.name} className="w-full h-full object-cover" />
+                                                                <img
+                                                                    src={review.restaurantId?.images?.[0]
+                                                                        ? `${API_BASE}${review.restaurantId.images[0].startsWith('/') ? '' : '/'}${review.restaurantId.images[0]}`
+                                                                        : "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070"
+                                                                    }
+                                                                    alt={review.restaurantId?.name}
+                                                                    className="w-full h-full object-cover"
+                                                                />
                                                             </div>
                                                             <div>
                                                                 <h3 className="text-[#F5F5F5] font-medium group-hover:text-[#F5B942] transition-colors cursor-pointer" onClick={() => navigate(`/restaurants/${review.restaurantId?._id}`)}>{review.restaurantId?.name || 'Restaurant'}</h3>
@@ -686,7 +690,7 @@ const UserDashboard = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button onClick={() => handleToggleFavorite(fav._id)} className="absolute top-4 right-4 p-2.5 bg-black/60 backdrop-blur-md rounded-full text-red-500 hover:bg-white/10 transition-colors border border-[#1F1F1F] group/heart">
+                                                    <button onClick={() => handleToggleFavorite(fav._id)} className="absolute top-4 right-4 p-2.5 bg-black/60 backdrop-blur-md rounded-full text-red-500 transition-colors border border-[#1F1F1F] group/heart">
                                                         <Heart size={20} className="fill-current group-hover/heart:scale-110 transition-transform" />
                                                     </button>
                                                 </div>
@@ -889,7 +893,7 @@ const UserDashboard = () => {
                                         </div>
                                         <div className="pt-2 flex justify-end">
                                             <button type="submit"
-                                                className="bg-white/10 text-[#F5F5F5] px-8 py-3 rounded-lg font-medium hover:bg-white/20 transition-colors border border-[#1F1F1F]"
+                                                className="bg-white/10 text-[#F5F5F5] px-8 py-3 rounded-lg font-medium transition-colors border border-[#1F1F1F]"
                                             >
                                                 Update Password
                                             </button>
@@ -951,7 +955,7 @@ const UserDashboard = () => {
                                     />
                                 </div>
                                 <div className="flex gap-4 pt-2">
-                                    <button type="button" onClick={() => setIsTicketModalOpen(false)} className="flex-1 py-2 rounded-lg border border-[#1F1F1F] text-[#A1A1A1] hover:text-[#F5F5F5] hover:bg-white/5 transition-colors">Cancel</button>
+                                    <button type="button" onClick={() => setIsTicketModalOpen(false)} className="flex-1 py-2 rounded-lg border border-[#1F1F1F] text-[#A1A1A1] hover:text-[#F5F5F5] transition-colors">Cancel</button>
                                     <button type="submit" disabled={supportLoading} className="flex-1 py-2 rounded-lg bg-[#F5B942] text-black font-medium hover:bg-amber-400 transition-colors disabled:opacity-50">
                                         {supportLoading ? 'Submitting...' : 'Submit Ticket'}
                                     </button>

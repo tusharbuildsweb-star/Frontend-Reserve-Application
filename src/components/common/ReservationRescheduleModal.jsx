@@ -154,7 +154,7 @@ const ReservationRescheduleModal = ({ isOpen, onClose, reservation, onReschedule
                                             className={`py-2 rounded-lg text-sm transition-all font-medium border
                                                 ${selectedSlotId === slot._id
                                                     ? 'bg-amber-500 text-black border-amber-500 shadow-[0_0_10px_rgba(212,175,55,0.3)]'
-                                                    : 'bg-zinc-900/50 text-white/80 border-white/10 hover:border-amber-500/50 hover:bg-white/5'
+                                                    : 'bg-zinc-900/50 text-white/80 border-white/10 hover:border-amber-500/50'
                                                 }`}
                                         >
                                             {slot.time}

@@ -54,7 +54,7 @@ const SiteAlertModal = () => {
                         {alert.showCancel && (
                             <button
                                 onClick={handleCancel}
-                                className="flex-1 py-4 text-zinc-400 font-medium hover:bg-white/5 transition-colors border-r border-white/10"
+                                className="flex-1 py-4 text-zinc-400 font-medium transition-colors border-r border-white/10"
                             >
                                 {alert.cancelText}
                             </button>
@@ -63,7 +63,7 @@ const SiteAlertModal = () => {
                             onClick={handleConfirm}
                             className={`flex-1 py-4 font-bold transition-colors ${alert.type === 'error' ? 'text-red-500 hover:bg-red-500/10' :
                                     alert.type === 'success' ? 'text-green-500 hover:bg-green-500/10' :
-                                        'text-amber-500 hover:bg-amber-500/10'
+                                        'text-amber-500'
                                 }`}
                         >
                             {alert.confirmText}

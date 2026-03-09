@@ -335,7 +335,7 @@ const CheckoutPage = () => {
                                                         <div className="flex items-center ml-4 gap-4">
                                                             <span className="text-amber-500 whitespace-nowrap">{typeof meal.price === 'string' && meal.price.includes('₹') ? meal.price : `₹${meal.price}`}</span>
                                                             <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-lg p-1">
-                                                                <button onClick={() => adjustQuantity(meal, -1)} className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:bg-white/10 transition-colors cursor-pointer" disabled={qty === 0}>
+                                                                <button onClick={() => adjustQuantity(meal, -1)} className="w-8 h-8 rounded-md flex items-center justify-center text-white transition-colors cursor-pointer" disabled={qty === 0}>
                                                                     -
                                                                 </button>
                                                                 <span className="text-white font-medium w-4 text-center">{qty}</span>

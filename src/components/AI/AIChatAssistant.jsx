@@ -146,7 +146,7 @@ const AIChatAssistant = () => {
                                     <button
                                         key={action}
                                         onClick={() => { setInput(action); handleSend(); }}
-                                        className="text-[10px] px-2 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-zinc-400 hover:text-white transition-all"
+                                        className="text-[10px] px-2 py-1 bg-white/5 border border-white/10 rounded-full text-zinc-400 hover:text-white transition-all"
                                     >
                                         {action}
                                     </button>

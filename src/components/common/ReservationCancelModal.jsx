@@ -173,7 +173,7 @@ const ReservationCancelModal = ({ isOpen, onClose, onConfirm, reservation }) => 
                     <div className="px-8 pb-8 flex gap-4">
                         <button
                             onClick={onClose}
-                            className="flex-1 py-4 bg-white/5 border border-white/10 rounded-2xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all font-medium"
+                            className="flex-1 py-4 bg-white/5 border border-white/10 rounded-2xl text-zinc-400 hover:text-white transition-all font-medium"
                         >
                             Keep Reservation
                         </button>

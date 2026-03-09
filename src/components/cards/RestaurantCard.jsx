@@ -28,8 +28,8 @@ const RestaurantCard = ({ restaurant }) => {
 
   const promotionColors = {
     'Top Homepage': { bg: '#F5B942', text: '#050505' },
-    'Featured':      { bg: '#F5B942', text: '#050505' },
-    'Recommended':   { bg: 'rgba(18,18,18,0.95)', text: '#F5B942', border: '#F5B942' },
+    'Featured': { bg: '#F5B942', text: '#050505' },
+    'Recommended': { bg: 'rgba(18,18,18,0.95)', text: '#F5B942', border: '#F5B942' },
   };
   const promo = promotionColors[restaurant.promotionType] || promotionColors['Featured'];
 
@@ -40,20 +40,16 @@ const RestaurantCard = ({ restaurant }) => {
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="group cursor-pointer"
+      className="group cursor-pointer relative"
       style={{
         background: '#121212',
         border: '1px solid #1F1F1F',
-        transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
+        transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
       }}
-      whileHover="hover"
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'rgba(245,185,66,0.28)';
-        e.currentTarget.style.boxShadow = '0 20px 60px rgba(245,185,66,0.07)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = '#1F1F1F';
-        e.currentTarget.style.boxShadow = 'none';
+      whileHover={{
+        scale: 1.03,
+        borderColor: 'rgba(245,185,66,0.28)',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.8), 0 0 12px rgba(245,185,66,0.2)'
       }}
     >
       {/* ── Image ── */}
@@ -106,10 +102,9 @@ const RestaurantCard = ({ restaurant }) => {
               <motion.div
                 key="spin"
                 initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
+                animate={{ opacity: 1, scale: 1, rotate: 360 }}
                 exit={{ opacity: 0, scale: 0 }}
                 style={{ width: 14, height: 14, border: '2px solid #F5B942', borderTopColor: 'transparent', borderRadius: '50%' }}
-                animate={{ rotate: 360 }}
                 transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
               />
             ) : (
