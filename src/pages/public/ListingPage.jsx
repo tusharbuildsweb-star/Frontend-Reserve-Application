@@ -9,59 +9,59 @@ import { io } from 'socket.io-client';
 
 /* â”€â”€ Reusable luxury checkbox â”€â”€ */
 const LuxuryCheckbox = ({ checked, onChange, label }) => (
-  <label className="flex items-center gap-3 group cursor-pointer py-2">
-    <div className="relative flex items-center flex-shrink-0">
-      <input type="checkbox" checked={checked} onChange={onChange} className="peer sr-only" />
-      <div
-        className="w-4 h-4 flex items-center justify-center transition-all duration-300"
-        style={{
-          border: checked ? '1px solid #F5B942' : '1px solid rgba(255,255,255,0.15)',
-          background: checked ? '#F5B942' : 'transparent',
-        }}
-      >
-        {checked && <Check size={9} style={{ color: '#050505', strokeWidth: 3 }} />}
-      </div>
-    </div>
-    <span
-      className="text-xs font-light transition-colors duration-200"
-      style={{ color: checked ? '#F5F5F5' : '#A1A1A1' }}
-    >
-      {label}
-    </span>
-  </label>
+    <label className="flex items-center gap-3 group cursor-pointer py-2">
+        <div className="relative flex items-center flex-shrink-0">
+            <input type="checkbox" checked={checked} onChange={onChange} className="peer sr-only" />
+            <div
+                className="w-4 h-4 flex items-center justify-center transition-all duration-300"
+                style={{
+                    border: checked ? '1px solid #F5B942' : '1px solid rgba(255,255,255,0.15)',
+                    background: checked ? '#F5B942' : 'transparent',
+                }}
+            >
+                {checked && <Check size={9} style={{ color: '#050505', strokeWidth: 3 }} />}
+            </div>
+        </div>
+        <span
+            className="text-xs font-light transition-colors duration-200"
+            style={{ color: checked ? '#F5F5F5' : '#A1A1A1' }}
+        >
+            {label}
+        </span>
+    </label>
 );
 
 /* â”€â”€ Collapsible filter section â”€â”€ */
 const FilterSection = ({ title, children }) => {
-  const [open, setOpen] = useState(true);
-  return (
-    <div style={{ borderBottom: '1px solid #1F1F1F' }}>
-      <button
-        onClick={() => setOpen(p => !p)}
-        className="w-full flex items-center justify-between py-4 text-left transition-colors hover:text-[#F5B942]"
-        style={{ color: open ? '#F5F5F5' : '#A1A1A1' }}
-      >
-        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">{title}</span>
-        <ChevronDown
-          size={12}
-          style={{ transition: 'transform 0.3s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)', color: '#A1A1A1' }}
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden pb-4"
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+    const [open, setOpen] = useState(true);
+    return (
+        <div style={{ borderBottom: '1px solid #1F1F1F' }}>
+            <button
+                onClick={() => setOpen(p => !p)}
+                className="w-full flex items-center justify-between py-4 text-left transition-colors hover:text-[#F5B942]"
+                style={{ color: open ? '#F5F5F5' : '#A1A1A1' }}
+            >
+                <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">{title}</span>
+                <ChevronDown
+                    size={12}
+                    style={{ transition: 'transform 0.3s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)', color: '#A1A1A1' }}
+                />
+            </button>
+            <AnimatePresence initial={false}>
+                {open && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden pb-4"
+                    >
+                        {children}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
 };
 
 const ListingPage = () => {
@@ -115,9 +115,9 @@ const ListingPage = () => {
         setSearchParams({});
     };
 
-    const toggleCuisine  = (c) => setSelectedCuisines(p => p.includes(c) ? p.filter(i => i !== c) : [...p, c]);
+    const toggleCuisine = (c) => setSelectedCuisines(p => p.includes(c) ? p.filter(i => i !== c) : [...p, c]);
     const toggleLocation = (l) => setSelectedLocations(p => p.includes(l) ? p.filter(i => i !== l) : [...p, l]);
-    const toggleFeature  = (f) => setSelectedFeatures(p => p.includes(f) ? p.filter(i => i !== f) : [...p, f]);
+    const toggleFeature = (f) => setSelectedFeatures(p => p.includes(f) ? p.filter(i => i !== f) : [...p, f]);
     const toggleAmbience = (a) => setSelectedAmbience(p => p.includes(a) ? p.filter(i => i !== a) : [...p, a]);
 
     const handleSortChange = (e) => {
@@ -307,7 +307,7 @@ const ListingPage = () => {
 
                                         {/* Collections */}
                                         <FilterSection title="Collections">
-                                            {[{ id: 'top10', label: 'ðŸ† Top 10 Restaurants' }, { id: 'openNow', label: 'ðŸ•“ Open Now' }].map(f => (
+                                            {[{ id: 'top10', label: 'Top 10 Restaurants' }, { id: 'openNow', label: 'Open Now' }].map(f => (
                                                 <LuxuryCheckbox
                                                     key={f.id}
                                                     label={f.label}
@@ -319,7 +319,7 @@ const ListingPage = () => {
 
                                         {/* Experiences */}
                                         <FilterSection title="Experiences">
-                                            <LuxuryCheckbox label="âœ¦ Premium Packages" checked={hasPkg} onChange={(e) => setHasPkg(e.target.checked)} />
+                                            <LuxuryCheckbox label="Premium Packages" checked={hasPkg} onChange={(e) => setHasPkg(e.target.checked)} />
                                         </FilterSection>
 
                                     </div>
