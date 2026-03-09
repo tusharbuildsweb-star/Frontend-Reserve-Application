@@ -31,15 +31,15 @@ const Particle = ({ size, x, bottom, delay, duration }) => (
 
 const STATS = [
   { value: '2,400+', label: 'Partner Restaurants' },
-  { value: '190K+',  label: 'Tables Reserved' },
-  { value: '98%',    label: 'Guest Satisfaction' },
-  { value: '60+',    label: 'Cities Covered' },
+  { value: '190K+', label: 'Tables Reserved' },
+  { value: '98%', label: 'Guest Satisfaction' },
+  { value: '60+', label: 'Cities Covered' },
 ];
 
 const WHY_ITEMS = [
   { title: 'Instant Confirmation', desc: 'Secure your table in seconds across 2,400+ carefully vetted venues.' },
-  { title: 'Concierge Service',    desc: 'We handle special requests, dietary requirements and surprise arrangements.' },
-  { title: 'Exclusive Access',     desc: 'Members gain priority access to chef tables, private events and tasting menus.' },
+  { title: 'Concierge Service', desc: 'We handle special requests, dietary requirements and surprise arrangements.' },
+  { title: 'Exclusive Access', desc: 'Members gain priority access to chef tables, private events and tasting menus.' },
 ];
 
 const HomePage = () => {
@@ -57,11 +57,11 @@ const HomePage = () => {
 
   const handleSubmit = () => {
     const params = new URLSearchParams();
-    if (searchParams.query)    params.append('q',      searchParams.query);
-    if (searchParams.location) params.append('loc',    searchParams.location);
-    if (searchParams.date)     params.append('date',   searchParams.date);
-    if (searchParams.time)     params.append('time',   searchParams.time);
-    if (searchParams.guests)   params.append('guests', searchParams.guests);
+    if (searchParams.query) params.append('q', searchParams.query);
+    if (searchParams.location) params.append('loc', searchParams.location);
+    if (searchParams.date) params.append('date', searchParams.date);
+    if (searchParams.time) params.append('time', searchParams.time);
+    if (searchParams.guests) params.append('guests', searchParams.guests);
     navigate(`/restaurants?${params.toString()}`);
   };
 
@@ -71,15 +71,29 @@ const HomePage = () => {
       {/* ══════════════════════ HERO ══════════════════════ */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
 
-        {/* Background image */}
+        {/* Background Video */}
         <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070&auto=format&fit=crop"
-            alt=""
-            className="w-full h-full object-cover"
-            style={{ opacity: 0.18 }}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover z-[-2]"
+            style={{ willChange: 'transform' }}
+          >
+            <source src="https://www.pexels.com/download/video/16664748/" type="video/mp4" />
+          </video>
+
+          {/* Cinematic Overlay */}
+          <div
+            className="absolute inset-0 z-[-1]"
+            style={{
+              background: 'linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.55), rgba(0,0,0,0.8))'
+            }}
           />
-          {/* Multi-layer gradient */}
+
+          {/* Multi-layer gradient for depth */}
           <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #050505 0%, transparent 30%, transparent 60%, #050505 100%)' }} />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, #050505 0%, transparent 30%, transparent 70%, #050505 100%)' }} />
           {/* Central gold ambient glow */}
@@ -268,20 +282,20 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {loading
               ? Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="animate-pulse h-[460px]" style={{ background: '#121212', border: '1px solid #1F1F1F' }} />
-                ))
+                <div key={i} className="animate-pulse h-[460px]" style={{ background: '#121212', border: '1px solid #1F1F1F' }} />
+              ))
               : featured.length > 0
                 ? featured.map((r, i) => (
-                    <motion.div
-                      key={r._id}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.14, duration: 0.7 }}
-                    >
-                      <RestaurantCard restaurant={r} />
-                    </motion.div>
-                  ))
+                  <motion.div
+                    key={r._id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.14, duration: 0.7 }}
+                  >
+                    <RestaurantCard restaurant={r} />
+                  </motion.div>
+                ))
                 : <p className="text-[#A1A1A1] col-span-3 text-center py-16 text-sm">No restaurants available at the moment.</p>
             }
           </div>

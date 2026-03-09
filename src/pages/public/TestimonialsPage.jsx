@@ -156,46 +156,6 @@ const TestimonialsPage = () => {
                 </div>
             </section>
 
-            {/* 3. Filters Section */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-                <div className="bg-[#0B0B0B]/60 border border-[#1F1F1F] p-6 rounded-3xl space-y-6">
-                    <div className="flex flex-col md:flex-row gap-4 items-center">
-
-                        <div className="flex gap-3 w-full md:w-auto">
-                            <div className="relative group w-full md:w-48">
-                                <select className="w-full bg-[#050505] border border-[#1F1F1F] px-4 py-3.5 rounded-2xl appearance-none text-xs uppercase tracking-widest text-[#A1A1A1] focus:outline-none focus:border-[#F5B942] cursor-pointer">
-                                    <option>Select Restaurant</option>
-                                    <option>Eka</option>
-                                    <option>Southern Spice</option>
-                                    <option>Dakshin</option>
-                                </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#3a3a3a] group-hover:text-[#F5B942] transition-colors pointer-events-none" size={14} />
-                            </div>
-                            <div className="relative group w-full md:w-48">
-                                <select className="w-full bg-[#050505] border border-[#1F1F1F] px-4 py-3.5 rounded-2xl appearance-none text-xs uppercase tracking-widest text-[#A1A1A1] focus:outline-none focus:border-[#F5B942] cursor-pointer">
-                                    <option>Filter by Date</option>
-                                    <option>Last 7 Days</option>
-                                    <option>Last 30 Days</option>
-                                    <option>All Time</option>
-                                </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#3a3a3a] group-hover:text-[#F5B942] transition-colors pointer-events-none" size={14} />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-4 w-full overflow-x-auto pb-2 scrollbar-none">
-                        {['All Reviews', 'Most Recent', 'Highest Rating', 'Lowest Rating'].map((f) => (
-                            <button
-                                key={f}
-                                onClick={() => setFilter(f)}
-                                className={`whitespace-nowrap px-8 py-3.5 rounded-2xl border text-[10px] uppercase tracking-[0.2em] font-bold transition-all duration-300 ${filter === f ? 'bg-[#F5B942] border-[#F5B942] text-black shadow-[0_0_20px_rgba(245,185,66,0.2)]' : 'border-[#1F1F1F] text-[#A1A1A1] hover:border-white/20 hover:text-[#F5F5F5] bg-[#050505]/50'}`}
-                            >
-                                {f}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* 4. Testimonial Grid */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

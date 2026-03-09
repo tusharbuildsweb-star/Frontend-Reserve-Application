@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { register as registerUser, clearError } from '../../app/features/authSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChefHat } from 'lucide-react';
+import { ChefHat, Loader2, Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
 
 const RegisterPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -18,9 +19,9 @@ const RegisterPage = () => {
         dispatch(clearError());
         if (isAuthenticated && user) {
             // Redirect based on role
-            if (user.role === 'admin') navigate('/dashboard/admin');
-            else if (user.role === 'owner') navigate('/dashboard/owner'); // Fallback if somehow already owner
-            else navigate('/dashboard/user');
+            if (user.role === 'admin') navigate('/dashboard/admin', { replace: true });
+            else if (user.role === 'owner') navigate('/dashboard/owner', { replace: true });
+            else navigate('/dashboard/user', { replace: true });
         }
     }, [isAuthenticated, user, navigate, dispatch]);
 
@@ -31,79 +32,108 @@ const RegisterPage = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center relative z-10 w-full bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full max-w-[420px] bg-[rgba(10,10,10,0.65)] backdrop-blur-[18px] border border-[rgba(255,255,255,0.06)] rounded-[18px] p-[40px] relative mx-auto group shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+            style={{
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.04) inset, 0 30px 80px rgba(0,0,0,0.8)"
+            }}
         >
-            <div className="w-20 h-20 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(245,158,11,0.2)] border border-amber-500/30 transform -rotate-3">
-                <ChefHat className="text-amber-500 w-10 h-10" />
+            {/* Gold Edge Light Effect on Hover */}
+            <div className="absolute inset-0 rounded-[18px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: "0 0 12px rgba(245,185,66,0.12)" }}></div>
+
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-[#121212] to-[#050505] rounded-xl flex items-center justify-center border border-[#1F1F1F] shadow-lg transform -rotate-45">
+                <ChefHat className="text-[#F5B942] w-6 h-6 rotate-45 drop-shadow-[0_0_8px_rgba(245,185,66,0.3)]" />
             </div>
 
-            <h2 className="text-4xl font-serif text-white mb-3 tracking-tight text-center">New Membership</h2>
-            <p className="text-zinc-400 text-sm mb-10 text-center max-w-xs leading-relaxed">Join our exclusive circle of diners and enjoy premium reservations.</p>
+            <h2 className="text-2xl font-serif text-[#F5F5F5] mt-6 mb-1 tracking-tight text-center">New Membership</h2>
+            <p className="text-[#A1A1A1] text-[10px] mb-8 text-center max-w-xs mx-auto leading-relaxed uppercase tracking-widest">Join our exclusive circle</p>
 
             {error && (
-                <div className="bg-red-500/5 border border-red-500/20 text-red-500 text-xs px-4 py-3 rounded-xl w-full mb-8 text-center font-medium">
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-500/10 border border-red-500/20 text-red-500 text-[11px] px-4 py-3 rounded-[10px] w-full mb-6 font-medium tracking-wide text-center"
+                >
                     {error}
-                </div>
+                </motion.div>
             )}
 
-            <form onSubmit={handleSubmit} className="w-full space-y-6">
-                <div>
-                    <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2 font-bold ml-1">Full Name</label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-amber-500/30 focus:bg-white/5 transition-all placeholder:text-zinc-700 text-sm"
-                        placeholder="John Doe"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2 font-bold ml-1">Digital Identity</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-amber-500/30 focus:bg-white/5 transition-all placeholder:text-zinc-700 text-sm"
-                        placeholder="email@example.com"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2 font-bold ml-1">Secure Key</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-amber-500/30 focus:bg-white/5 transition-all placeholder:text-zinc-700 text-sm"
-                        placeholder="••••••••"
-                        required
-                        minLength={6}
-                    />
+            <form onSubmit={handleSubmit} className="w-full space-y-5 relative z-10">
+                <div className="space-y-2">
+                    <div className="relative group/input">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white opacity-50 transition-colors duration-300 group-focus-within/input:text-[#F5B942] group-focus-within/input:opacity-100" />
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-full bg-[rgba(12,12,12,0.9)] border border-[rgba(255,255,255,0.06)] rounded-[10px] pl-12 pr-4 py-[14px] text-white outline-none focus:border-[#F5B942] transition-all duration-300 placeholder:text-white/30 text-sm focus:shadow-[0_0_10px_rgba(245,185,66,0.35)]"
+                            placeholder="John Doe"
+                            required
+                        />
+                    </div>
                 </div>
 
-                <div className="px-1">
-                    <p className="text-[10px] text-zinc-500 leading-relaxed italic">
-                        By registering, you agree to our <span className="text-amber-800">Terms of Excellence</span> and <span className="text-amber-800">Privacy Protocols</span>.
+                <div className="space-y-2">
+                    <div className="relative group/input">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white opacity-50 transition-colors duration-300 group-focus-within/input:text-[#F5B942] group-focus-within/input:opacity-100" />
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full bg-[rgba(12,12,12,0.9)] border border-[rgba(255,255,255,0.06)] rounded-[10px] pl-12 pr-4 py-[14px] text-white outline-none focus:border-[#F5B942] transition-all duration-300 placeholder:text-white/30 text-sm focus:shadow-[0_0_10px_rgba(245,185,66,0.35)]"
+                            placeholder="Email Address"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <div className="relative group/input">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white opacity-50 transition-colors duration-300 group-focus-within/input:text-[#F5B942] group-focus-within/input:opacity-100" />
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full bg-[rgba(12,12,12,0.9)] border border-[rgba(255,255,255,0.06)] rounded-[10px] pl-12 pr-12 py-[14px] text-white outline-none focus:border-[#F5B942] transition-all duration-300 placeholder:text-white/30 text-sm tracking-widest focus:shadow-[0_0_10px_rgba(245,185,66,0.35)]"
+                            placeholder="••••••••"
+                            required
+                            minLength={6}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100 hover:text-[#F5B942] transition-all duration-200 focus:outline-none text-white"
+                        >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="px-1 pt-2 pb-1 text-center">
+                    <p className="text-[10px] text-[rgba(255,255,255,0.5)] leading-relaxed uppercase tracking-wider block">
+                        By registering, you agree to our
                     </p>
+                    <Link to="/terms" className="text-[rgba(255,255,255,0.6)] hover:text-[#F5B942] transition-colors hover:underline decoration-[#F5B942] underline-offset-4 text-[10px] uppercase tracking-wider">Terms of Excellence</Link>
+                    <span className="text-[rgba(255,255,255,0.5)] mx-1 text-[10px]">&amp;</span>
+                    <Link to="/privacy" className="text-[rgba(255,255,255,0.6)] hover:text-[#F5B942] transition-colors hover:underline decoration-[#F5B942] underline-offset-4 text-[10px] uppercase tracking-wider">Privacy Protocols</Link>
                 </div>
 
-                <button
+                <motion.button
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98 }}
                     type="submit"
-                    disabled={loading}
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-4 rounded-2xl transition-all shadow-[0_10px_20px_rgba(245,158,11,0.15)] hover:shadow-[0_15px_30px_rgba(245,158,11,0.25)] hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed mt-4 flex justify-center items-center text-sm uppercase tracking-widest"
+                    disabled={loading || !name || !email || !password || password.length < 6}
+                    className="w-full bg-[linear-gradient(135deg,#F5B942,#D4A017)] text-[#050505] font-semibold py-[14px] rounded-[10px] transition-all hover:shadow-[0_10px_30px_rgba(245,185,66,0.35)] flex justify-center items-center text-sm tracking-[1px] disabled:opacity-50 disabled:pointer-events-none mt-4"
                 >
-                    {loading ? (
-                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    ) : 'Create Membership'}
-                </button>
+                    {loading ? <Loader2 className="animate-spin w-5 h-5" /> : 'Create Membership'}
+                </motion.button>
             </form>
 
-            <div className="mt-10 pt-8 border-t border-white/5 w-full">
-                <p className="text-xs text-zinc-500 text-center uppercase tracking-wider">
-                    Already recognized? <Link to="/login" className="text-amber-500 hover:text-amber-400 font-bold transition-colors ml-1">Sign In</Link>
+            <div className="mt-8 pt-8 border-t border-[rgba(255,255,255,0.05)] w-full flex flex-col gap-3 relative z-10 text-center">
+                <p className="text-[11px] text-[rgba(255,255,255,0.6)] tracking-wide">
+                    Already recognized? <Link to="/login" className="text-[rgba(255,255,255,0.9)] hover:text-[#F5B942] hover:underline decoration-[#F5B942] underline-offset-4 transition-colors font-medium ml-1">Sign In</Link>
                 </p>
             </div>
         </motion.div>
