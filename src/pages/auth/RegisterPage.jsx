@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { register as registerUser, clearError } from '../../app/features/authSlice';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChefHat, Loader2, Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
 
@@ -15,15 +15,18 @@ const RegisterPage = () => {
     const navigate = useNavigate();
     const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
 
+    const location = useLocation();
+    const returnTo = location.state?.returnTo;
+
     useEffect(() => {
         dispatch(clearError());
         if (isAuthenticated && user) {
             // Redirect based on role
             if (user.role === 'admin') navigate('/dashboard/admin', { replace: true });
             else if (user.role === 'owner') navigate('/dashboard/owner', { replace: true });
-            else navigate('/dashboard/user', { replace: true });
+            else navigate(returnTo || '/dashboard/user', { replace: true });
         }
-    }, [isAuthenticated, user, navigate, dispatch]);
+    }, [isAuthenticated, user, navigate, dispatch, returnTo]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -133,7 +136,7 @@ const RegisterPage = () => {
 
             <div className="mt-8 pt-8 border-t border-[rgba(255,255,255,0.05)] w-full flex flex-col gap-3 relative z-10 text-center">
                 <p className="text-[11px] text-[rgba(255,255,255,0.6)] tracking-wide">
-                    Already recognized? <Link to="/login" className="text-[rgba(255,255,255,0.9)] hover:text-[#F5B942] hover:underline decoration-[#F5B942] underline-offset-4 transition-colors font-medium ml-1">Sign In</Link>
+                    Already recognized? <Link to="/login" state={{ returnTo }} className="text-[rgba(255,255,255,0.9)] hover:text-[#F5B942] hover:underline decoration-[#F5B942] underline-offset-4 transition-colors font-medium ml-1">Sign In</Link>
                 </p>
             </div>
         </motion.div>

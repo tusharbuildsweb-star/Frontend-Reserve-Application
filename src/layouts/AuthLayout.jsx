@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { UtensilsCrossed, FileText, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
+import FloatingDocButton from '../components/common/FloatingDocButton';
 
 const Particle = ({ delay }) => {
     // Generate random x starting positions and speeds
@@ -14,7 +15,7 @@ const Particle = ({ delay }) => {
             style={{
                 width: '2px',
                 height: '2px',
-                left: `${randomX}%`,
+                left: `${randomX}% `,
                 bottom: '-5%'
             }}
             initial={{ y: 0, opacity: 0 }}
@@ -124,34 +125,7 @@ const AuthLayout = () => {
                     {/* Child Authentication Pages are injected here */}
                     <Outlet />
 
-                    {/* Documentation Download Card (Positioned statically below form to avoid overlap) */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-                        className="mt-8 mx-auto w-full flex items-stretch bg-[rgba(15,15,15,0.85)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-xl sm:rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] overflow-hidden group hover:border-[rgba(245,185,66,0.2)] transition-colors duration-300"
-                    >
-                        <div className="flex-1 flex flex-col justify-center px-4 py-3 sm:px-5 sm:py-4 border-r border-[rgba(255,255,255,0.05)]">
-                            <div className="flex items-center gap-2 sm:gap-2.5 mb-1 sm:mb-1.5">
-                                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#F5B942]" />
-                                <span className="font-semibold text-xs sm:text-sm text-white tracking-wide">Test Documentation</span>
-                            </div>
-                            <span className="text-[10px] sm:text-[11px] text-[#A0A0A0] leading-snug">
-                                To test this application, kindly download this documentation
-                            </span>
-                        </div>
-                        <a
-                            href="/RESERVE_Project_Documentation.pdf"
-                            download="RESERVE_Project_Documentation.pdf"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center px-6 sm:px-8 bg-[linear-gradient(135deg,#F5B942,#D4A017)] hover:bg-[linear-gradient(135deg,#FFD272,#E5B128)] text-[#050505] transition-all duration-300 relative overflow-hidden shrink-0"
-                            title="Download Documentation"
-                        >
-                            <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <Download className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 relative z-10" />
-                        </a>
-                    </motion.div>
+                    <FloatingDocButton />
                 </div>
             </div>
         </div>

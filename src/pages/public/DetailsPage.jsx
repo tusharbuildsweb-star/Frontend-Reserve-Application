@@ -4,6 +4,7 @@ import { MapPin, Clock, Star, Heart, Share2, Users, Calendar, ChefHat, Info, Loa
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRestaurantById, clearCurrentRestaurant } from '../../app/features/restaurantSlice';
+import { toggleFavorite } from '../../app/features/authSlice';
 import { fetchPackagesByRestaurant } from '../../app/features/packageSlice';
 import { fetchPublicSlots, clearPublicSlots } from '../../app/features/timeSlotSlice';
 import { addReview } from '../../app/features/reviewSlice';
@@ -66,6 +67,8 @@ const DetailsPage = () => {
     const activeTabRef = useRef(activeTab);
     const [showFloatingBtn, setShowFloatingBtn] = useState(false);
     const headerRef = useRef(null);
+
+    const isFavorite = user?.favorites?.includes(id);
 
     useEffect(() => { dateRef.current = date; }, [date]);
     useEffect(() => { guestsRef.current = guests; }, [guests]);
@@ -342,9 +345,20 @@ const DetailsPage = () => {
         setReviewRating(review.rating || 5);
         setReviewComment(review.comment || '');
         setFoodRating(review.foodRating || 0);
-        setAmbienceRating(review.ambienceRating || 0);
-        setStaffRating(review.staffRating || 0);
         setIsReviewModalOpen(true);
+    };
+
+    const handleFavoriteClick = async () => {
+        if (!isAuthenticated) {
+            navigate('/login', { state: { returnTo: `/restaurants/${id}` } });
+            return;
+        }
+        try {
+            await dispatch(toggleFavorite(id));
+            showAlert({ type: 'success', title: 'Favorites Updated', message: isFavorite ? 'Restaurant removed from favorites' : 'Restaurant added to favorites' });
+        } catch (err) {
+            showAlert({ type: 'error', title: 'Error', message: 'Failed to update favorites' });
+        }
     };
 
     if (loading) {
@@ -427,8 +441,10 @@ const DetailsPage = () => {
                                 <button className="p-3 bg-zinc-900 border border-white/10 rounded-full text-white hover:text-amber-500 hover:border-amber-500/50 transition-colors">
                                     <Share2 size={20} />
                                 </button>
-                                <button className="p-3 bg-zinc-900 border border-white/10 rounded-full text-white hover:text-red-500 hover:border-red-500/50 transition-colors">
-                                    <Heart size={20} />
+                                <button
+                                    onClick={handleFavoriteClick}
+                                    className={`p-3 rounded-full transition-colors border ${isFavorite ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' : 'bg-zinc-900 border-white/10 text-white hover:text-red-500 hover:border-red-500/50'}`}>
+                                    <Heart size={20} className={isFavorite ? 'fill-current' : ''} />
                                 </button>
                             </div>
                         </div>

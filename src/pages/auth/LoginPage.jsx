@@ -217,7 +217,7 @@ const LoginPage = () => {
 
             <div className="mt-8 pt-8 border-t border-[rgba(255,255,255,0.05)] w-full flex flex-col gap-3 relative z-10">
                 <p className="text-[11px] text-[rgba(255,255,255,0.6)] text-center tracking-wide">
-                    New to the platform? <Link to="/register" className="text-[rgba(255,255,255,0.9)] hover:text-[#F5B942] hover:underline decoration-[#F5B942] underline-offset-4 transition-colors ml-1 font-medium">Register</Link>
+                    New to the platform? <Link to="/register" state={{ returnTo }} className="text-[rgba(255,255,255,0.9)] hover:text-[#F5B942] hover:underline decoration-[#F5B942] underline-offset-4 transition-colors ml-1 font-medium">Register</Link>
                 </p>
                 <p className="text-[11px] text-[rgba(255,255,255,0.6)] text-center tracking-wide">
                     Restaurant Owner? <Link to="/become-partner" className="text-[rgba(255,255,255,0.9)] hover:text-[#F5B942] hover:underline decoration-[#F5B942] underline-offset-4 transition-colors ml-1 font-medium">Apply</Link>
