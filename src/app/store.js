@@ -7,6 +7,7 @@ import supportReducer from './features/supportSlice';
 import reviewReducer from './features/reviewSlice';
 import timeSlotReducer from './features/timeSlotSlice';
 import notificationReducer from './features/notificationSlice';
+import promotionReducer from './features/promotionSlice';
 
 export const store = configureStore({
     reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
         reviews: reviewReducer,
         timeSlots: timeSlotReducer,
         notifications: notificationReducer,
+        promotions: promotionReducer,
     }
 });

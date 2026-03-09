@@ -20,5 +20,9 @@ export const reservationService = {
     updateStatus: async (id, statusData) => {
         const { data } = await api.put(`reservations/${id}/status`, statusData);
         return data;
+    },
+    reschedule: async (id, rescheduleData) => {
+        const { data } = await api.put(`reservations/${id}/reschedule`, rescheduleData);
+        return data;
     }
 };

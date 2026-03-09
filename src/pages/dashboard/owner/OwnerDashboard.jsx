@@ -4,11 +4,12 @@ import { BarChart3, CalendarDays, UtensilsCrossed, MessageSquare, Settings, LogO
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOwnerRestaurant, updateRestaurant } from '@/app/features/restaurantSlice';
 import { fetchPackagesByRestaurant, createPackage, deletePackage } from '@/app/features/packageSlice';
-import { fetchOwnerReservations, updateReservationStatus } from '@/app/features/reservationSlice';
+import { fetchOwnerReservations, updateReservationStatus, approveReservation, rejectReservation } from '@/app/features/reservationSlice';
 import { fetchOwnerSlots, createSlot, deleteSlot } from '@/app/features/timeSlotSlice';
 import { logout, updateProfile, loadUser } from '@/app/features/authSlice';
 import { fetchUserTickets } from '@/app/features/supportSlice';
 import { fetchNotifications } from '@/app/features/notificationSlice';
+import { fetchOwnerPromotions, createPromotion } from '@/app/features/promotionSlice';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import api from '@/services/api';
@@ -25,6 +26,7 @@ const OwnerDashboard = () => {
     const { list: packages, loading: packLoading, successMessage } = useSelector((state) => state.packages);
     const { list: reservations, loading: resLoading } = useSelector((state) => state.reservations);
     const { ownerSlots, loading: slotLoading } = useSelector((state) => state.timeSlots);
+    const { ownerList: promotions, loading: promoLoading } = useSelector((state) => state.promotions);
 
     const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
     const [newPackage, setNewPackage] = useState({
@@ -315,6 +317,7 @@ const OwnerDashboard = () => {
             dispatch(fetchPackagesByRestaurant(restaurant._id));
             dispatch(fetchOwnerReservations());
             dispatch(fetchOwnerSlots());
+            dispatch(fetchOwnerPromotions());
         }
     }, [dispatch, restaurant]);
 
@@ -377,6 +380,7 @@ const OwnerDashboard = () => {
                 dispatch(fetchOwnerReservations());
                 dispatch(fetchOwnerSlots());
                 dispatch(fetchNotifications());
+                dispatch(fetchOwnerPromotions());
                 dispatch(loadUser());
                 if (activeTabRef.current === 'support') dispatch(fetchUserTickets());
             });
@@ -722,6 +726,13 @@ const OwnerDashboard = () => {
                                 <span className="flex items-center font-semibold"><MessageSquare size={20} className={`mr-4 ${activeTab === 'reviews' ? 'text-black' : 'text-amber-500 group-hover:scale-110 transition-transform'}`} /> Reviews & Management</span>
                                 {activeTab === 'reviews' && <ChevronRight size={16} />}
                             </button>
+                            <button
+                                onClick={() => setActiveTab('promotions')}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'promotions' ? 'bg-amber-500 text-black shadow-[0_10px_20px_rgba(212,175,55,0.2)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
+                            >
+                                <span className="flex items-center font-semibold"><Star size={20} className={`mr-4 ${activeTab === 'promotions' ? 'text-black' : 'text-amber-500 group-hover:scale-110 transition-transform'}`} /> Promotions</span>
+                                {activeTab === 'promotions' && <ChevronRight size={16} />}
+                            </button>
 
                             <div className="pt-6 mt-4 border-t border-white/5 px-4 mb-2">
                                 <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-zinc-600">Operations</span>
@@ -866,9 +877,11 @@ const OwnerDashboard = () => {
                                                             <td className="py-4">
                                                                 <span className={`px-2 py-1 rounded text-xs border ${res.status === 'confirmed' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
                                                                     res.status === 'payment_initiated' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 animate-pulse' :
-                                                                        res.status === 'payment_failed' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                                                            res.status === 'cancelled' ? 'bg-red-500/5 text-red-400 border-red-500/10' :
-                                                                                'bg-white/5 text-zinc-400 border-white/10'}`}>
+                                                                        res.status === 'approved' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                                            res.status === 'pending' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20 animate-pulse' :
+                                                                                res.status === 'payment_failed' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                                                                    res.status === 'cancelled' || res.status === 'rejected' ? 'bg-red-500/5 text-red-400 border-red-500/10' :
+                                                                                        'bg-white/5 text-zinc-400 border-white/10'}`}>
                                                                     {res.status === 'payment_initiated' ? 'Awaiting Payment' : res.status.replace('_', ' ')}
                                                                 </span>
                                                             </td>
@@ -877,6 +890,12 @@ const OwnerDashboard = () => {
                                                                     <div className="flex gap-2 justify-end">
                                                                         <button onClick={() => dispatch(updateReservationStatus({ id: res._id, status: 'completed' }))} className="text-zinc-400 hover:text-green-400 transition-colors text-xs">Mark Completed</button>
                                                                         <button onClick={() => dispatch(updateReservationStatus({ id: res._id, status: 'cancelled' }))} className="text-red-400 hover:text-red-300 transition-colors text-xs">Cancel</button>
+                                                                    </div>
+                                                                )}
+                                                                {res.status === 'pending' && (
+                                                                    <div className="flex gap-2 justify-end">
+                                                                        <button onClick={() => dispatch(approveReservation(res._id))} className="text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-2 py-1 rounded transition-colors text-xs font-medium border border-green-500/20">Approve</button>
+                                                                        <button onClick={() => dispatch(rejectReservation(res._id))} className="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-2 py-1 rounded transition-colors text-xs font-medium border border-red-500/20">Reject</button>
                                                                     </div>
                                                                 )}
                                                             </td>
@@ -1881,6 +1900,110 @@ const OwnerDashboard = () => {
                                         ) : (
                                             <div className="text-center py-10">
                                                 <p className="text-zinc-600 text-sm italic">No recent transactions found on the dashboard.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'promotions' && (
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center mb-8">
+                                        <h2 className="text-2xl font-serif text-white">Promote Your Restaurant</h2>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                                        {[
+                                            { type: 'Recommended', price: 500, desc: 'Appear in Recommended section for 7 days' },
+                                            { type: 'Featured', price: 1500, desc: 'Featured tag and rank boost for 15 days' },
+                                            { type: 'Top Homepage', price: 3000, desc: 'Hero section placement for 30 days' }
+                                        ].map((plan, idx) => (
+                                            <div key={idx} className="bg-black/20 border border-white/10 p-6 rounded-2xl flex flex-col justify-between hover:border-amber-500/50 transition-colors">
+                                                <div>
+                                                    <div className="flex items-center gap-3 mb-4">
+                                                        <Star className="text-amber-500" size={24} />
+                                                        <h3 className="text-lg font-serif text-white">{plan.type}</h3>
+                                                    </div>
+                                                    <p className="text-2xl font-bold text-amber-500 mb-2">₹{plan.price}</p>
+                                                    <p className="text-zinc-400 text-sm mb-6">{plan.desc}</p>
+                                                </div>
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            const orderRes = await api.post('promotions/payment-order', { amount: plan.price });
+                                                            const { id: rzpOrderId, amount, currency } = orderRes.data;
+                                                            const options = {
+                                                                key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_zHnC7K1561t7qK',
+                                                                amount: amount,
+                                                                currency: currency || 'INR',
+                                                                name: 'Tableo Promotions',
+                                                                description: `${plan.type} Plan`,
+                                                                order_id: rzpOrderId,
+                                                                handler: async function (response) {
+                                                                    const durationMap = { 'Recommended': 7, 'Featured': 15, 'Top Homepage': 30 };
+                                                                    const days = durationMap[plan.type] || 7;
+                                                                    const startDate = new Date();
+                                                                    const endDate = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
+                                                                    
+                                                                    await dispatch(createPromotion({
+                                                                        restaurantId: restaurant._id,
+                                                                        promotionType: plan.type,
+                                                                        startDate,
+                                                                        endDate,
+                                                                        amount: plan.price,
+                                                                        razorpay_order_id: response.razorpay_order_id,
+                                                                        razorpay_payment_id: response.razorpay_payment_id,
+                                                                        razorpay_signature: response.razorpay_signature
+                                                                    })).unwrap();
+                                                                },
+                                                                prefill: { name: user?.name, email: user?.email, contact: user?.mobileNumber || '' },
+                                                                theme: { color: '#f59e0b' }
+                                                            };
+                                                            const rzp = new window.Razorpay(options);
+                                                            rzp.open();
+                                                        } catch (err) {
+                                                            console.error("Failed promotion initialization", err);
+                                                        }
+                                                    }}
+                                                    className="w-full py-3 bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded-xl font-bold text-sm hover:bg-amber-500 hover:text-black transition-colors"
+                                                >
+                                                    Buy Now
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="bg-black/20 border border-white/10 p-6 rounded-2xl">
+                                        <h3 className="text-zinc-500 font-medium text-xs uppercase tracking-widest mb-6 pb-2 border-b border-white/5">Promotion History</h3>
+                                        {promoLoading ? (
+                                            <div className="flex justify-center py-10"><Loader2 className="animate-spin text-amber-500" /></div>
+                                        ) : promotions && promotions.length > 0 ? (
+                                            <div className="space-y-4">
+                                                {promotions.map((promo) => (
+                                                    <div key={promo._id} className="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <p className="text-white text-sm font-medium">{promo.promotionType} Plan</p>
+                                                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${promo.status === 'active' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : promo.status === 'expired' ? 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20' : promo.status === 'rejected' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'}`}>
+                                                                    {promo.status}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-zinc-500 text-[10px]">
+                                                                {new Date(promo.startDate).toLocaleDateString()} to {new Date(promo.endDate).toLocaleDateString()}
+                                                            </p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-amber-500 text-sm font-bold">₹{promo.amount.toLocaleString()}</p>
+                                                            {promo.adminMessage && promo.status === 'rejected' && (
+                                                                <p className="text-red-400 text-[10px] mt-1 italic">Reason: {promo.adminMessage}</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-10">
+                                                <p className="text-zinc-600 text-sm italic">You haven't purchased any promotions yet.</p>
                                             </div>
                                         )}
                                     </div>

@@ -24,5 +24,9 @@ export const restaurantService = {
     updateCrowdLevel: async (id, levelData) => {
         const { data } = await api.put(`restaurants/${id}/crowd`, levelData);
         return data;
+    },
+    getRecommendations: async (id) => {
+        const { data } = await api.get(`restaurants/${id}/recommendations`);
+        return data;
     }
 };

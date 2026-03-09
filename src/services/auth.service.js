@@ -24,5 +24,9 @@ export const authService = {
     logout: async () => {
         const { data } = await api.post('auth/logout');
         return data;
+    },
+    getRecommendations: async () => {
+        const { data } = await api.get('users/recommendations');
+        return data;
     }
 };

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     BarChart3, Users, Store, ShieldAlert, Settings, LogOut,
     TrendingUp, IndianRupee, Activity, ChevronRight, Ban, CheckCircle,
-    Search, ClipboardList, Check, X, Trash2, Eye, RefreshCw, MessageSquare, CreditCard, Clock
+    Search, ClipboardList, Check, X, Trash2, Eye, RefreshCw, MessageSquare, CreditCard, Clock, Star
 } from 'lucide-react';
 import api from '@/services/api';
 import { useDispatch } from 'react-redux';
@@ -279,6 +279,7 @@ const AdminDashboard = () => {
     const [applications, setApplications] = useState([]);
     const [payments, setPayments] = useState([]);
     const [reservations, setReservations] = useState([]);
+    const [adminPromotions, setAdminPromotions] = useState([]);
 
     // UI state
     const [loading, setLoading] = useState(false);
@@ -375,6 +376,15 @@ const AdminDashboard = () => {
         finally { setHealthLoading(false); }
     }, []);
 
+    const fetchAdminPromotionsData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await api.get('promotions/admin');
+            setAdminPromotions(res.data);
+        } catch (e) { console.error('Promotions fetch failed', e); }
+        finally { setLoading(false); }
+    }, []);
+
     // ── Tab effect ─────────────────────────────────────────────────────────────
     const activeTabRef = useRef(activeTab);
     useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
@@ -387,7 +397,8 @@ const AdminDashboard = () => {
         if (activeTab === 'support') fetchTickets();
         if (activeTab === 'payments') fetchPayments();
         if (activeTab === 'reservations') fetchReservations();
-    }, [activeTab]);
+        if (activeTab === 'promotions') fetchAdminPromotionsData();
+    }, [activeTab, fetchAdminPromotionsData]);
 
     useEffect(() => {
         if (activeTab === 'logs') fetchActivityLogs();
@@ -417,6 +428,8 @@ const AdminDashboard = () => {
             if (data.type === 'userActivated' && activeTabRef.current === 'users') fetchUsers();
             if (data.type === 'userDeleted' && activeTabRef.current === 'users') fetchUsers();
             if (data.type === 'applicationDeleted' && activeTabRef.current === 'applications') fetchApplications();
+            if (data.type === 'promotionUpdated' && activeTabRef.current === 'promotions') fetchAdminPromotionsData();
+            if (data.type === 'promotionCreated' && activeTabRef.current === 'promotions') fetchAdminPromotionsData();
         });
 
         // Global update: refresh whatever tab is active
@@ -435,12 +448,13 @@ const AdminDashboard = () => {
             else if (tab === 'support') fetchTickets();
             else if (tab === 'payments') fetchPayments();
             else if (tab === 'reservations') fetchReservations();
+            else if (tab === 'promotions') fetchAdminPromotionsData();
             else if (tab === 'logs') fetchActivityLogs();
             else if (tab === 'health') fetchSystemHealth();
         });
 
         return () => socket.disconnect();
-    }, [fetchTickets, fetchRestaurants, fetchUsers, fetchApplications, fetchAnalytics, fetchPayments, fetchReservations]);
+    }, [fetchTickets, fetchRestaurants, fetchUsers, fetchApplications, fetchAnalytics, fetchPayments, fetchReservations, fetchAdminPromotionsData]);
 
     // ── Approve / Reject / Delete Application ─────────────────────────────────
     const handleApprove = async (id) => {
@@ -720,6 +734,7 @@ const AdminDashboard = () => {
         { id: 'restaurants', icon: Store, label: 'Restaurants' },
         { id: 'reservations', icon: ClipboardList, label: 'Global Reservations' },
         { id: 'applications', icon: ClipboardList, label: 'Partner Applications' },
+        { id: 'promotions', icon: Star, label: 'Promotion Requests' },
         { id: 'support', icon: MessageSquare, label: 'Support Tickets' },
         { id: 'payments', icon: CreditCard, label: 'Payments' },
         { id: 'moderation', icon: ShieldAlert, label: 'Moderation' },
@@ -1168,6 +1183,86 @@ const AdminDashboard = () => {
                                     <p className="text-zinc-400 max-w-sm">
                                         {activeTab === 'moderation' ? 'Review flagged comments, photos, and resolve support escalation tickets here.' : 'Manage global platform fees, API keys, and maintenance modes.'}
                                     </p>
+                                </div>
+                            )}
+
+                            {/* ── PROMOTIONS ──────────────────────────────────────────── */}
+                            {activeTab === 'promotions' && (
+                                <div>
+                                    <div className="flex justify-between items-center mb-8">
+                                        <div>
+                                            <h2 className="text-2xl font-serif text-white">Promotion Requests</h2>
+                                            <p className="text-zinc-400 text-sm mt-1">Review and approve paid restaurant promotions.</p>
+                                        </div>
+                                        <button onClick={fetchAdminPromotionsData} className="text-zinc-400 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg"><RefreshCw size={16} /></button>
+                                    </div>
+
+                                    {loading ? (
+                                        <div className="flex justify-center py-20"><RefreshCw className="w-8 h-8 text-white animate-spin" /></div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {adminPromotions.map((promo) => (
+                                                <div key={promo._id} className="bg-black/30 border border-white/5 rounded-2xl p-6 flex flex-col lg:flex-row justify-between lg:items-center gap-6 hover:border-white/10 transition-colors">
+                                                    <div>
+                                                        <div className="flex items-center gap-3 mb-2">
+                                                            <h3 className="text-lg font-medium text-white">{promo.restaurantId?.name || 'Unknown Restaurant'}</h3>
+                                                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${promo.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : promo.status === 'active' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : promo.status === 'expired' ? 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
+                                                                {promo.status}
+                                                            </span>
+                                                        </div>
+                                                        <div className="text-zinc-400 text-sm space-y-1">
+                                                            <p><span className="text-zinc-500">Plan:</span> <span className="text-amber-400 font-medium">{promo.promotionType}</span></p>
+                                                            <p><span className="text-zinc-500">Duration:</span> {new Date(promo.startDate).toLocaleDateString()} to {new Date(promo.endDate).toLocaleDateString()}</p>
+                                                            <p><span className="text-zinc-500">Owner:</span> {promo.ownerId?.email || 'N/A'}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex flex-col lg:items-end gap-4">
+                                                        <div className="text-left lg:text-right">
+                                                            <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest mb-1">Paid Amount</p>
+                                                            <p className="text-xl font-serif text-white">₹{promo.amount?.toLocaleString()}</p>
+                                                            <p className="text-zinc-600 text-[10px] font-mono mt-1">{promo.razorpayPaymentId}</p>
+                                                        </div>
+                                                        {promo.status === 'pending' && (
+                                                            <div className="flex gap-2">
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        try {
+                                                                            await api.put(`promotions/${promo._id}/reject`, { adminMessage: 'Management decided to reject this request.' });
+                                                                            fetchAdminPromotionsData();
+                                                                        } catch (e) {
+                                                                            console.error(e);
+                                                                        }
+                                                                    }}
+                                                                    className="px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-xl transition-colors border border-red-500/20 text-sm font-medium"
+                                                                >
+                                                                    Reject
+                                                                </button>
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        try {
+                                                                            await api.put(`promotions/${promo._id}/approve`);
+                                                                            fetchAdminPromotionsData();
+                                                                        } catch (e) {
+                                                                            console.error(e);
+                                                                        }
+                                                                    }}
+                                                                    className="px-4 py-2 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-xl transition-colors border border-green-500/20 text-sm font-medium"
+                                                                >
+                                                                    Approve
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {adminPromotions.length === 0 && !loading && (
+                                                <div className="text-center py-10">
+                                                    <p className="text-zinc-600">No promotion requests found.</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

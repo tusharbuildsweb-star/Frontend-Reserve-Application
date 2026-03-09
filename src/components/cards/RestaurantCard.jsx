@@ -11,12 +11,11 @@ const RestaurantCard = ({ restaurant }) => {
   const [isLiking, setIsLiking] = useState(false);
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
-  // Check if restaurant._id / id is in user.favorites
   const restaurantId = restaurant._id || restaurant.id;
   const isFavorite = user?.favorites?.includes(restaurantId);
 
   const handleFavoriteClick = async (e) => {
-    e.stopPropagation(); // prevent navigation
+    e.stopPropagation();
     if (!isAuthenticated) {
       navigate('/login', { state: { message: 'Please log in to save favorites' } });
       return;
@@ -27,98 +26,179 @@ const RestaurantCard = ({ restaurant }) => {
     setIsLiking(false);
   };
 
+  const promotionColors = {
+    'Top Homepage': { bg: '#F5B942', text: '#050505' },
+    'Featured':      { bg: '#F5B942', text: '#050505' },
+    'Recommended':   { bg: 'rgba(18,18,18,0.95)', text: '#F5B942', border: '#F5B942' },
+  };
+  const promo = promotionColors[restaurant.promotionType] || promotionColors['Featured'];
+
   return (
     <motion.div
-      onClick={() => navigate(`/restaurants/${restaurant._id || restaurant.id}`)}
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
+      onClick={() => navigate(`/restaurants/${restaurantId}`)}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.3 }}
-      className="group bg-zinc-900 rounded-2xl overflow-hidden border border-white/5 hover:border-amber-500/30 transition-all duration-500 cursor-pointer shadow-lg hover:shadow-[0_10px_30px_rgba(212,175,55,0.1)]"
+      transition={{ duration: 0.5 }}
+      className="group cursor-pointer"
+      style={{
+        background: '#121212',
+        border: '1px solid #1F1F1F',
+        transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
+      }}
+      whileHover="hover"
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = 'rgba(245,185,66,0.28)';
+        e.currentTarget.style.boxShadow = '0 20px 60px rgba(245,185,66,0.07)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = '#1F1F1F';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
     >
-      <div className="relative h-64 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
-        <img
-          src={restaurant.image || "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=2070&auto=format"}
+      {/* ── Image ── */}
+      <div className="relative overflow-hidden" style={{ height: 280 }}>
+        <motion.img
+          variants={{ hover: { scale: 1.06 } }}
+          transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+          src={restaurant.image || 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=2070&auto=format'}
           alt={restaurant.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+          className="w-full h-full object-cover"
         />
 
-        {/* Badges and Heart */}
-        <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 items-end">
-          <button
-            onClick={handleFavoriteClick}
-            disabled={isLiking}
-            className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${isFavorite
-              ? 'bg-amber-500/20 border-amber-500/50'
-              : 'bg-black/40 border-white/10 hover:bg-black/60 hover:border-white/30'
-              }`}
-          >
-            <AnimatePresence mode="wait">
-              {isLiking ? (
-                <motion.div
-                  key="spinner"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"
-                />
-              ) : (
-                <motion.div
-                  key="heart"
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: isFavorite ? [1, 1.2, 1] : 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Heart className={`w-5 h-5 transition-colors ${isFavorite ? 'text-amber-500 fill-amber-500' : 'text-white'}`} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </button>
+        {/* Gradient overlay — strong at bottom */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, rgba(18,18,18,1) 0%, rgba(18,18,18,0.45) 40%, transparent 100%)' }}
+        />
 
-          <div className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center shadow-lg mt-1">
-            <Star className="text-amber-500 fill-amber-500 w-3 h-3 mr-1" />
-            <span className="text-white text-xs font-medium">
-              {Number(restaurant.rating || 0).toFixed(1)}
-              <span className="text-zinc-400 ml-1 font-light">({restaurant.reviewCount || 0} reviews)</span>
+        {/* Promoted badge — top left */}
+        {restaurant.isPromoted && (
+          <div className="absolute top-0 left-0 z-10">
+            <span
+              className="flex items-center gap-1.5 px-4 py-2 text-[9px] font-bold uppercase tracking-[0.16em]"
+              style={{
+                background: promo.bg,
+                color: promo.text,
+                border: promo.border ? `1px solid ${promo.border}` : 'none',
+              }}
+            >
+              <Star size={9} style={{ fill: promo.text, color: promo.text }} />
+              {restaurant.promotionType || 'Featured'}
             </span>
           </div>
-          {restaurant.hasPackages && (
-            <div className="bg-amber-500/20 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 flex items-center shadow-lg">
-              <span className="text-amber-400 text-xs font-medium">✨ Packages</span>
-            </div>
-          )}
-        </div>
+        )}
 
-        <div className="absolute bottom-4 left-4 z-20 flex gap-2 w-full pr-8 justify-between items-end">
-          <span className="text-amber-500 text-xs font-semibold tracking-wider uppercase mb-1 block">
-            {restaurant.cuisine || "Modern European"}
+        {/* Heart — top right */}
+        <button
+          onClick={handleFavoriteClick}
+          disabled={isLiking}
+          className="absolute top-4 right-4 z-10 flex items-center justify-center transition-all duration-300"
+          style={{
+            width: 36, height: 36,
+            background: isFavorite ? 'rgba(245,185,66,0.18)' : 'rgba(5,5,5,0.65)',
+            border: isFavorite ? '1px solid rgba(245,185,66,0.5)' : '1px solid rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {isLiking ? (
+              <motion.div
+                key="spin"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                style={{ width: 14, height: 14, border: '2px solid #F5B942', borderTopColor: 'transparent', borderRadius: '50%' }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+              />
+            ) : (
+              <motion.div key="heart" initial={{ scale: 0.8 }} animate={{ scale: isFavorite ? [1, 1.25, 1] : 1 }} transition={{ duration: 0.3 }}>
+                <Heart
+                  size={15}
+                  style={{ color: isFavorite ? '#F5B942' : '#F5F5F5', fill: isFavorite ? '#F5B942' : 'transparent', transition: 'all 0.3s ease' }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </button>
+
+        {/* Rating — bottom right of image */}
+        <div
+          className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 px-2.5 py-1"
+          style={{ background: 'rgba(5,5,5,0.80)', backdropFilter: 'blur(8px)', border: '1px solid #1F1F1F' }}
+        >
+          <Star size={10} style={{ color: '#F5B942', fill: '#F5B942' }} />
+          <span className="text-xs font-medium" style={{ color: '#F5F5F5' }}>
+            {Number(restaurant.rating || 0).toFixed(1)}
+          </span>
+          <span className="text-[10px] font-light" style={{ color: '#A1A1A1' }}>
+            ({restaurant.reviewCount || 0})
           </span>
         </div>
-      </div>
 
-      <div className="p-6">
-        <h3 className="text-2xl font-serif text-white mb-2 group-hover:text-amber-500 transition-colors">
-          {restaurant.name || "The Golden Truffle"}
-        </h3>
-
-        <div className="flex items-center text-zinc-400 text-sm font-light mb-4 text-balance">
-          <MapPin className="w-4 h-4 mr-1 text-white/50 shrink-0" />
-          <span>{restaurant.location || "Mayfair, London"}</span>
+        {/* Cuisine — bottom left of image */}
+        <div className="absolute bottom-4 left-4 z-10">
+          <span className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: '#F5B942' }}>
+            {restaurant.cuisine || 'Fine Dining'}
+          </span>
         </div>
 
-        <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-4 text-sm">
-          <div className="flex items-center text-zinc-400">
-            <Clock className="w-4 h-4 mr-1.5" />
-            <span>{restaurant.workingHours?.weekday || '11:00 AM - 11:00 PM'}</span>
+        {/* Packages badge */}
+        {restaurant.hasPackages && (
+          <div
+            className="absolute bottom-14 left-4 z-10 flex items-center gap-1.5 px-2.5 py-1"
+            style={{ background: 'rgba(245,185,66,0.14)', border: '1px solid rgba(245,185,66,0.3)' }}
+          >
+            <span className="text-[9px] uppercase tracking-widest font-medium" style={{ color: '#F5B942' }}>✦ Packages</span>
           </div>
+        )}
+      </div>
+
+      {/* ── Card content ── */}
+      <div className="p-6" style={{ borderTop: '1px solid #1F1F1F' }}>
+
+        {/* Restaurant name */}
+        <h3
+          className="font-serif mb-2 leading-snug transition-colors duration-300"
+          style={{ fontSize: '1.3rem', fontWeight: 500, color: '#F5F5F5' }}
+        >
+          <motion.span variants={{ hover: { color: '#F5B942' } }} transition={{ duration: 0.25 }}>
+            {restaurant.name || 'The Golden Truffle'}
+          </motion.span>
+        </h3>
+
+        {/* Location */}
+        <div className="flex items-center gap-1.5 mb-5" style={{ color: '#A1A1A1' }}>
+          <MapPin size={12} style={{ flexShrink: 0 }} />
+          <span className="text-xs font-light">{restaurant.location || 'Mayfair, London'}</span>
+        </div>
+
+        {/* Footer row */}
+        <div
+          className="flex items-center justify-between pt-4"
+          style={{ borderTop: '1px solid #1F1F1F' }}
+        >
+          <div className="flex items-center gap-1.5 text-xs font-light" style={{ color: '#A1A1A1' }}>
+            <Clock size={12} style={{ flexShrink: 0 }} />
+            <span>{restaurant.workingHours?.weekday || '11 AM – 11 PM'}</span>
+          </div>
+
           <button
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/restaurants/${restaurant._id || restaurant.id}?book=true`);
+              navigate(`/restaurants/${restaurantId}?book=true`);
             }}
-            className="text-amber-500 font-medium hover:text-white transition-colors underline-offset-4 hover:underline"
+            className="text-[10px] uppercase tracking-[0.14em] font-semibold px-4 py-2 transition-all duration-300"
+            style={{ color: '#F5B942', border: '1px solid rgba(245,185,66,0.35)' }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#F5B942';
+              e.currentTarget.style.color = '#050505';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#F5B942';
+            }}
           >
             Book Now
           </button>

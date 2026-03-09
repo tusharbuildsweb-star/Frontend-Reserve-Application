@@ -1,11 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Search, Filter, SlidersHorizontal, ChevronDown, Check, Star } from 'lucide-react';
+﻿import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, SlidersHorizontal, ChevronDown, Check, Star, X } from 'lucide-react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchRestaurants, fetchRestaurants, fetchFilters } from '../../app/features/restaurantSlice';
 import RestaurantCard from '../../components/cards/RestaurantCard';
 import { io } from 'socket.io-client';
+
+/* â”€â”€ Reusable luxury checkbox â”€â”€ */
+const LuxuryCheckbox = ({ checked, onChange, label }) => (
+  <label className="flex items-center gap-3 group cursor-pointer py-2">
+    <div className="relative flex items-center flex-shrink-0">
+      <input type="checkbox" checked={checked} onChange={onChange} className="peer sr-only" />
+      <div
+        className="w-4 h-4 flex items-center justify-center transition-all duration-300"
+        style={{
+          border: checked ? '1px solid #F5B942' : '1px solid rgba(255,255,255,0.15)',
+          background: checked ? '#F5B942' : 'transparent',
+        }}
+      >
+        {checked && <Check size={9} style={{ color: '#050505', strokeWidth: 3 }} />}
+      </div>
+    </div>
+    <span
+      className="text-xs font-light transition-colors duration-200"
+      style={{ color: checked ? '#F5F5F5' : '#A1A1A1' }}
+    >
+      {label}
+    </span>
+  </label>
+);
+
+/* â”€â”€ Collapsible filter section â”€â”€ */
+const FilterSection = ({ title, children }) => {
+  const [open, setOpen] = useState(true);
+  return (
+    <div style={{ borderBottom: '1px solid #1F1F1F' }}>
+      <button
+        onClick={() => setOpen(p => !p)}
+        className="w-full flex items-center justify-between py-4 text-left transition-colors hover:text-[#F5B942]"
+        style={{ color: open ? '#F5F5F5' : '#A1A1A1' }}
+      >
+        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">{title}</span>
+        <ChevronDown
+          size={12}
+          style={{ transition: 'transform 0.3s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)', color: '#A1A1A1' }}
+        />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden pb-4"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const ListingPage = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -14,24 +71,21 @@ const ListingPage = () => {
     const dispatch = useDispatch();
     const { list, filters, loading } = useSelector((state) => state.restaurants);
 
-    // Form states initialized from URL params
     const [searchStr, setSearchStr] = useState(searchParams.get('search') || '');
     const [selectedCuisines, setSelectedCuisines] = useState(searchParams.get('cuisine') ? searchParams.get('cuisine').split(',') : []);
     const [selectedLocations, setSelectedLocations] = useState(searchParams.get('location') ? searchParams.get('location').split(',') : []);
     const [selectedFeatures, setSelectedFeatures] = useState(searchParams.get('features') ? searchParams.get('features').split(',') : []);
+    const [selectedAmbience, setSelectedAmbience] = useState(searchParams.get('ambience') ? searchParams.get('ambience').split(',') : []);
     const [minRating, setMinRating] = useState(searchParams.get('rating') || '');
     const [hasPkg, setHasPkg] = useState(searchParams.get('packages') === 'true');
     const [sortOption, setSortOption] = useState(searchParams.get('sort') || '');
     const [activeFilter, setActiveFilter] = useState(searchParams.get('filter') || '');
 
-    useEffect(() => {
-        dispatch(fetchFilters());
-    }, [dispatch]);
+    useEffect(() => { dispatch(fetchFilters()); }, [dispatch]);
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const searchArgs = Object.fromEntries(queryParams.entries());
-
         if (Object.keys(searchArgs).length > 0) {
             dispatch(searchRestaurants(searchArgs));
         } else {
@@ -39,317 +93,295 @@ const ListingPage = () => {
         }
     }, [location.search, dispatch]);
 
-    // Apply Filters to URL
     const handleApplyFilters = () => {
         const params = new URLSearchParams();
         if (searchStr) params.set('search', searchStr);
         if (selectedCuisines.length > 0) params.set('cuisine', selectedCuisines.join(','));
         if (selectedLocations.length > 0) params.set('location', selectedLocations.join(','));
         if (selectedFeatures.length > 0) params.set('features', selectedFeatures.join(','));
+        if (selectedAmbience.length > 0) params.set('ambience', selectedAmbience.join(','));
         if (minRating) params.set('rating', minRating);
         if (hasPkg) params.set('packages', 'true');
         if (sortOption) params.set('sort', sortOption);
         if (activeFilter) params.set('filter', activeFilter);
-
         setSearchParams(params);
-        if (window.innerWidth < 1024) {
-            setIsFilterOpen(false); // close mobile menu on apply
-        }
+        if (window.innerWidth < 1024) setIsFilterOpen(false);
     };
 
     const handleClearFilters = () => {
-        setSearchStr('');
-        setSelectedCuisines([]);
-        setSelectedLocations([]);
-        setSelectedFeatures([]);
-        setMinRating('');
-        setHasPkg(false);
-        setSortOption('');
-        setActiveFilter('');
+        setSearchStr(''); setSelectedCuisines([]); setSelectedLocations([]);
+        setSelectedFeatures([]); setSelectedAmbience([]); setMinRating('');
+        setHasPkg(false); setSortOption(''); setActiveFilter('');
         setSearchParams({});
     };
 
-    const toggleCuisine = (c) => {
-        setSelectedCuisines(prev => prev.includes(c) ? prev.filter(item => item !== c) : [...prev, c]);
-    };
+    const toggleCuisine  = (c) => setSelectedCuisines(p => p.includes(c) ? p.filter(i => i !== c) : [...p, c]);
+    const toggleLocation = (l) => setSelectedLocations(p => p.includes(l) ? p.filter(i => i !== l) : [...p, l]);
+    const toggleFeature  = (f) => setSelectedFeatures(p => p.includes(f) ? p.filter(i => i !== f) : [...p, f]);
+    const toggleAmbience = (a) => setSelectedAmbience(p => p.includes(a) ? p.filter(i => i !== a) : [...p, a]);
 
-    const toggleLocation = (l) => {
-        setSelectedLocations(prev => prev.includes(l) ? prev.filter(item => item !== l) : [...prev, l]);
-    };
-
-    const toggleFeature = (f) => {
-        setSelectedFeatures(prev => prev.includes(f) ? prev.filter(item => item !== f) : [...prev, f]);
-    };
-
-    // Sort change immediately applies to URL
     const handleSortChange = (e) => {
         const val = e.target.value;
         setSortOption(val);
         const params = new URLSearchParams(searchParams);
-        if (val) {
-            params.set('sort', val);
-        } else {
-            params.delete('sort');
-        }
+        if (val) params.set('sort', val); else params.delete('sort');
         setSearchParams(params);
     };
 
-    // Real-time socket listener
     useEffect(() => {
         const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000');
         socket.on('dataUpdated', (payload) => {
-            if (payload?.type === 'restaurantApproved' || payload?.type === 'restaurantDeleted') {
-                dispatch(fetchRestaurants());
-            }
+            if (payload?.type === 'restaurantApproved' || payload?.type === 'restaurantDeleted') dispatch(fetchRestaurants());
         });
         socket.on('restaurantUpdated', () => dispatch(fetchRestaurants()));
         socket.on('restaurantRatingUpdated', () => dispatch(fetchRestaurants()));
         return () => socket.disconnect();
     }, [dispatch]);
 
+    const activeFilterCount = [
+        selectedCuisines.length > 0, selectedLocations.length > 0,
+        selectedFeatures.length > 0, selectedAmbience.length > 0,
+        !!minRating, hasPkg, !!activeFilter, !!searchStr,
+    ].filter(Boolean).length;
 
     return (
-        <div className="w-full flex flex-col min-h-screen bg-zinc-950 pt-32 pb-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="min-h-screen pt-28 pb-20" style={{ background: '#050505' }}>
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
-                {/* Header Section */}
-                <div className="mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <span className="text-amber-500 font-medium tracking-[0.2em] uppercase text-xs mb-3 block">
-                            Curated Collection
-                        </span>
-                        <h1 className="text-5xl md:text-6xl font-serif text-white mb-6">Discover Exceptional Dining</h1>
-                        <p className="text-zinc-400 font-light max-w-2xl text-lg leading-relaxed">
-                            Explore our handpicked selection of the world's finest culinary destinations. Filter by cuisine, location, or atmosphere to find your perfect table.
-                        </p>
-                    </motion.div>
-                </div>
+                {/* â”€â”€ Page header â”€â”€ */}
+                <motion.div
+                    className="mb-16"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7 }}
+                >
+                    <p className="text-[10px] uppercase tracking-[0.4em] font-medium mb-4" style={{ color: '#F5B942' }}>
+                        Curated Collection
+                    </p>
+                    <h1 className="font-serif text-[#F5F5F5] leading-tight mb-4" style={{ fontSize: 'clamp(32px,4.5vw,56px)', fontWeight: 500 }}>
+                        Discover Exceptional Dining
+                    </h1>
+                    <p className="font-light max-w-xl leading-relaxed" style={{ color: '#A1A1A1', fontSize: '0.95rem' }}>
+                        Explore our handpicked selection of the world's finest culinary destinations.
+                    </p>
+                </motion.div>
 
-                <div className="flex flex-col lg:flex-row gap-12">
+                {/* â”€â”€ Mobile filter toggle â”€â”€ */}
+                <button
+                    onClick={() => setIsFilterOpen(p => !p)}
+                    className="lg:hidden w-full flex items-center justify-between px-5 py-4 mb-6 transition-colors"
+                    style={{
+                        background: '#0B0B0B',
+                        border: '1px solid #1F1F1F',
+                        color: '#F5F5F5',
+                    }}
+                >
+                    <span className="flex items-center gap-2.5 text-xs uppercase tracking-[0.16em] font-medium">
+                        <SlidersHorizontal size={14} style={{ color: '#F5B942' }} />
+                        Filters {activeFilterCount > 0 && <span className="ml-1 px-1.5 py-0.5 text-[9px] font-bold" style={{ background: '#F5B942', color: '#050505' }}>{activeFilterCount}</span>}
+                    </span>
+                    <ChevronDown
+                        size={14}
+                        style={{ color: '#A1A1A1', transition: 'transform 0.3s', transform: isFilterOpen ? 'rotate(180deg)' : 'none' }}
+                    />
+                </button>
 
-                    {/* Mobile Filter Toggle */}
-                    <button
-                        onClick={() => setIsFilterOpen(!isFilterOpen)}
-                        className="lg:hidden w-full flex items-center justify-between bg-zinc-900/50 backdrop-blur-md border border-white/10 p-4 rounded-2xl text-white shadow-lg"
-                    >
-                        <span className="flex items-center font-medium"><SlidersHorizontal size={18} className="mr-3 text-amber-500" /> Filters & Sorting</span>
-                        <ChevronDown size={18} className={`transform transition-transform duration-300 ${isFilterOpen ? 'rotate-180' : ''}`} />
-                    </button>
+                <div className="flex flex-col lg:flex-row gap-10">
 
-                    {/* Left: Filters Sidebar */}
-                    <aside className={`w-full lg:w-1/4 ${isFilterOpen ? 'block' : 'hidden'} lg:block`}>
-                        <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-8 sticky top-32 shadow-2xl">
-                            <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                                <h3 className="text-xl font-serif text-white flex items-center">
-                                    <Filter size={20} className="mr-3 text-amber-500" /> Refine
-                                </h3>
-                                <button
-                                    onClick={handleClearFilters}
-                                    className="text-xs text-zinc-500 hover:text-amber-500 transition-colors uppercase tracking-widest font-medium"
+                    {/* â•â•â•â•â•â• FILTER SIDEBAR â•â•â•â•â•â• */}
+                    <AnimatePresence>
+                        {(isFilterOpen || true) && (
+                            <aside
+                                className={`w-full lg:w-64 xl:w-72 flex-shrink-0 ${isFilterOpen ? 'block' : 'hidden lg:block'}`}
+                            >
+                                <div
+                                    className="sticky top-28 flex flex-col custom-scrollbar overflow-y-auto"
+                                    style={{
+                                        maxHeight: 'calc(100vh - 8rem)',
+                                        background: '#0B0B0B',
+                                        border: '1px solid #1F1F1F',
+                                    }}
                                 >
-                                    Reset
-                                </button>
-                            </div>
-
-                            {/* Search in sidebar */}
-                            <div className="mb-8">
-                                <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-3 font-semibold">Search</label>
-                                <div className="relative group">
-                                    <Search size={16} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-zinc-500 group-focus-within:text-amber-500 transition-colors" />
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. Sushi, London"
-                                        value={searchStr}
-                                        onChange={(e) => setSearchStr(e.target.value)}
-                                        onKeyDown={(e) => e.key === 'Enter' && handleApplyFilters()}
-                                        className="w-full bg-black/40 border border-white/5 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-500/50 transition-all shadow-inner"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Cuisine Filter */}
-                            {filters.cuisines?.length > 0 && (
-                                <div className="mb-8">
-                                    <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-4 font-semibold">Cuisine</label>
-                                    <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                                        {filters.cuisines.map(c => (
-                                            <label key={c} className="flex items-center group cursor-pointer">
-                                                <div className="relative flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedCuisines.includes(c)}
-                                                        onChange={() => toggleCuisine(c)}
-                                                        className="peer h-5 w-5 opacity-0 absolute cursor-pointer"
-                                                    />
-                                                    <div className="h-5 w-5 border border-white/20 rounded-md bg-black/40 peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-all flex items-center justify-center">
-                                                        <Check size={12} className="text-black scale-0 peer-checked:scale-100 transition-transform" />
-                                                    </div>
-                                                </div>
-                                                <span className="ml-3 text-sm text-zinc-400 group-hover:text-white transition-colors">{c}</span>
-                                            </label>
-                                        ))}
+                                    {/* Sidebar header */}
+                                    <div
+                                        className="flex items-center justify-between px-6 py-5 flex-shrink-0"
+                                        style={{ borderBottom: '1px solid #1F1F1F' }}
+                                    >
+                                        <span className="text-xs uppercase tracking-[0.2em] font-semibold flex items-center gap-2.5" style={{ color: '#F5F5F5' }}>
+                                            <SlidersHorizontal size={13} style={{ color: '#F5B942' }} />
+                                            Refine
+                                        </span>
+                                        {activeFilterCount > 0 && (
+                                            <button
+                                                onClick={handleClearFilters}
+                                                className="flex items-center gap-1.5 text-[9px] uppercase tracking-widest font-medium transition-colors hover:text-[#F5B942]"
+                                                style={{ color: '#A1A1A1' }}
+                                            >
+                                                <X size={10} /> Clear all
+                                            </button>
+                                        )}
                                     </div>
-                                </div>
-                            )}
 
-                            {/* Location Filter */}
-                            {filters.locations?.length > 0 && (
-                                <div className="mb-8">
-                                    <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-4 font-semibold">Location</label>
-                                    <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                                        {filters.locations.map(l => (
-                                            <label key={l} className="flex items-center group cursor-pointer">
-                                                <div className="relative flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedLocations.includes(l)}
-                                                        onChange={() => toggleLocation(l)}
-                                                        className="peer h-5 w-5 opacity-0 absolute cursor-pointer"
-                                                    />
-                                                    <div className="h-5 w-5 border border-white/20 rounded-md bg-black/40 peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-all flex items-center justify-center">
-                                                        <Check size={12} className="text-black scale-0 peer-checked:scale-100 transition-transform" />
-                                                    </div>
-                                                </div>
-                                                <span className="ml-3 text-sm text-zinc-400 group-hover:text-white transition-colors">{l}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Rating Filter */}
-                            <div className="mb-8">
-                                <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-4 font-semibold">Min. Rating</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {[5, 4, 3, 2].map(r => (
-                                        <button
-                                            key={r}
-                                            onClick={() => setMinRating(prev => prev === r.toString() ? '' : r.toString())}
-                                            className={`flex items-center justify-center px-3 py-2.5 border rounded-xl text-sm transition-all duration-300 ${minRating === r.toString() ? 'bg-amber-500/10 border-amber-500 text-amber-500 shadow-[0_0_15px_rgba(212,175,55,0.1)]' : 'border-white/5 text-zinc-500 hover:border-white/20 hover:text-white'}`}
-                                        >
-                                            <span className="flex items-center font-medium">
-                                                {r} <Star size={12} className="ml-1.5 fill-current" />
-                                            </span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Features Filter */}
-                            {filters.features?.length > 0 && (
-                                <div className="mb-8">
-                                    <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-4 font-semibold">Features</label>
-                                    <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                                        {filters.features.map(f => (
-                                            <label key={f} className="flex items-center group cursor-pointer">
-                                                <div className="relative flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedFeatures.includes(f)}
-                                                        onChange={() => toggleFeature(f)}
-                                                        className="peer h-5 w-5 opacity-0 absolute cursor-pointer"
-                                                    />
-                                                    <div className="h-5 w-5 border border-white/20 rounded-md bg-black/40 peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-all flex items-center justify-center">
-                                                        <Check size={12} className="text-black scale-0 peer-checked:scale-100 transition-transform" />
-                                                    </div>
-                                                </div>
-                                                <span className="ml-3 text-sm text-zinc-400 group-hover:text-white transition-colors">{f}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Collections Filter */}
-                            <div className="mb-8">
-                                <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-4 font-semibold">Collections</label>
-                                <div className="space-y-3">
-                                    {[
-                                        { id: 'top10', label: 'Top 10 Restaurants', icon: '🏆' },
-                                        { id: 'openNow', label: 'Open Now', icon: '🕓' }
-                                    ].map(f => (
-                                        <label key={f.id} className="flex items-center group cursor-pointer bg-white/5 p-3 rounded-xl border border-transparent hover:border-amber-500/30 transition-all">
-                                            <div className="relative flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={activeFilter === f.id}
-                                                    onChange={() => setActiveFilter(prev => prev === f.id ? '' : f.id)}
-                                                    className="peer h-5 w-5 opacity-0 absolute cursor-pointer"
-                                                />
-                                                <div className="h-5 w-5 border border-white/20 rounded-md bg-black/40 peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-all flex items-center justify-center">
-                                                    <Check size={12} className="text-black scale-0 peer-checked:scale-100 transition-transform" />
-                                                </div>
-                                            </div>
-                                            <span className="ml-3 text-sm text-zinc-300 group-hover:text-amber-500 transition-colors font-medium">{f.icon} {f.label}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Special Features Filter */}
-                            <div className="mb-8">
-                                <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-4 font-semibold">Experiences</label>
-                                <label className="flex items-center group cursor-pointer bg-white/5 p-3 rounded-xl border border-transparent hover:border-amber-500/30 transition-all">
-                                    <div className="relative flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={hasPkg}
-                                            onChange={(e) => setHasPkg(e.target.checked)}
-                                            className="peer h-5 w-5 opacity-0 absolute cursor-pointer"
-                                        />
-                                        <div className="h-5 w-5 border border-white/20 rounded-md bg-black/40 peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-all flex items-center justify-center">
-                                            <Check size={12} className="text-black scale-0 peer-checked:scale-100 transition-transform" />
+                                    {/* Search */}
+                                    <div className="px-6 py-5" style={{ borderBottom: '1px solid #1F1F1F' }}>
+                                        <div className="flex items-center gap-3 px-4 py-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #1F1F1F' }}>
+                                            <Search size={13} style={{ color: '#A1A1A1', flexShrink: 0 }} />
+                                            <input
+                                                type="text"
+                                                placeholder="Search venues..."
+                                                value={searchStr}
+                                                onChange={(e) => setSearchStr(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilters()}
+                                                className="flex-1 bg-transparent outline-none text-xs font-light placeholder:text-[#3a3a3a]"
+                                                style={{ color: '#F5F5F5' }}
+                                            />
                                         </div>
                                     </div>
-                                    <span className="ml-3 text-sm text-zinc-300 group-hover:text-amber-500 transition-colors font-medium">✨ Premium Packages</span>
-                                </label>
+
+                                    {/* Filter sections */}
+                                    <div className="px-6 flex-1 overflow-y-auto custom-scrollbar">
+
+                                        {/* Cuisine */}
+                                        {filters.cuisines?.length > 0 && (
+                                            <FilterSection title="Cuisine">
+                                                <div className="max-h-44 overflow-y-auto custom-scrollbar">
+                                                    {filters.cuisines.map(c => (
+                                                        <LuxuryCheckbox key={c} label={c} checked={selectedCuisines.includes(c)} onChange={() => toggleCuisine(c)} />
+                                                    ))}
+                                                </div>
+                                            </FilterSection>
+                                        )}
+
+                                        {/* Location */}
+                                        {filters.locations?.length > 0 && (
+                                            <FilterSection title="Location">
+                                                <div className="max-h-44 overflow-y-auto custom-scrollbar">
+                                                    {filters.locations.map(l => (
+                                                        <LuxuryCheckbox key={l} label={l} checked={selectedLocations.includes(l)} onChange={() => toggleLocation(l)} />
+                                                    ))}
+                                                </div>
+                                            </FilterSection>
+                                        )}
+
+                                        {/* Rating */}
+                                        <FilterSection title="Min. Rating">
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {[5, 4, 3, 2].map(r => (
+                                                    <button
+                                                        key={r}
+                                                        onClick={() => setMinRating(p => p === r.toString() ? '' : r.toString())}
+                                                        className="flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-medium transition-all duration-300"
+                                                        style={{
+                                                            border: minRating === r.toString() ? '1px solid #F5B942' : '1px solid #1F1F1F',
+                                                            background: minRating === r.toString() ? 'rgba(245,185,66,0.08)' : 'transparent',
+                                                            color: minRating === r.toString() ? '#F5B942' : '#A1A1A1',
+                                                        }}
+                                                    >
+                                                        {r} <Star size={10} style={{ fill: 'currentColor' }} />
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </FilterSection>
+
+                                        {/* Features */}
+                                        {filters.features?.length > 0 && (
+                                            <FilterSection title="Facilities">
+                                                <div className="max-h-44 overflow-y-auto custom-scrollbar">
+                                                    {filters.features.map(f => (
+                                                        <LuxuryCheckbox key={f} label={f} checked={selectedFeatures.includes(f)} onChange={() => toggleFeature(f)} />
+                                                    ))}
+                                                </div>
+                                            </FilterSection>
+                                        )}
+
+                                        {/* Ambience */}
+                                        {filters.ambience?.length > 0 && (
+                                            <FilterSection title="Ambiance">
+                                                <div className="max-h-44 overflow-y-auto custom-scrollbar">
+                                                    {filters.ambience.map(a => (
+                                                        <LuxuryCheckbox key={a} label={a} checked={selectedAmbience.includes(a)} onChange={() => toggleAmbience(a)} />
+                                                    ))}
+                                                </div>
+                                            </FilterSection>
+                                        )}
+
+                                        {/* Collections */}
+                                        <FilterSection title="Collections">
+                                            {[{ id: 'top10', label: 'ðŸ† Top 10 Restaurants' }, { id: 'openNow', label: 'ðŸ•“ Open Now' }].map(f => (
+                                                <LuxuryCheckbox
+                                                    key={f.id}
+                                                    label={f.label}
+                                                    checked={activeFilter === f.id}
+                                                    onChange={() => setActiveFilter(p => p === f.id ? '' : f.id)}
+                                                />
+                                            ))}
+                                        </FilterSection>
+
+                                        {/* Experiences */}
+                                        <FilterSection title="Experiences">
+                                            <LuxuryCheckbox label="âœ¦ Premium Packages" checked={hasPkg} onChange={(e) => setHasPkg(e.target.checked)} />
+                                        </FilterSection>
+
+                                    </div>
+
+                                    {/* Apply button â€” pinned bottom */}
+                                    <div className="px-6 pb-6 pt-4 flex-shrink-0" style={{ borderTop: '1px solid #1F1F1F' }}>
+                                        <button
+                                            onClick={handleApplyFilters}
+                                            className="btn-luxury w-full py-3.5"
+                                            style={{ background: 'linear-gradient(135deg,#F5B942,#D4A017)' }}
+                                        >
+                                            Apply Filters
+                                        </button>
+                                    </div>
+                                </div>
+                            </aside>
+                        )}
+                    </AnimatePresence>
+
+                    {/* â•â•â•â•â•â• MAIN GRID â•â•â•â•â•â• */}
+                    <main className="flex-1 min-w-0">
+
+                        {/* Count + sort row */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+                            <div>
+                                <span className="font-serif text-3xl mr-2" style={{ color: '#F5F5F5', fontWeight: 500 }}>{list?.length || 0}</span>
+                                <span className="text-[11px] uppercase tracking-[0.18em] font-medium" style={{ color: '#A1A1A1' }}>
+                                    matching establishments
+                                </span>
                             </div>
 
-                            <button
-                                onClick={handleApplyFilters}
-                                className="w-full bg-amber-500 hover:bg-amber-400 text-black py-4 rounded-2xl font-bold tracking-wider uppercase text-xs transition-all duration-300 shadow-[0_10px_20px_rgba(212,175,55,0.2)] hover:shadow-[0_15px_30px_rgba(212,175,55,0.4)] active:scale-95"
-                            >
-                                Apply Changes
-                            </button>
-                        </div>
-                    </aside>
-
-                    {/* Right: Restaurant Grid */}
-                    <main className="w-full lg:w-3/4">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 px-2">
-                            <span className="text-zinc-500 text-sm tracking-wide font-medium">
-                                <span className="text-white font-serif text-lg mr-2">{list?.length || 0}</span>
-                                matching establishments
-                            </span>
-                            <div className="relative group min-w-[200px] w-full sm:w-auto">
+                            <div className="relative" style={{ minWidth: 200 }}>
                                 <select
                                     value={sortOption}
                                     onChange={handleSortChange}
-                                    className="appearance-none w-full bg-zinc-900/50 backdrop-blur-md border border-white/10 rounded-xl px-5 py-3 text-sm text-zinc-300 focus:outline-none focus:border-amber-500/50 cursor-pointer transition-all hover:bg-zinc-900/80"
+                                    className="w-full appearance-none pl-4 pr-10 py-3 text-xs uppercase tracking-[0.12em] outline-none cursor-pointer transition-colors"
+                                    style={{
+                                        background: '#0B0B0B',
+                                        border: '1px solid #1F1F1F',
+                                        color: '#A1A1A1',
+                                    }}
                                 >
-                                    <option value="" className="bg-zinc-950 text-white">Recommended Order</option>
-                                    <option value="rating_desc" className="bg-zinc-950 text-white">Highest Guest Rating</option>
+                                    <option value="" style={{ background: '#0B0B0B' }}>Recommended Order</option>
+                                    <option value="rating_desc" style={{ background: '#0B0B0B' }}>Highest Rating</option>
                                 </select>
-                                <ChevronDown size={16} className="absolute right-4 top-1/2 transform -translate-y-1/2 text-zinc-500 pointer-events-none group-hover:text-amber-500 transition-colors" />
+                                <ChevronDown size={12} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#A1A1A1' }} />
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        {/* Cards grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {loading ? (
-                                Array.from({ length: 4 }).map((_, idx) => (
-                                    <div key={idx} className="bg-zinc-900/20 border border-white/5 rounded-3xl h-[450px] animate-pulse" />
+                                Array.from({ length: 4 }).map((_, i) => (
+                                    <div key={i} className="animate-pulse h-[440px]" style={{ background: '#121212', border: '1px solid #1F1F1F' }} />
                                 ))
                             ) : list?.length > 0 ? (
                                 list.map((restaurant, index) => (
                                     <motion.div
                                         key={restaurant._id}
-                                        initial={{ opacity: 0, y: 20 }}
+                                        initial={{ opacity: 0, y: 24 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                                        transition={{ duration: 0.5, delay: Math.min(index * 0.07, 0.5) }}
                                     >
                                         <RestaurantCard restaurant={restaurant} />
                                     </motion.div>
@@ -358,15 +390,18 @@ const ListingPage = () => {
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    className="col-span-1 md:col-span-2 text-center py-24 border border-white/10 rounded-3xl bg-zinc-900/20 backdrop-blur-sm"
+                                    className="col-span-1 md:col-span-2 text-center py-24"
+                                    style={{ border: '1px solid #1F1F1F', background: '#0B0B0B' }}
                                 >
                                     <div className="max-w-xs mx-auto">
-                                        <Search size={40} className="mx-auto text-zinc-700 mb-6" />
-                                        <h3 className="text-xl font-serif text-white mb-2">No Match Found</h3>
-                                        <p className="text-zinc-500 font-light mb-8">Refine your filters to discover other exceptional venues.</p>
+                                        <Search size={36} className="mx-auto mb-6" style={{ color: '#1F1F1F' }} />
+                                        <h3 className="font-serif text-xl text-[#F5F5F5] mb-2" style={{ fontWeight: 500 }}>No Match Found</h3>
+                                        <p className="text-sm font-light mb-8" style={{ color: '#A1A1A1' }}>
+                                            Refine your filters to discover other exceptional venues.
+                                        </p>
                                         <button
                                             onClick={handleClearFilters}
-                                            className="text-amber-500 border border-amber-500/30 px-6 py-2 rounded-full text-sm font-medium hover:bg-amber-500/10 transition-colors"
+                                            className="btn-luxury-outline text-[10px] !px-6 !py-2.5"
                                         >
                                             View All Venues
                                         </button>

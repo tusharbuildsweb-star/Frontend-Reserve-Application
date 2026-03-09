@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { MapPin, Clock, Star, Heart, Share2, Users, Calendar, ChefHat, Info, Loader2, ShieldAlert, Phone, Mail } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Clock, Star, Heart, Share2, Users, Calendar, ChefHat, Info, Loader2, ShieldAlert, Phone, Mail, Utensils } from 'lucide-react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRestaurantById, clearCurrentRestaurant } from '../../app/features/restaurantSlice';
@@ -9,7 +9,9 @@ import { fetchPublicSlots, clearPublicSlots } from '../../app/features/timeSlotS
 import { addReview } from '../../app/features/reviewSlice';
 import { io } from 'socket.io-client';
 import api from '../../services/api';
+import { restaurantService } from '../../services/restaurant.service';
 import ReservationCancelModal from '@/components/common/ReservationCancelModal';
+import RestaurantCard from '@/components/cards/RestaurantCard';
 
 import { useAlert } from '@/context/AlertContext';
 
@@ -55,13 +57,31 @@ const DetailsPage = () => {
     const [liveMenu, setLiveMenu] = useState({});
     const [menuLoading, setMenuLoading] = useState(false);
 
+    // Recommendations state
+    const [recommendations, setRecommendations] = useState([]);
+    const [recLoading, setRecLoading] = useState(false);
+
     const dateRef = useRef(date);
     const guestsRef = useRef(guests);
     const activeTabRef = useRef(activeTab);
+    const [showFloatingBtn, setShowFloatingBtn] = useState(false);
+    const headerRef = useRef(null);
 
     useEffect(() => { dateRef.current = date; }, [date]);
     useEffect(() => { guestsRef.current = guests; }, [guests]);
     useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
+
+    // Show floating reserve button when user scrolls past the header on mobile
+    useEffect(() => {
+        const handleScroll = () => {
+            if (headerRef.current) {
+                const rect = headerRef.current.getBoundingClientRect();
+                setShowFloatingBtn(rect.bottom < 0);
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const checkDuplicate = useCallback(async () => {
         if (isAuthenticated && id) {
@@ -157,6 +177,17 @@ const DetailsPage = () => {
         if (id) {
             dispatch(fetchRestaurantById(id));
             dispatch(fetchPackagesByRestaurant(id));
+            
+            // Fetch similar restaurants
+            setRecLoading(true);
+            restaurantService.getRecommendations(id)
+                .then(data => setRecommendations(data))
+                .catch(err => console.error("Failed to fetch recommendations:", err))
+                .finally(() => setRecLoading(false));
+            
+            // Reset state on ID change (e.g. clicking a recommendation)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setActiveTab('menu');
         }
         return () => {
             dispatch(clearCurrentRestaurant());
@@ -253,18 +284,44 @@ const DetailsPage = () => {
         }
     }, [restaurant?._id, restaurant?.crowd, fetchLiveReviews, fetchLiveMenu, dispatch, checkDuplicate]);
 
+    const [editingReviewId, setEditingReviewId] = useState(null);
+
     const handleAddReview = async (e) => {
         e.preventDefault();
         try {
-            await dispatch(addReview({
-                restaurantId: restaurant._id,
-                rating: reviewRating,
-                comment: reviewComment,
-                foodRating,
-                ambienceRating,
-                staffRating
-            })).unwrap();
+            if (editingReviewId) {
+                // Update existing review
+                await reviewService.updateReview(editingReviewId, {
+                    rating: reviewRating,
+                    comment: reviewComment,
+                    foodRating,
+                    ambienceRating,
+                    staffRating
+                });
+                showAlert({
+                    type: 'success',
+                    title: 'Review Updated',
+                    message: 'Your review has been successfully updated.'
+                });
+            } else {
+                // Add new review
+                await dispatch(addReview({
+                    restaurantId: restaurant._id,
+                    rating: reviewRating,
+                    comment: reviewComment,
+                    foodRating,
+                    ambienceRating,
+                    staffRating
+                })).unwrap();
+                showAlert({
+                    type: 'success',
+                    title: 'Review Posted',
+                    message: 'Thank you! Your review has been successfully posted.'
+                });
+            }
+            
             setIsReviewModalOpen(false);
+            setEditingReviewId(null);
             setReviewComment('');
             setReviewRating(5);
             showAlert({
@@ -276,8 +333,18 @@ const DetailsPage = () => {
             fetchLiveReviews(restaurant._id);
             dispatch(fetchRestaurantById(id));
         } catch (error) {
-            showAlert({ type: 'error', title: 'Error', message: error || 'Failed to post review' });
+            showAlert({ type: 'error', title: 'Error', message: error.response?.data?.message || error || 'Failed to process review' });
         }
+    };
+
+    const handleEditClick = (review) => {
+        setEditingReviewId(review._id);
+        setReviewRating(review.rating || 5);
+        setReviewComment(review.comment || '');
+        setFoodRating(review.foodRating || 0);
+        setAmbienceRating(review.ambienceRating || 0);
+        setStaffRating(review.staffRating || 0);
+        setIsReviewModalOpen(true);
     };
 
     if (loading) {
@@ -329,11 +396,11 @@ const DetailsPage = () => {
             </div>
 
             {/* Main Content Area */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-10">
-                <div className="flex flex-col lg:flex-row gap-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-10" ref={headerRef}>
+                <div className="flex flex-col-reverse lg:flex-row gap-12">
 
-                    {/* Left Column (Details) */}
-                    <div className="w-full lg:w-2/3">
+                    {/* Left Column (Details) — order-2 on mobile so reservation panel shows first */}
+                    <div className="w-full lg:w-2/3 order-2 lg:order-1">
 
                         {/* Header Details */}
                         <div className="flex justify-between items-start mb-6">
@@ -604,6 +671,16 @@ const DetailsPage = () => {
                                                                 <p className="text-zinc-400 text-sm">{review.ownerReply}</p>
                                                             </div>
                                                         )}
+                                                        {isAuthenticated && user?._id === (review.userId?._id || review.userId) && (
+                                                            <div className="mt-4 flex gap-3">
+                                                                <button
+                                                                    onClick={() => handleEditClick(review)}
+                                                                    className="px-3 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs rounded-lg transition-colors border border-blue-500/30"
+                                                                >
+                                                                    Edit Review
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 );
                                             })
@@ -619,8 +696,8 @@ const DetailsPage = () => {
                         )}
                     </div>
 
-                    {/* Right Column (Sticky Reservation Card) */}
-                    <div className="w-full lg:w-1/3 relative" ref={reservationRef}>
+                    {/* Right Column (Sticky Reservation Card) — order-1 on mobile so it appears first */}
+                    <div className="w-full lg:w-1/3 relative order-1 lg:order-2" ref={reservationRef}>
                         {existingBooking ? (
                             <div className="sticky top-28 bg-zinc-900 border border-green-500/30 rounded-2xl p-6 shadow-[0_0_30px_rgba(74,222,128,0.15)] flex flex-col justify-between min-h-[400px]">
                                 <div>
@@ -655,10 +732,12 @@ const DetailsPage = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="sticky top-28 bg-zinc-900 border border-white/10 rounded-2xl p-6 shadow-2xl">
-                                <h3 className="text-2xl font-serif text-white mb-6 text-center border-b border-white/10 pb-4">Make a Reservation</h3>
+                            <div className="sticky top-28 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl flex flex-col max-h-[calc(100vh-8rem)]">
+                                <div className="p-6 pb-0 shrink-0">
+                                    <h3 className="text-2xl font-serif text-white mb-4 text-center border-b border-white/10 pb-4">Make a Reservation</h3>
+                                </div>
 
-                                <div className="space-y-5">
+                                <div className="px-6 pb-2 overflow-y-auto custom-scrollbar flex-1 space-y-5">
                                     {/* Guests */}
                                     <div className="bg-black/40 border border-white/10 rounded-xl p-3 flex items-center cursor-pointer hover:border-amber-500/50 transition-colors">
                                         <Users className="text-amber-500 mr-4 ml-2" size={20} />
@@ -757,7 +836,7 @@ const DetailsPage = () => {
                                                 <Star className="text-amber-500 mr-3" size={20} />
                                                 <span className="text-xs text-zinc-400 uppercase tracking-wider font-medium">Enhance Your Reservation (Optional)</span>
                                             </div>
-                                            <div className="space-y-3">
+                                            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                                 {packages.map(pkg => {
                                                     const totalPkgCost = (pkg.basePrice || pkg.price || 0) + (pkg.decorationCost || 0);
                                                     const maxCap = pkg.maxCapacity || pkg.maxPeople || 99;
@@ -801,7 +880,9 @@ const DetailsPage = () => {
                                             </div>
                                         </div>
                                     )}
+                                </div>
 
+                                <div className="p-6 pt-4 border-t border-white/10 bg-zinc-900 shrink-0 rounded-b-2xl shadow-[0_-10px_20px_rgba(0,0,0,0.5)] z-10">
                                     <button
                                         onClick={async () => {
                                             if (!isAuthenticated) {
@@ -893,9 +974,12 @@ const DetailsPage = () => {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-zinc-900 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
+                        className="bg-zinc-900 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar relative"
                     >
-                        <h3 className="text-2xl font-serif text-white mb-4">Rate & Review</h3>
+                        <button onClick={() => { setIsReviewModalOpen(false); setEditingReviewId(null); }} className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors">
+                            <X size={24} />
+                        </button>
+                        <h3 className="text-2xl font-serif text-white mb-4 pr-10">{editingReviewId ? 'Edit Your Experience' : 'Rate & Review'}</h3>
                         <form onSubmit={handleAddReview} className="space-y-5">
                             <div>
                                 <label className="block text-sm font-medium text-zinc-400 mb-2">Overall Rating</label>
@@ -942,22 +1026,59 @@ const DetailsPage = () => {
                                     placeholder="What did you love? What could be better?"
                                 ></textarea>
                             </div>
-                            <div className="flex gap-4 pt-4 border-t border-white/10">
-                                <button type="button" onClick={() => setIsReviewModalOpen(false)} className="flex-1 py-3 rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:bg-white/5 transition-colors">Cancel</button>
-                                <button type="submit" disabled={reviewLoading} className="flex-1 py-3 rounded-xl bg-amber-500 text-black font-medium hover:bg-amber-400 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.2)] disabled:opacity-50">
-                                    {reviewLoading ? 'Submitting...' : 'Post Review'}
+                            <div className="flex gap-4 pt-4 border-t border-white/10 mt-6">
+                                <button type="button" onClick={() => { setIsReviewModalOpen(false); setEditingReviewId(null); }} className="flex-1 py-3 rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:bg-white/5 transition-colors font-medium">Cancel</button>
+                                <button type="submit" disabled={reviewLoading} className="flex-1 py-3 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.2)] disabled:opacity-50">
+                                    {reviewLoading ? 'Submitting...' : (editingReviewId ? 'Update Review' : 'Post Review')}
                                 </button>
                             </div>
                         </form>
                     </motion.div>
                 </div>
             )}
+            
+            {/* Recommendations Section */}
+            {!recLoading && recommendations.length > 0 && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-24 mb-10">
+                    <div className="flex items-center gap-3 mb-8">
+                        <Star className="text-amber-500 w-6 h-6" />
+                        <h2 className="text-3xl font-serif text-white">Similar Restaurants You Might Like</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {recommendations.map(restaurant => (
+                            <RestaurantCard key={restaurant._id} restaurant={restaurant} />
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <ReservationCancelModal
                 isOpen={isCancelModalOpen}
                 onClose={() => setIsCancelModalOpen(false)}
                 onConfirm={handleConfirmCancel}
                 reservation={existingBooking ? { ...existingBooking, _id: existingBooking.bookingId } : null}
             />
+
+            {/* Floating Reserve Button — Mobile Only */}
+            <AnimatePresence>
+                {showFloatingBtn && !existingBooking && (
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        className="lg:hidden fixed bottom-6 left-4 right-4 z-50"
+                    >
+                        <button
+                            onClick={() => reservationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                            className="w-full flex items-center justify-center gap-3 py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-2xl shadow-[0_8px_30px_rgba(212,175,55,0.4)] active:scale-95 transition-all text-base"
+                        >
+                            <Utensils size={20} />
+                            Reserve a Table
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

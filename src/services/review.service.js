@@ -5,6 +5,10 @@ export const reviewService = {
         const { data } = await api.get('users/reviews');
         return data;
     },
+    getRestaurantReviews: async (restaurantId) => {
+        const { data } = await api.get(`reviews/${restaurantId}`);
+        return data;
+    },
     addReview: async (reviewData) => {
         const { data } = await api.post('reviews', reviewData);
         return data;
@@ -16,5 +20,10 @@ export const reviewService = {
     updateReview: async (id, reviewData) => {
         const { data } = await api.put(`reviews/${id}`, reviewData);
         return data;
+    },
+    ownerReply: async (reviewId, replyText) => {
+        const { data } = await api.put(`reviews/${reviewId}/reply`, { replyText });
+        return data;
     }
 };
+

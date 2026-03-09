@@ -38,6 +38,7 @@ import UserReviewsPage from '../pages/dashboard/user/UserReviewsPage';
 import OwnerDashboard from '../pages/dashboard/owner/OwnerDashboard';
 import AdminDashboard from '../pages/dashboard/admin/AdminDashboard';
 import ActivateSubscriptionPage from '../pages/dashboard/owner/ActivateSubscriptionPage';
+import NotificationsPage from '../pages/dashboard/user/NotificationsPage';
 
 const AppRoutes = () => {
     const dispatch = useDispatch();
@@ -76,6 +77,11 @@ const AppRoutes = () => {
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/faq" element={<FAQPage />} />
+                <Route path="/notifications" element={
+                    <ProtectedRoute roles={['user', 'owner', 'admin']}>
+                        <NotificationsPage />
+                    </ProtectedRoute>
+                } />
             </Route>
 
             {/* Auth Routes - Wrapped in AuthLayout */}

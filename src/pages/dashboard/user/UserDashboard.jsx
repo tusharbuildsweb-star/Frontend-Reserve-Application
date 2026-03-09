@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Star, Heart, Settings, LogOut, Ticket, ChevronRight, MapPin, Clock, Users, MessageSquare } from 'lucide-react';
+import { Calendar, Star, Heart, Settings, LogOut, Ticket, ChevronRight, MapPin, Clock, Users, MessageSquare, XCircle, AlertTriangle } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserReservations, cancelReservation } from '@/app/features/reservationSlice';
@@ -11,6 +11,7 @@ import { fetchNotifications } from '@/app/features/notificationSlice';
 import { io } from 'socket.io-client';
 import api from '@/services/api';
 import ReservationCancelModal from '@/components/common/ReservationCancelModal';
+import ReservationRescheduleModal from '@/components/common/ReservationRescheduleModal';
 import { useAlert } from '@/context/AlertContext';
 
 const CountdownTimer = ({ targetDate }) => {
@@ -57,9 +58,12 @@ const UserDashboard = () => {
 
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
     const [favorites, setFavorites] = useState([]);
     const [favoritesLoading, setFavoritesLoading] = useState(false);
+    const [recommendations, setRecommendations] = useState([]);
+    const [recommendationsLoading, setRecommendationsLoading] = useState(false);
     const [ticketData, setTicketData] = useState({ category: 'Booking Issue', description: '', ticketImage: null });
 
     const [formData, setFormData] = useState({
@@ -168,11 +172,24 @@ const UserDashboard = () => {
         }
     };
 
+    const fetchRecommendations = async () => {
+        setRecommendationsLoading(true);
+        try {
+            const res = await api.get('users/recommendations');
+            setRecommendations(res.data);
+        } catch (err) {
+            console.error("Failed to fetch recommendations", err);
+        } finally {
+            setRecommendationsLoading(false);
+        }
+    };
+
     useEffect(() => {
         dispatch(fetchUserReservations());
         dispatch(fetchUserTickets());
         dispatch(fetchUserReviews());
         fetchFavorites();
+        fetchRecommendations();
 
         if (user?._id) {
             const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
@@ -368,11 +385,11 @@ const UserDashboard = () => {
                                 {activeTab === 'favorites' && <ChevronRight size={16} />}
                             </button>
                             <button
-                                onClick={() => navigate('/dashboard/user/reviews')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group text-zinc-400 hover:bg-white/5 hover:text-white`}
+                                onClick={() => setActiveTab('reviews')}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reviews' ? 'bg-amber-500 text-black shadow-[0_10px_20px_rgba(212,175,55,0.2)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
                             >
-                                <span className="flex items-center font-semibold"><Star size={20} className={`mr-4 text-amber-500 group-hover:scale-110 transition-transform`} /> My Reviews</span>
-                                <ChevronRight size={16} />
+                                <span className="flex items-center font-semibold"><Star size={20} className={`mr-4 ${activeTab === 'reviews' ? 'text-black' : 'text-amber-500 group-hover:scale-110 transition-transform'}`} /> My Reviews</span>
+                                {activeTab === 'reviews' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('support')}
@@ -406,6 +423,18 @@ const UserDashboard = () => {
                             {/* Reservations Tab */}
                             {activeTab === 'reservations' && (
                                 <div>
+                                    {/* Penalty Banner */}
+                                    {user?.penaltyBalance > 0 && (
+                                        <div className="mb-6 flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl">
+                                            <AlertTriangle size={20} className="text-red-400 mt-0.5 flex-shrink-0" />
+                                            <div>
+                                                <p className="text-red-400 font-semibold text-sm">Pending Cancellation Penalty — ₹{user.penaltyBalance}</p>
+                                                <p className="text-zinc-500 text-xs mt-0.5">
+                                                    This penalty was applied due to a late cancellation (within 2 hours of reservation) and will be automatically added to your next booking's total.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                                         <h2 className="text-2xl font-serif text-white">Your Reservations</h2>
                                         <div className="flex bg-black/40 p-1 rounded-xl border border-white/10">
@@ -432,12 +461,18 @@ const UserDashboard = () => {
                                                         <div>
                                                             <div className="flex justify-between items-start mb-2">
                                                                 <h3 className="text-xl font-serif text-white">{res.restaurantId?.name || 'Restaurant'}</h3>
-                                                                <span className={`px-3 py-1 text-xs rounded-full border ${res.status === 'confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/30' :
+                                                                <span className={`px-3 py-1 text-xs rounded-full border ${
+                                                                    res.status === 'confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/30' :
+                                                                    res.status === 'approved' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30 animate-pulse' :
+                                                                    res.status === 'pending' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' :
                                                                     res.status === 'payment_initiated' ? 'bg-amber-500/10 text-amber-500 border-amber-500/30 animate-pulse' :
-                                                                        res.status === 'payment_failed' ? 'bg-red-500/10 text-red-500 border-red-500/30' :
-                                                                            res.status === 'cancelled' ? 'bg-red-500/5 text-red-400 border-red-500/10' :
-                                                                                'bg-white/5 text-zinc-400 border-white/10'}`}>
-                                                                    {res.status === 'payment_initiated' ? 'Initializing Payment' : res.status.replace('_', ' ')}
+                                                                    res.status === 'payment_failed' ? 'bg-red-500/10 text-red-500 border-red-500/30' :
+                                                                    (res.status === 'cancelled' || res.status === 'rejected') ? 'bg-red-500/5 text-red-400 border-red-500/10' :
+                                                                    'bg-white/5 text-zinc-400 border-white/10'}`}>
+                                                                    {res.status === 'payment_initiated' ? 'Initializing Payment' : 
+                                                                     res.status === 'approved' ? 'Awaiting Payment' :
+                                                                     res.status === 'pending' ? 'Awaiting Approval' :
+                                                                     res.status.replace('_', ' ')}
                                                                 </span>
                                                             </div>
                                                             <div className="flex flex-wrap gap-4 text-sm text-zinc-400">
@@ -481,8 +516,8 @@ const UserDashboard = () => {
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        <div className="flex gap-3 mt-4">
-                                                            {(res.status === 'payment_initiated' || res.status === 'payment_failed') && (
+                                                        <div className="flex gap-3 mt-4 flex-wrap">
+                                                             {(res.status === 'approved' || res.status === 'payment_initiated' || res.status === 'payment_failed') && (
                                                                 <button
                                                                     onClick={() => navigate('/checkout', {
                                                                         state: {
@@ -495,17 +530,37 @@ const UserDashboard = () => {
                                                                             advanceAmount: res.advancePaid,
                                                                             packageId: res.selectedPackage?.packageId,
                                                                             packageTitle: res.selectedPackage?.title,
-                                                                            packagePrice: res.selectedPackage?.totalCost
+                                                                            packagePrice: res.selectedPackage?.totalCost,
+                                                                            reservationId: res._id // Link existing reservation
                                                                         }
                                                                     })}
                                                                     className="px-4 py-2 bg-amber-500 text-black text-sm rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20"
                                                                 >
-                                                                    Complete Payment
+                                                                    {res.status === 'approved' ? 'Proceed to Payment' : 'Complete Payment'}
                                                                 </button>
                                                             )}
                                                             {res.status === 'Completed' && (
                                                                 <button onClick={() => navigate(`/reservations/${res._id}/review`)} className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 text-sm rounded-lg transition-colors border border-amber-500/30 flex items-center">
                                                                     <Star size={14} className="mr-1.5" /> Leave Review
+                                                                </button>
+                                                            )}
+                                                            {res.status === 'confirmed' && new Date(res.bookingDateTime) > new Date() && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setSelectedReservation(res);
+                                                                        setIsRescheduleModalOpen(true);
+                                                                    }}
+                                                                    className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm rounded-lg transition-all border border-blue-500/20 hover:border-blue-500/40 flex items-center gap-1.5 font-medium"
+                                                                >
+                                                                    <Calendar size={14} /> Reschedule
+                                                                </button>
+                                                            )}
+                                                            {(res.status === 'confirmed' || res.status === 'payment_initiated') && (
+                                                                <button
+                                                                    onClick={() => handleCancelClick(res)}
+                                                                    className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm rounded-lg transition-all border border-red-500/20 hover:border-red-500/40 flex items-center gap-1.5 font-medium"
+                                                                >
+                                                                    <XCircle size={14} /> Cancel Reservation
                                                                 </button>
                                                             )}
                                                         </div>
@@ -517,6 +572,39 @@ const UserDashboard = () => {
                                                 </p>
                                             );
                                         })()}
+                                    </div>
+                                    
+                                    {/* Recommendations Section */}
+                                    <div className="mt-12 pt-8 border-t border-white/5">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                                                <Star className="text-amber-500" size={20} />
+                                            </div>
+                                            <h2 className="text-2xl font-serif text-white">Recommended for You</h2>
+                                        </div>
+                                        {recommendationsLoading ? (
+                                            <p className="text-zinc-400">Loading recommendations...</p>
+                                        ) : recommendations?.length > 0 ? (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {recommendations.map(restaurant => (
+                                                    <div key={restaurant._id} className="bg-black/20 border border-white/10 rounded-2xl p-4 flex gap-4 hover:border-amber-500/30 transition-all cursor-pointer group" onClick={() => navigate(`/restaurants/${restaurant._id}`)}>
+                                                        <img src={restaurant.images?.[0] ? `${API_BASE}${restaurant.images[0]}` : "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070"} alt={restaurant.name} className="w-24 h-24 object-cover rounded-xl" />
+                                                        <div className="flex-1 py-1 flex flex-col justify-between">
+                                                            <div>
+                                                                <h3 className="text-lg font-serif text-white group-hover:text-amber-500 transition-colors line-clamp-1">{restaurant.name}</h3>
+                                                                <p className="text-sm text-amber-500 mb-2">{restaurant.cuisine}</p>
+                                                            </div>
+                                                            <div className="flex items-center text-xs text-zinc-400 gap-3">
+                                                                <span className="flex items-center"><Star size={12} className="mr-1 text-amber-500 fill-current" /> {restaurant.rating || 'New'}</span>
+                                                                <span className="flex items-center"><MapPin size={12} className="mr-1" /> <span className="line-clamp-1">{restaurant.location}</span></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-zinc-500">Book more tables to get personalized recommendations!</p>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -881,6 +969,19 @@ const UserDashboard = () => {
                 }}
                 onConfirm={handleConfirmCancel}
                 reservation={selectedReservation}
+            />
+            <ReservationRescheduleModal
+                isOpen={isRescheduleModalOpen}
+                onClose={() => {
+                    setIsRescheduleModalOpen(false);
+                    setSelectedReservation(null);
+                }}
+                reservation={selectedReservation}
+                onRescheduleSuccess={() => {
+                    dispatch(fetchUserReservations());
+                    setIsRescheduleModalOpen(false);
+                    setSelectedReservation(null);
+                }}
             />
         </div >
     );

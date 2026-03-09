@@ -23,7 +23,6 @@ const BecomePartnerPage = () => {
         facilities: ''
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const [imageUploadMode, setImageUploadMode] = useState('file'); // 'file' | 'url'
     const [imageUrls, setImageUrls] = useState([]);
     const [urlInput, setUrlInput] = useState('');
     const [agreeTerms, setAgreeTerms] = useState(false);
@@ -69,11 +68,6 @@ const BecomePartnerPage = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleFileChange = (e) => {
-        if (e.target.files) {
-            setSelectedFiles(Array.from(e.target.files));
-        }
-    };
 
     const handleAddImageUrl = () => {
         const trimmed = urlInput.trim();
@@ -94,7 +88,7 @@ const BecomePartnerPage = () => {
         setFormError('');
         setIsSubmitting(true);
 
-        if (imageUploadMode === 'url' && imageUrls.length === 0) {
+        if (imageUrls.length === 0) {
             setFormError('Please add at least one image URL.');
             setIsSubmitting(false);
             return;
@@ -106,14 +100,8 @@ const BecomePartnerPage = () => {
                 submitData.append(key, formData[key]);
             });
 
-            if (imageUploadMode === 'file') {
-                selectedFiles.forEach((file) => {
-                    submitData.append('images', file);
-                });
-            } else {
-                // Send URLs as comma-separated string — backend parses this
-                submitData.append('images', imageUrls.join(','));
-            }
+            // Send URLs as comma-separated string
+            submitData.append('images', imageUrls.join(','));
 
             const res = await api.post('owner/apply', submitData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -393,86 +381,51 @@ const BecomePartnerPage = () => {
 
                             </div>
 
-                            {/* Image Upload Section */}
+                            {/* Image URL Section */}
                             <div>
-                                <label className="block text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider text-xs">Restaurant Images *</label>
-
-                                {/* Toggle */}
-                                <div className="flex rounded-xl overflow-hidden border border-zinc-800 mb-4 w-fit">
-                                    <button
-                                        type="button"
-                                        onClick={() => setImageUploadMode('file')}
-                                        className={`px-5 py-2 text-sm font-medium transition-all ${imageUploadMode === 'file' ? 'bg-amber-500 text-black' : 'bg-black/30 text-zinc-400 hover:text-white'}`}
-                                    >
-                                        📁 Upload from Device
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setImageUploadMode('url')}
-                                        className={`px-5 py-2 text-sm font-medium transition-all ${imageUploadMode === 'url' ? 'bg-amber-500 text-black' : 'bg-black/30 text-zinc-400 hover:text-white'}`}
-                                    >
-                                        🔗 Paste Image URLs
-                                    </button>
-                                </div>
-
-                                {imageUploadMode === 'file' ? (
-                                    <div>
+                                <label className="block text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider text-xs">Restaurant Images * <span className="normal-case text-zinc-600">(paste image URLs)</span></label>
+                                <div className="space-y-3">
+                                    <div className="flex gap-2">
                                         <input
-                                            type="file"
-                                            name="images"
-                                            multiple
-                                            accept="image/*"
-                                            onChange={handleFileChange}
-                                            required
-                                            className="w-full bg-black/40 border border-zinc-800 text-white rounded-xl py-3 px-4 focus:outline-none focus:border-amber-500/50 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-500/10 file:text-amber-500 hover:file:bg-amber-500/20"
+                                            type="url"
+                                            value={urlInput}
+                                            onChange={e => setUrlInput(e.target.value)}
+                                            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddImageUrl())}
+                                            placeholder="https://example.com/restaurant-image.jpg"
+                                            className="flex-1 bg-black/40 border border-zinc-800 text-white rounded-xl py-3 px-4 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all placeholder-zinc-700"
                                         />
-                                        <p className="text-xs text-zinc-500 mt-2">Select high-quality JPEG or PNG files from your device.</p>
+                                        <button
+                                            type="button"
+                                            onClick={handleAddImageUrl}
+                                            className="bg-amber-500 hover:bg-amber-400 text-black font-medium px-5 py-3 rounded-xl text-sm transition-colors whitespace-nowrap"
+                                        >
+                                            + Add
+                                        </button>
                                     </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        <div className="flex gap-2">
-                                            <input
-                                                type="url"
-                                                value={urlInput}
-                                                onChange={e => setUrlInput(e.target.value)}
-                                                onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddImageUrl())}
-                                                placeholder="https://example.com/restaurant-image.jpg"
-                                                className="flex-1 bg-black/40 border border-zinc-800 text-white rounded-xl py-3 px-4 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all placeholder-zinc-700"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={handleAddImageUrl}
-                                                className="bg-amber-500 hover:bg-amber-400 text-black font-medium px-5 py-3 rounded-xl text-sm transition-colors whitespace-nowrap"
-                                            >
-                                                + Add Image
-                                            </button>
-                                        </div>
-                                        <p className="text-xs text-zinc-500">URL must start with https://. Press Enter or click Add Image. You can add multiple URLs.</p>
+                                    <p className="text-xs text-zinc-500">URL must start with https://. Press Enter or click Add. You can add multiple.</p>
 
-                                        {/* Preview thumbnails */}
-                                        {imageUrls.length > 0 && (
-                                            <div className="flex flex-wrap gap-3 mt-3">
-                                                {imageUrls.map((url, idx) => (
-                                                    <div key={idx} className="relative group w-24 h-24">
-                                                        <img
-                                                            src={url}
-                                                            alt={`Preview ${idx + 1}`}
-                                                            className="w-full h-full object-cover rounded-lg border border-white/10"
-                                                            onError={e => { e.target.src = 'https://placehold.co/96x96/1a1a1a/666?text=Error'; }}
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleRemoveUrl(idx)}
-                                                            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                                                        >
-                                                            ×
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                    {imageUrls.length > 0 && (
+                                        <div className="flex flex-wrap gap-3 mt-3">
+                                            {imageUrls.map((url, idx) => (
+                                                <div key={idx} className="relative group w-24 h-24">
+                                                    <img
+                                                        src={url}
+                                                        alt={`Preview ${idx + 1}`}
+                                                        className="w-full h-full object-cover rounded-lg border border-white/10"
+                                                        onError={e => { e.target.src = 'https://placehold.co/96x96/1a1a1a/666?text=Error'; }}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveUrl(idx)}
+                                                        className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="mt-8 pt-6 border-t border-white/10">

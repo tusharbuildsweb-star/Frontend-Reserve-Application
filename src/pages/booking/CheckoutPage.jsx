@@ -57,6 +57,24 @@ const CheckoutPage = () => {
         fetchMenu();
     }, [reservationData?.restaurantId]);
 
+    // Check if confirming existing reservation (Skip Step 1 pre-order)
+    useEffect(() => {
+        if (reservationData?.reservationId && step === 1) {
+            setStep(2);
+        }
+    }, [reservationData, step]);
+
+    // Load Razorpay Script
+    useEffect(() => {
+        const loadRazorpayScript = () => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            document.body.appendChild(script);
+        };
+        loadRazorpayScript();
+    }, []);
+
     const adjustQuantity = (meal, delta) => {
         const exists = selectedMeals.find(m => (m.id || m._id) === (meal.id || meal._id));
         if (exists) {
@@ -76,41 +94,17 @@ const CheckoutPage = () => {
     const advancePaid = (reservationData.advanceAmount > 0) ? Number(reservationData.advanceAmount) : (tableCount * 200);
     const platformFee = 100; // Fixed ₹100 platform fee as per requirement
     const packageCost = Number(reservationData.packagePrice) || 0;
+    const pendingPenalty = Number(user?.penaltyBalance) || 0; // Prior-cancellation penalty
 
     const preorderTotal = selectedMeals.reduce((sum, meal) => {
         const priceNum = typeof meal.price === 'string' ? Number(meal.price.replace(/[^0-9.]/g, '')) : (meal.price || 0);
         return sum + (priceNum * (meal.quantity || 1));
     }, 0);
 
-    const totalOrderAmount = advancePaid + packageCost + preorderTotal + platformFee;
+    const totalOrderAmount = advancePaid + packageCost + preorderTotal + platformFee + pendingPenalty;
 
-    const loadRazorpayScript = () => {
-        return new Promise((resolve) => {
-            if (window.Razorpay) {
-                resolve(true);
-                return;
-            }
-            const script = document.createElement('script');
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.body.appendChild(script);
-        });
-    };
-
-    const handlePayment = async () => {
+    const handleRequestReservation = async () => {
         setPaymentError(null);
-
-        // 0. Load Razorpay Script
-        const isLoaded = await loadRazorpayScript();
-        if (!isLoaded) {
-            showAlert({
-                type: 'error',
-                title: 'Payment Error',
-                message: 'Razorpay SDK failed to load. Are you online?'
-            });
-            return;
-        }
 
         const payload = {
             restaurantId: reservationData.restaurantId,
@@ -138,58 +132,67 @@ const CheckoutPage = () => {
         }
 
         try {
-            // 1. Create Reservation in DB first
             setPaymentProcessing(true);
             const resAction = await dispatch(createReservation(payload)).unwrap();
-            const reservationId = resAction._id;
+            setConfirmedDetails({ orderId: `REQ-${resAction._id.substring(0, 8).toUpperCase()}` });
+            setPaymentProcessing(false);
+            setStep(3);
+            dispatch(clearReservationMessages());
 
-            // 2. Initialize Payment Order
+        } catch (err) {
+            setPaymentProcessing(false);
+            setPaymentError(err.message || 'Error initializing request.');
+        }
+    };
+
+    const handlePayment = async () => {
+        setPaymentError(null);
+        setPaymentProcessing(true);
+
+        try {
             const orderRes = await api.post('payment/create-order', {
-                reservationId,
+                reservationId: reservationData.reservationId,
                 amount: totalOrderAmount
             });
-            const order = orderRes.data;
 
-            // 3. Open Razorpay Interface
+            const { id: rzpOrderId, amount, currency } = orderRes.data;
+
+            if (!rzpOrderId) throw new Error("Could not initialize payment order.");
+
             const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'test_key_here',
-                amount: order.amount,
-                currency: order.currency,
-                name: "Restaurant Reservation",
-                description: "Booking Payment",
-                order_id: order.id,
-                prefill: {
-                    name: user?.name || "Guest",
-                    email: user?.email || "",
-                },
-                theme: { color: "#d4af37" }, // Amber 500
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_zHnC7K1561t7qK',
+                amount: amount,
+                currency: currency || 'INR',
+                name: 'Tableo',
+                description: `Confirm table at ${reservationData.restaurantName}`,
+                order_id: rzpOrderId,
                 handler: async function (response) {
                     try {
-                        // 4. Verify Payment Signature
-                        const verifyRes = await api.post('payment/verify', {
-                            razorpayOrderId: response.razorpay_order_id,
-                            razorpayPaymentId: response.razorpay_payment_id,
-                            razorpaySignature: response.razorpay_signature
+                        const verified = await api.post('payment/verify', {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            reservationId: reservationData.reservationId
                         });
-                        if (verifyRes.data) setConfirmedDetails(verifyRes.data);
-                        // 5. Success
+
+                        setConfirmedDetails({ orderId: verified.data?.orderId || reservationData.reservationId });
                         setPaymentProcessing(false);
                         setStep(3);
-                        dispatch(clearReservationMessages());
                     } catch (err) {
                         setPaymentProcessing(false);
-                        setPaymentError('Payment verification failed. Please contact support.');
+                        setPaymentError('Payment verification failed.');
                     }
                 },
+                prefill: {
+                    name: user?.name,
+                    email: user?.email,
+                    contact: user?.mobileNumber || ''
+                },
+                theme: { color: '#f59e0b' },
                 modal: {
-                    ondismiss: async function () {
+                    ondismiss: function () {
                         setPaymentProcessing(false);
-                        setPaymentError('Payment cancelled. You can retry the payment to confirm your booking.');
-                        try {
-                            await api.post('payment/payment-failed', { razorpayOrderId: order.id });
-                        } catch (e) {
-                            console.error("Failed to report payment cancellation", e);
-                        }
+                        api.put(`reservations/${reservationData.reservationId}/status`, { status: 'payment_failed' }).catch(console.error);
                     }
                 }
             };
@@ -197,13 +200,14 @@ const CheckoutPage = () => {
             const rzp = new window.Razorpay(options);
             rzp.on('payment.failed', function (response) {
                 setPaymentProcessing(false);
-                setPaymentError('Payment failed. Please try again.');
+                setPaymentError(response.error.description);
+                api.put(`reservations/${reservationData.reservationId}/status`, { status: 'payment_failed' }).catch(console.error);
             });
             rzp.open();
 
-        } catch (err) {
+        } catch (error) {
             setPaymentProcessing(false);
-            setPaymentError(err.message || 'Error initializing payment.');
+            setPaymentError(error.response?.data?.message || 'Failed to initialize payment.');
         }
     };
 
@@ -217,7 +221,7 @@ const CheckoutPage = () => {
                 time: reservationData.time,
                 guests: reservationData.guests
             };
-            const response = await api.post('waitlist', payload);
+            const response = await api.post('reservations/waitlist', payload);
             setWaitlistStatus('success');
             setWaitlistMessage(response.data.message || 'Successfully joined the waitlist!');
         } catch (err) {
@@ -235,9 +239,16 @@ const CheckoutPage = () => {
                     className="bg-zinc-900 border border-amber-500/30 rounded-2xl p-10 max-w-md w-full text-center shadow-[0_0_50px_rgba(212,175,55,0.15)]"
                 >
                     <CheckCircle className="w-20 h-20 text-amber-500 mx-auto mb-6" />
-                    <h2 className="text-3xl font-serif text-white mb-2">Reservation Confirmed</h2>
+                    <h2 className="text-3xl font-serif text-white mb-2">
+                        {reservationData?.reservationId ? 'Payment Successful' : 'Reservation Requested'}
+                    </h2>
+                    <p className="text-zinc-400 font-light mb-6">
+                        {reservationData?.reservationId 
+                            ? 'Your reservation is now fully confirmed.' 
+                            : 'Your request has been sent to the restaurant owner for approval.'}
+                    </p>
                     {confirmedDetails && (
-                        <p className="text-amber-500/80 font-mono text-sm mb-6">Order ID: {confirmedDetails.orderId}</p>
+                        <p className="text-amber-500/80 font-mono text-sm mb-6">Request ID: {confirmedDetails.orderId}</p>
                     )}
                     <div className="bg-black/30 p-6 rounded-xl text-left border border-white/5 mb-8 space-y-3">
                         <p className="text-zinc-400 font-light flex justify-between">
@@ -346,32 +357,38 @@ const CheckoutPage = () => {
                                             onClick={() => setStep(2)}
                                             className="bg-white hover:bg-gray-200 text-black px-8 py-3 rounded-xl font-medium transition-colors"
                                         >
-                                            Continue to Payment
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            )}
+                                        Continue to Review Request
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </div>
+
+                    {/* Step 2: Confirmation Step */}
+                    <div className={`bg-zinc-900 border ${step === 2 ? 'border-amber-500/50 shadow-[0_0_20px_rgba(212,175,55,0.1)]' : 'border-white/10 opacity-60'} rounded-2xl p-8 transition-all`}>
+                        <div className="flex items-center mb-6">
+                            <h2 className="text-2xl font-serif text-white flex items-center">
+                                <span className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center text-sm mr-3 font-sans font-bold">2</span>
+                                Review & Submit
+                            </h2>
                         </div>
 
-                        {/* Step 2: Payment */}
-                        <div className={`bg-zinc-900 border ${step === 2 ? 'border-amber-500/50 shadow-[0_0_20px_rgba(212,175,55,0.1)]' : 'border-white/10 opacity-60'} rounded-2xl p-8 transition-all`}>
-                            <div className="flex items-center mb-6">
-                                <h2 className="text-2xl font-serif text-white flex items-center">
-                                    <span className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center text-sm mr-3 font-sans font-bold">2</span>
-                                    Payment Details
-                                </h2>
-                            </div>
+                        {step === 2 && (
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                <p className="text-zinc-400 text-sm mb-6">
+                                    {reservationData?.reservationId 
+                                        ? 'Review your details and complete the payment to finalize your booking.' 
+                                        : 'Your request will be sent to the restaurant owner for approval. You will not be asked to pay until the reservation is approved.'}
+                                </p>
 
-                            {step === 2 && (
-                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                    <p className="text-zinc-400 text-sm mb-6">A card is required to hold this reservation. You will only be charged for pre-ordered meals or in the event of a no-show.</p>
-
+                                {!reservationData?.reservationId && (
                                     <div className="p-6 bg-black/40 border border-white/10 rounded-xl flex items-center justify-between mb-8">
                                         <div className="flex items-center text-white">
-                                            <CreditCard className="mr-3 text-amber-500" />
-                                            <span>Pay securely with Razorpay</span>
+                                            <AlertCircle className="mr-3 text-amber-500" />
+                                            <span>Payment Required Later</span>
                                         </div>
                                     </div>
+                                )}
 
                                     {error && (
                                         <div className="mb-4">
@@ -413,21 +430,39 @@ const CheckoutPage = () => {
                                         </div>
                                     )}
 
-                                    <button
-                                        onClick={handlePayment}
-                                        disabled={isProcessing || paymentProcessing}
-                                        className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
-                                    >
-                                        {(isProcessing || paymentProcessing) ? (
-                                            <span className="flex items-center">
-                                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                                Initializing Payment...
-                                            </span>
-                                        ) : "Confirm Reservation"}
-                                    </button>
+                                    {reservationData?.reservationId ? (
+                                        <button
+                                            onClick={handlePayment}
+                                            disabled={paymentProcessing}
+                                            className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
+                                        >
+                                            {paymentProcessing ? (
+                                                <span className="flex items-center">
+                                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    Processing...
+                                                </span>
+                                            ) : `Pay ₹${totalOrderAmount} to Confirm`}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={handleRequestReservation}
+                                            disabled={isProcessing || paymentProcessing}
+                                            className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
+                                        >
+                                            {(isProcessing || paymentProcessing) ? (
+                                                <span className="flex items-center">
+                                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    Sending Request...
+                                                </span>
+                                            ) : "Request Reservation"}
+                                        </button>
+                                    )}
                                 </motion.div>
                             )}
                         </div>
@@ -506,6 +541,15 @@ const CheckoutPage = () => {
                                     <span>Platform Fee (10% of Advance)</span>
                                     <span>₹{platformFee}</span>
                                 </div>
+                                {pendingPenalty > 0 && (
+                                    <div className="flex justify-between items-center text-sm px-3 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
+                                        <span className="text-red-400 flex items-center gap-1.5">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+                                            Late Cancellation Penalty
+                                        </span>
+                                        <span className="text-red-400 font-semibold">+₹{pendingPenalty}</span>
+                                    </div>
+                                )}
 
                                 <div className="border-t border-white/10 mt-2 pt-4 flex justify-between items-center text-lg">
                                     <span className="text-white font-medium">Due Now</span>

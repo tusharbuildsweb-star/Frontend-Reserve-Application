@@ -12,5 +12,13 @@ export const notificationService = {
     markAllAsRead: async () => {
         const { data } = await api.put('notifications/mark-all-read');
         return data;
+    },
+    deleteNotification: async (id) => {
+        const { data } = await api.delete(`notifications/${id}`);
+        return data;
+    },
+    getUnreadCount: async () => {
+        const { data } = await api.get('notifications/unread-count');
+        return data.count;
     }
 };

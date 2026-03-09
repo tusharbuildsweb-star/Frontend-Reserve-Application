@@ -49,6 +49,30 @@ export const updateReservationStatus = createAsyncThunk(
     }
 );
 
+export const approveReservation = createAsyncThunk(
+    'reservations/approve',
+    async (id, thunkAPI) => {
+        try {
+            const response = await api.put(`reservations/${id}/approve`);
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to approve reservation');
+        }
+    }
+);
+
+export const rejectReservation = createAsyncThunk(
+    'reservations/reject',
+    async (id, thunkAPI) => {
+        try {
+            const response = await api.put(`reservations/${id}/reject`);
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to reject reservation');
+        }
+    }
+);
+
 export const cancelReservation = createAsyncThunk(
     'reservations/cancel',
     async (id, thunkAPI) => {
@@ -144,6 +168,42 @@ const reservationSlice = createSlice({
                 }
             })
             .addCase(updateReservationStatus.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Approve Reservation
+            .addCase(approveReservation.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(approveReservation.fulfilled, (state, action) => {
+                state.loading = false;
+                const updatedIndex = state.list.findIndex(r => r._id === action.payload._id);
+                if (updatedIndex !== -1) {
+                    state.list[updatedIndex] = action.payload;
+                }
+                state.successMessage = 'Reservation approved successfully';
+            })
+            .addCase(approveReservation.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Reject Reservation
+            .addCase(rejectReservation.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(rejectReservation.fulfilled, (state, action) => {
+                state.loading = false;
+                const updatedIndex = state.list.findIndex(r => r._id === action.payload._id);
+                if (updatedIndex !== -1) {
+                    state.list[updatedIndex] = action.payload;
+                }
+                state.successMessage = 'Reservation rejected successfully';
+            })
+            .addCase(rejectReservation.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
