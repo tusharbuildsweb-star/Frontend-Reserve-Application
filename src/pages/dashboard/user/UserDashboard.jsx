@@ -38,9 +38,9 @@ const CountdownTimer = ({ targetDate }) => {
     }, [targetDate]);
 
     return (
-        <div className="flex items-center gap-2 bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20">
-            <Clock size={14} className="text-amber-500 animate-pulse" />
-            <span className="text-amber-500 font-mono font-bold text-sm tracking-tighter">{timeLeft} left</span>
+        <div className="flex items-center gap-2 bg-[#F5B942]/10 px-3 py-1.5 rounded-lg border border-[#F5B942]/20">
+            <Clock size={14} className="text-[#F5B942] animate-pulse" />
+            <span className="text-[#F5B942] font-mono font-bold text-sm tracking-tighter">{timeLeft} left</span>
         </div>
     );
 };
@@ -298,9 +298,9 @@ const UserDashboard = () => {
         if (timeLeft.total <= 0) return null;
 
         return (
-            <div className="flex items-center gap-2 text-amber-500 font-mono text-sm bg-amber-500/10 px-4 py-2 rounded-xl border border-amber-500/20">
+            <div className="flex items-center gap-2 text-[#F5B942] font-mono text-sm bg-[#F5B942]/10 px-4 py-2 rounded-xl border border-[#F5B942]/20">
                 <Clock size={14} className="animate-pulse" />
-                <span className="uppercase text-[10px] tracking-widest font-bold mr-2 text-amber-500/60">Arriving In</span>
+                <span className="uppercase text-[10px] tracking-widest font-bold mr-2 text-[#F5B942]/60">Arriving In</span>
                 <span>{String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}</span>
             </div>
         );
@@ -311,41 +311,41 @@ const UserDashboard = () => {
         : null;
 
     return (
-        <div className="min-h-screen bg-zinc-950 pt-32 pb-16">
+        <div className="min-h-screen bg-[#050505] pt-32 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Dashboard Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-12 flex flex-col md:flex-row items-center md:items-start justify-between bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl relative overflow-hidden group"
+                    className="mb-12 flex flex-col md:flex-row items-center md:items-start justify-between bg-[#0B0B0B]/40 backdrop-blur-xl border border-[#1F1F1F] rounded-3xl p-10 shadow-2xl relative overflow-hidden group"
                 >
                     {/* Decorative Background Element */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none group-hover:bg-amber-500/10 transition-all duration-700" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#F5B942]/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none group-hover:bg-[#F5B942]/10 transition-all duration-700" />
 
                     <div className="flex items-center gap-8 relative z-10">
                         <div className="relative">
-                            <div className="w-28 h-28 rounded-full bg-zinc-800 overflow-hidden flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.2)] border-2 border-amber-500/50">
+                            <div className="w-28 h-28 rounded-full bg-[#121212] overflow-hidden flex items-center justify-center shadow-[0_0_30px_rgba(245,185,66,0.2)] border-2 border-[#F5B942]/50">
                                 {user?.profileImage ? (
                                     <img src={`http://localhost:5000${user.profileImage}`} alt={user.name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <span className="text-4xl font-serif text-amber-500">{user?.name?.charAt(0) || 'U'}</span>
+                                    <span className="text-4xl font-serif text-[#F5B942]">{user?.name?.charAt(0) || 'U'}</span>
                                 )}
                             </div>
-                            <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center border-4 border-zinc-900 shadow-lg">
+                            <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#F5B942] rounded-full flex items-center justify-center border-4 border-zinc-900 shadow-lg">
                                 <div className="w-2 h-2 bg-black rounded-full animate-pulse" />
                             </div>
                         </div>
                         <div>
-                            <span className="text-amber-500 font-medium tracking-[0.2em] uppercase text-xs mb-2 block">
+                            <span className="text-[#F5B942] font-medium tracking-[0.2em] uppercase text-xs mb-2 block">
                                 Private Member
                             </span>
-                            <h1 className="text-4xl md:text-5xl font-serif text-white mb-3 tracking-tight">{user?.name}</h1>
+                            <h1 className="text-4xl md:text-5xl font-serif text-[#F5F5F5] mb-3 tracking-tight">{user?.name}</h1>
                             <div className="flex flex-col md:flex-row md:items-center gap-4">
-                                <div className="flex flex-wrap items-center gap-4 text-zinc-400 text-sm">
-                                    <span className="flex items-center"><MessageSquare size={14} className="mr-2 text-white/40" /> {user?.email}</span>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-800 hidden md:block" />
-                                    <span className="flex items-center font-medium text-amber-500/80 tracking-widest uppercase text-[10px]">Joined {new Date(user?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                                <div className="flex flex-wrap items-center gap-4 text-[#A1A1A1] text-sm">
+                                    <span className="flex items-center"><MessageSquare size={14} className="mr-2 text-[#F5F5F5]/40" /> {user?.email}</span>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#121212] hidden md:block" />
+                                    <span className="flex items-center font-medium text-[#F5B942]/80 tracking-widest uppercase text-[10px]">Joined {new Date(user?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
                                 </div>
                                 {nextReservation && <CountdownTimer targetDate={nextReservation.bookingDateTime} />}
                             </div>
@@ -355,7 +355,7 @@ const UserDashboard = () => {
                     <div className="mt-8 md:mt-0 flex gap-4 relative z-10">
                         <button
                             onClick={() => { dispatch(logout()); navigate('/'); }}
-                            className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-zinc-400 hover:text-red-400 hover:border-red-400/30 hover:bg-red-500/5 transition-all duration-300 flex items-center group font-medium"
+                            className="px-6 py-3 bg-white/5 border border-[#1F1F1F] rounded-2xl text-[#A1A1A1] hover:text-red-400 hover:border-red-400/30 hover:bg-red-500/5 transition-all duration-300 flex items-center group font-medium"
                         >
                             <LogOut size={16} className="mr-3 transform group-hover:-translate-x-1 transition-transform" /> Sign Out
                         </button>
@@ -366,46 +366,46 @@ const UserDashboard = () => {
 
                     {/* Sidebar Navigation */}
                     <div className="w-full lg:w-1/4">
-                        <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sticky top-32 space-y-2 shadow-2xl">
+                        <div className="bg-[#0B0B0B]/50 backdrop-blur-xl border border-[#1F1F1F] rounded-3xl p-5 sticky top-32 space-y-2 shadow-2xl">
                             <div className="px-4 py-2 mb-2">
-                                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-zinc-600">Overview</span>
+                                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#3a3a3a]">Overview</span>
                             </div>
                             <button
                                 onClick={() => setActiveTab('reservations')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reservations' ? 'bg-amber-500 text-black shadow-[0_10px_20px_rgba(212,175,55,0.2)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reservations' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
                             >
-                                <span className="flex items-center font-semibold"><Calendar size={20} className={`mr-4 ${activeTab === 'reservations' ? 'text-black' : 'text-amber-500 group-hover:scale-110 transition-transform'}`} /> Reservations</span>
+                                <span className="flex items-center font-semibold"><Calendar size={20} className={`mr-4 ${activeTab === 'reservations' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Reservations</span>
                                 {activeTab === 'reservations' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('favorites')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'favorites' ? 'bg-amber-500 text-black shadow-[0_10px_20px_rgba(212,175,55,0.2)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'favorites' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
                             >
-                                <span className="flex items-center font-semibold"><Heart size={20} className={`mr-4 ${activeTab === 'favorites' ? 'text-black' : 'text-amber-500 group-hover:scale-110 transition-transform'}`} /> Favorites</span>
+                                <span className="flex items-center font-semibold"><Heart size={20} className={`mr-4 ${activeTab === 'favorites' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Favorites</span>
                                 {activeTab === 'favorites' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('reviews')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reviews' ? 'bg-amber-500 text-black shadow-[0_10px_20px_rgba(212,175,55,0.2)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'reviews' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
                             >
-                                <span className="flex items-center font-semibold"><Star size={20} className={`mr-4 ${activeTab === 'reviews' ? 'text-black' : 'text-amber-500 group-hover:scale-110 transition-transform'}`} /> My Reviews</span>
+                                <span className="flex items-center font-semibold"><Star size={20} className={`mr-4 ${activeTab === 'reviews' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> My Reviews</span>
                                 {activeTab === 'reviews' && <ChevronRight size={16} />}
                             </button>
                             <button
                                 onClick={() => setActiveTab('support')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'support' ? 'bg-amber-500 text-black shadow-[0_10px_20px_rgba(212,175,55,0.2)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'support' ? 'bg-[#F5B942] text-black shadow-[0_10px_20px_rgba(245,185,66,0.2)]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
                             >
-                                <span className="flex items-center font-semibold"><Ticket size={20} className={`mr-4 ${activeTab === 'support' ? 'text-black' : 'text-amber-500 group-hover:scale-110 transition-transform'}`} /> Support</span>
+                                <span className="flex items-center font-semibold"><Ticket size={20} className={`mr-4 ${activeTab === 'support' ? 'text-black' : 'text-[#F5B942] group-hover:scale-110 transition-transform'}`} /> Support</span>
                                 {activeTab === 'support' && <ChevronRight size={16} />}
                             </button>
-                            <div className="pt-6 mt-4 border-t border-white/5 px-4 mb-2">
-                                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-zinc-600">Account</span>
+                            <div className="pt-6 mt-4 border-t border-[#1F1F1F] px-4 mb-2">
+                                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#3a3a3a]">Account</span>
                             </div>
                             <button
                                 onClick={() => setActiveTab('settings')}
-                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'settings' ? 'bg-zinc-800 text-white border border-white/10' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${activeTab === 'settings' ? 'bg-[#121212] text-[#F5F5F5] border border-[#1F1F1F]' : 'text-[#A1A1A1] hover:bg-white/5 hover:text-[#F5F5F5]'}`}
                             >
-                                <span className="flex items-center font-semibold"><Settings size={20} className="mr-4 text-zinc-500 group-hover:text-amber-500 transition-colors" /> Settings</span>
+                                <span className="flex items-center font-semibold"><Settings size={20} className="mr-4 text-[#A1A1A1] group-hover:text-[#F5B942] transition-colors" /> Settings</span>
                                 {activeTab === 'settings' && <ChevronRight size={16} />}
                             </button>
                         </div>
@@ -418,7 +418,7 @@ const UserDashboard = () => {
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.4 }}
-                            className="bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-10 min-h-[600px] shadow-2xl"
+                            className="bg-[#0B0B0B]/40 backdrop-blur-xl border border-[#1F1F1F] rounded-3xl p-10 min-h-[600px] shadow-2xl"
                         >
                             {/* Reservations Tab */}
                             {activeTab === 'reservations' && (
@@ -429,20 +429,20 @@ const UserDashboard = () => {
                                             <AlertTriangle size={20} className="text-red-400 mt-0.5 flex-shrink-0" />
                                             <div>
                                                 <p className="text-red-400 font-semibold text-sm">Pending Cancellation Penalty — ₹{user.penaltyBalance}</p>
-                                                <p className="text-zinc-500 text-xs mt-0.5">
+                                                <p className="text-[#A1A1A1] text-xs mt-0.5">
                                                     This penalty was applied due to a late cancellation (within 2 hours of reservation) and will be automatically added to your next booking's total.
                                                 </p>
                                             </div>
                                         </div>
                                     )}
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                                        <h2 className="text-2xl font-serif text-white">Your Reservations</h2>
-                                        <div className="flex bg-black/40 p-1 rounded-xl border border-white/10">
+                                        <h2 className="text-2xl font-serif text-[#F5F5F5]">Your Reservations</h2>
+                                        <div className="flex bg-[#050505] p-1 rounded-xl border border-[#1F1F1F]">
                                             {['Upcoming', 'History'].map(tab => (
                                                 <button
                                                     key={tab}
                                                     onClick={() => setReservationTab(tab.toLowerCase())}
-                                                    className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${reservationTab === tab.toLowerCase() ? 'bg-amber-500 text-black' : 'text-zinc-500 hover:text-white'}`}
+                                                    className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${reservationTab === tab.toLowerCase() ? 'bg-[#F5B942] text-black' : 'text-[#A1A1A1] hover:text-[#F5F5F5]'}`}
                                                 >
                                                     {tab}
                                                 </button>
@@ -451,37 +451,37 @@ const UserDashboard = () => {
                                     </div>
                                     <div className="space-y-6">
                                         {loading ? (
-                                            <p className="text-zinc-400">Loading your reservations...</p>
+                                            <p className="text-[#A1A1A1]">Loading your reservations...</p>
                                         ) : (() => {
                                             const displayList = reservationTab === 'upcoming' ? (reservations || []) : (reservationHistory || []);
                                             return displayList.length > 0 ? displayList.map(res => (
-                                                <div key={res._id} className="flex flex-col md:flex-row gap-6 p-4 border border-white/10 rounded-xl hover:border-amber-500/30 transition-colors bg-black/20">
+                                                <div key={res._id} className="flex flex-col md:flex-row gap-6 p-4 border border-[#1F1F1F] rounded-xl hover:border-[#F5B942]/30 transition-colors bg-[#0B0B0B]">
                                                     <img src={res.restaurantId?.images?.[0] || "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070"} alt={res.restaurantId?.name} className="w-full md:w-48 h-32 object-cover rounded-lg" />
                                                     <div className="flex-1 flex flex-col justify-between py-1">
                                                         <div>
                                                             <div className="flex justify-between items-start mb-2">
-                                                                <h3 className="text-xl font-serif text-white">{res.restaurantId?.name || 'Restaurant'}</h3>
+                                                                <h3 className="text-xl font-serif text-[#F5F5F5]">{res.restaurantId?.name || 'Restaurant'}</h3>
                                                                 <span className={`px-3 py-1 text-xs rounded-full border ${
                                                                     res.status === 'confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/30' :
                                                                     res.status === 'approved' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30 animate-pulse' :
                                                                     res.status === 'pending' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' :
-                                                                    res.status === 'payment_initiated' ? 'bg-amber-500/10 text-amber-500 border-amber-500/30 animate-pulse' :
+                                                                    res.status === 'payment_initiated' ? 'bg-[#F5B942]/10 text-[#F5B942] border-[#F5B942]/30 animate-pulse' :
                                                                     res.status === 'payment_failed' ? 'bg-red-500/10 text-red-500 border-red-500/30' :
                                                                     (res.status === 'cancelled' || res.status === 'rejected') ? 'bg-red-500/5 text-red-400 border-red-500/10' :
-                                                                    'bg-white/5 text-zinc-400 border-white/10'}`}>
+                                                                    'bg-white/5 text-[#A1A1A1] border-[#1F1F1F]'}`}>
                                                                     {res.status === 'payment_initiated' ? 'Initializing Payment' : 
                                                                      res.status === 'approved' ? 'Awaiting Payment' :
                                                                      res.status === 'pending' ? 'Awaiting Approval' :
                                                                      res.status.replace('_', ' ')}
                                                                 </span>
                                                             </div>
-                                                            <div className="flex flex-wrap gap-4 text-sm text-zinc-400">
-                                                                <span className="flex items-center"><Calendar size={14} className="mr-1.5 text-white/50" /> {new Date(res.date).toLocaleDateString()}</span>
-                                                                <span className="flex items-center"><Clock size={14} className="mr-1.5 text-white/50" /> {res.time}</span>
-                                                                <span className="flex items-center"><Users size={14} className="mr-1.5 text-white/50" /> {res.guests} Guests</span>
+                                                            <div className="flex flex-wrap gap-4 text-sm text-[#A1A1A1]">
+                                                                <span className="flex items-center"><Calendar size={14} className="mr-1.5 text-[#F5F5F5]/50" /> {new Date(res.date).toLocaleDateString()}</span>
+                                                                <span className="flex items-center"><Clock size={14} className="mr-1.5 text-[#F5F5F5]/50" /> {res.time}</span>
+                                                                <span className="flex items-center"><Users size={14} className="mr-1.5 text-[#F5F5F5]/50" /> {res.guests} Guests</span>
                                                             </div>
                                                             {res.selectedPackage?.title && (
-                                                                <div className="mt-3 inline-flex items-center px-2.5 py-1 rounded-md bg-amber-500/10 text-xs text-amber-500 font-medium border border-amber-500/20">
+                                                                <div className="mt-3 inline-flex items-center px-2.5 py-1 rounded-md bg-[#F5B942]/10 text-xs text-[#F5B942] font-medium border border-[#F5B942]/20">
                                                                     <Star size={12} className="mr-1.5 fill-current" />
                                                                     {res.selectedPackage.title}
                                                                 </div>
@@ -491,27 +491,27 @@ const UserDashboard = () => {
                                                                     <CountdownTimer targetDate={res.bookingDateTime} />
                                                                 </div>
                                                             )}
-                                                            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs text-zinc-400 bg-black/40 p-3 rounded-lg border border-white/5">
+                                                            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs text-[#A1A1A1] bg-[#050505] p-3 rounded-lg border border-[#1F1F1F]">
                                                                 <div className="flex justify-between">
                                                                     <span>Order ID:</span>
-                                                                    <span className="text-white font-mono">{res.razorpayOrderId || 'Pending...'}</span>
+                                                                    <span className="text-[#F5F5F5] font-mono">{res.razorpayOrderId || 'Pending...'}</span>
                                                                 </div>
                                                                 <div className="flex justify-between">
                                                                     <span>Advance:</span>
-                                                                    <span className="text-white">₹{res.advancePaid || 0}</span>
+                                                                    <span className="text-[#F5F5F5]">₹{res.advancePaid || 0}</span>
                                                                 </div>
                                                                 <div className="flex justify-between">
                                                                     <span>Total Paid:</span>
-                                                                    <span className="text-amber-500 font-medium">₹{res.totalPaidNow || 0}</span>
+                                                                    <span className="text-[#F5B942] font-medium">₹{res.totalPaidNow || 0}</span>
                                                                 </div>
                                                                 <div className="flex justify-between">
                                                                     <span>Platform Fee:</span>
-                                                                    <span className="text-white">₹{res.platformFee || 0}</span>
+                                                                    <span className="text-[#F5F5F5]">₹{res.platformFee || 0}</span>
                                                                 </div>
                                                                 {res.preorderItems?.length > 0 && (
-                                                                    <div className="col-span-1 sm:col-span-2 mt-2 pt-2 border-t border-white/5 flex justify-between">
+                                                                    <div className="col-span-1 sm:col-span-2 mt-2 pt-2 border-t border-[#1F1F1F] flex justify-between">
                                                                         <span>Preordered Items:</span>
-                                                                        <span className="text-white">{res.preorderItems.reduce((acc, curr) => acc + (curr.quantity || 1), 0)} items (₹{res.preorderTotal || 0})</span>
+                                                                        <span className="text-[#F5F5F5]">{res.preorderItems.reduce((acc, curr) => acc + (curr.quantity || 1), 0)} items (₹{res.preorderTotal || 0})</span>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -534,13 +534,13 @@ const UserDashboard = () => {
                                                                             reservationId: res._id // Link existing reservation
                                                                         }
                                                                     })}
-                                                                    className="px-4 py-2 bg-amber-500 text-black text-sm rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20"
+                                                                    className="px-4 py-2 bg-[#F5B942] text-black text-sm rounded-lg font-bold transition-all shadow-lg shadow-[#F5B942]/20"
                                                                 >
                                                                     {res.status === 'approved' ? 'Proceed to Payment' : 'Complete Payment'}
                                                                 </button>
                                                             )}
                                                             {res.status === 'Completed' && (
-                                                                <button onClick={() => navigate(`/reservations/${res._id}/review`)} className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 text-sm rounded-lg transition-colors border border-amber-500/30 flex items-center">
+                                                                <button onClick={() => navigate(`/reservations/${res._id}/review`)} className="px-4 py-2 bg-[#F5B942]/10 hover:bg-[#F5B942]/20 text-[#F5B942] text-sm rounded-lg transition-colors border border-[#F5B942]/30 flex items-center">
                                                                     <Star size={14} className="mr-1.5" /> Leave Review
                                                                 </button>
                                                             )}
@@ -567,7 +567,7 @@ const UserDashboard = () => {
                                                     </div>
                                                 </div>
                                             )) : (
-                                                <p className="text-zinc-500 text-center py-10 border border-dashed border-white/10 rounded-2xl">
+                                                <p className="text-[#A1A1A1] text-center py-10 border border-dashed border-[#1F1F1F] rounded-2xl">
                                                     {reservationTab === 'upcoming' ? "You're all caught up. No active reservations." : "No past reservations found."}
                                                 </p>
                                             );
@@ -575,27 +575,27 @@ const UserDashboard = () => {
                                     </div>
                                     
                                     {/* Recommendations Section */}
-                                    <div className="mt-12 pt-8 border-t border-white/5">
+                                    <div className="mt-12 pt-8 border-t border-[#1F1F1F]">
                                         <div className="flex items-center gap-3 mb-6">
-                                            <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                                                <Star className="text-amber-500" size={20} />
+                                            <div className="p-2 bg-[#F5B942]/10 rounded-lg border border-[#F5B942]/20">
+                                                <Star className="text-[#F5B942]" size={20} />
                                             </div>
-                                            <h2 className="text-2xl font-serif text-white">Recommended for You</h2>
+                                            <h2 className="text-2xl font-serif text-[#F5F5F5]">Recommended for You</h2>
                                         </div>
                                         {recommendationsLoading ? (
-                                            <p className="text-zinc-400">Loading recommendations...</p>
+                                            <p className="text-[#A1A1A1]">Loading recommendations...</p>
                                         ) : recommendations?.length > 0 ? (
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 {recommendations.map(restaurant => (
-                                                    <div key={restaurant._id} className="bg-black/20 border border-white/10 rounded-2xl p-4 flex gap-4 hover:border-amber-500/30 transition-all cursor-pointer group" onClick={() => navigate(`/restaurants/${restaurant._id}`)}>
+                                                    <div key={restaurant._id} className="bg-[#0B0B0B] border border-[#1F1F1F] rounded-2xl p-4 flex gap-4 hover:border-[#F5B942]/30 transition-all cursor-pointer group" onClick={() => navigate(`/restaurants/${restaurant._id}`)}>
                                                         <img src={restaurant.images?.[0] ? `${API_BASE}${restaurant.images[0]}` : "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070"} alt={restaurant.name} className="w-24 h-24 object-cover rounded-xl" />
                                                         <div className="flex-1 py-1 flex flex-col justify-between">
                                                             <div>
-                                                                <h3 className="text-lg font-serif text-white group-hover:text-amber-500 transition-colors line-clamp-1">{restaurant.name}</h3>
-                                                                <p className="text-sm text-amber-500 mb-2">{restaurant.cuisine}</p>
+                                                                <h3 className="text-lg font-serif text-[#F5F5F5] group-hover:text-[#F5B942] transition-colors line-clamp-1">{restaurant.name}</h3>
+                                                                <p className="text-sm text-[#F5B942] mb-2">{restaurant.cuisine}</p>
                                                             </div>
-                                                            <div className="flex items-center text-xs text-zinc-400 gap-3">
-                                                                <span className="flex items-center"><Star size={12} className="mr-1 text-amber-500 fill-current" /> {restaurant.rating || 'New'}</span>
+                                                            <div className="flex items-center text-xs text-[#A1A1A1] gap-3">
+                                                                <span className="flex items-center"><Star size={12} className="mr-1 text-[#F5B942] fill-current" /> {restaurant.rating || 'New'}</span>
                                                                 <span className="flex items-center"><MapPin size={12} className="mr-1" /> <span className="line-clamp-1">{restaurant.location}</span></span>
                                                             </div>
                                                         </div>
@@ -603,7 +603,7 @@ const UserDashboard = () => {
                                                 ))}
                                             </div>
                                         ) : (
-                                            <p className="text-zinc-500">Book more tables to get personalized recommendations!</p>
+                                            <p className="text-[#A1A1A1]">Book more tables to get personalized recommendations!</p>
                                         )}
                                     </div>
                                 </div>
@@ -612,55 +612,55 @@ const UserDashboard = () => {
                             {/* Reviews Tab */}
                             {activeTab === 'reviews' && (
                                 <div>
-                                    <h2 className="text-2xl font-serif text-white mb-6">Your Reviews</h2>
+                                    <h2 className="text-2xl font-serif text-[#F5F5F5] mb-6">Your Reviews</h2>
                                     <div className="space-y-6">
                                         {reviewsLoading ? (
-                                            <p className="text-zinc-400">Loading your reviews...</p>
+                                            <p className="text-[#A1A1A1]">Loading your reviews...</p>
                                         ) : reviews?.length > 0 ? (
                                             reviews.map(review => (
-                                                <div key={review._id} className="p-6 bg-black/20 border border-white/10 rounded-2xl group relative hover:border-amber-500/30 transition-all">
+                                                <div key={review._id} className="p-6 bg-[#0B0B0B] border border-[#1F1F1F] rounded-2xl group relative hover:border-[#F5B942]/30 transition-all">
                                                     <div className="flex justify-between items-start mb-4">
                                                         <div className="flex gap-4">
-                                                            <div className="w-12 h-12 rounded-lg bg-zinc-800 overflow-hidden flex-shrink-0">
+                                                            <div className="w-12 h-12 rounded-lg bg-[#121212] overflow-hidden flex-shrink-0">
                                                                 <img src={review.restaurantId?.images?.[0] ? `${API_BASE}${review.restaurantId.images[0]}` : "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070"} alt={review.restaurantId?.name} className="w-full h-full object-cover" />
                                                             </div>
                                                             <div>
-                                                                <h3 className="text-white font-medium group-hover:text-amber-500 transition-colors cursor-pointer" onClick={() => navigate(`/restaurants/${review.restaurantId?._id}`)}>{review.restaurantId?.name || 'Restaurant'}</h3>
+                                                                <h3 className="text-[#F5F5F5] font-medium group-hover:text-[#F5B942] transition-colors cursor-pointer" onClick={() => navigate(`/restaurants/${review.restaurantId?._id}`)}>{review.restaurantId?.name || 'Restaurant'}</h3>
                                                                 <div className="flex items-center gap-2 mt-1">
-                                                                    <div className="flex text-amber-500">
+                                                                    <div className="flex text-[#F5B942]">
                                                                         {[...Array(5)].map((_, i) => (
-                                                                            <Star key={i} size={12} className={i < review.rating ? 'fill-current' : 'text-zinc-700'} />
+                                                                            <Star key={i} size={12} className={i < review.rating ? 'fill-current' : 'text-[#1F1F1F]'} />
                                                                         ))}
                                                                     </div>
-                                                                    <span className="text-xs text-zinc-500">• {new Date(review.createdAt).toLocaleDateString()}</span>
+                                                                    <span className="text-xs text-[#A1A1A1]">• {new Date(review.createdAt).toLocaleDateString()}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <button
                                                             onClick={() => handleDeleteReview(review._id)}
-                                                            className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                                                            className="p-2 text-[#A1A1A1] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                                                         >
                                                             <LogOut size={16} className="rotate-90" title="Delete Review" />
                                                         </button>
                                                     </div>
-                                                    <p className="text-zinc-400 text-sm leading-relaxed italic">"{review.comment}"</p>
+                                                    <p className="text-[#A1A1A1] text-sm leading-relaxed italic">"{review.comment}"</p>
                                                     {review.images?.length > 0 && (
                                                         <div className="flex gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
                                                             {review.images.map((img, idx) => (
-                                                                <img key={idx} src={`${API_BASE}${img}`} alt="Review" className="w-20 h-20 object-cover rounded-lg border border-white/10" />
+                                                                <img key={idx} src={`${API_BASE}${img}`} alt="Review" className="w-20 h-20 object-cover rounded-lg border border-[#1F1F1F]" />
                                                             ))}
                                                         </div>
                                                     )}
                                                     {review.ownerReply && (
-                                                        <div className="mt-4 p-4 bg-amber-500/5 border-l-2 border-amber-500 rounded-r-lg">
-                                                            <p className="text-xs text-amber-500 font-bold uppercase tracking-wider mb-2">Owner Response</p>
-                                                            <p className="text-zinc-300 text-sm italic">"{review.ownerReply.text}"</p>
+                                                        <div className="mt-4 p-4 bg-[#F5B942]/5 border-l-2 border-[#F5B942] rounded-r-lg">
+                                                            <p className="text-xs text-[#F5B942] font-bold uppercase tracking-wider mb-2">Owner Response</p>
+                                                            <p className="text-[#F5F5F5] text-sm italic">"{review.ownerReply.text}"</p>
                                                         </div>
                                                     )}
                                                 </div>
                                             ))
                                         ) : (
-                                            <p className="text-zinc-500 text-center py-10 border border-dashed border-white/10 rounded-2xl">You haven't shared any reviews yet.</p>
+                                            <p className="text-[#A1A1A1] text-center py-10 border border-dashed border-[#1F1F1F] rounded-2xl">You haven't shared any reviews yet.</p>
                                         )}
                                     </div>
                                 </div>
@@ -669,33 +669,33 @@ const UserDashboard = () => {
                             {/* Favorites Tab */}
                             {activeTab === 'favorites' && (
                                 <div>
-                                    <h2 className="text-2xl font-serif text-white mb-6">Saved Restaurants</h2>
+                                    <h2 className="text-2xl font-serif text-[#F5F5F5] mb-6">Saved Restaurants</h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {favoritesLoading ? (
-                                            <div className="col-span-full py-10 text-center text-zinc-500">Loading your favorites...</div>
+                                            <div className="col-span-full py-10 text-center text-[#A1A1A1]">Loading your favorites...</div>
                                         ) : favorites.length > 0 ? (
                                             favorites.map(fav => (
-                                                <div key={fav._id} className="group relative rounded-xl overflow-hidden border border-white/10 hover:border-amber-500/50 transition-all h-64 shadow-lg">
+                                                <div key={fav._id} className="group relative rounded-xl overflow-hidden border border-[#1F1F1F] hover:border-[#F5B942]/50 transition-all h-64 shadow-lg">
                                                     <img src={fav.images?.[0] ? `${API_BASE}${fav.images[0]}` : "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070"} alt={fav.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-6 flex flex-col justify-end">
                                                         <div onClick={() => navigate(`/restaurants/${fav._id}`)} className="cursor-pointer">
-                                                            <h3 className="text-xl font-serif text-white mb-1 group-hover:text-amber-500 transition-colors">{fav.name}</h3>
-                                                            <div className="flex items-center text-sm text-zinc-400">
+                                                            <h3 className="text-xl font-serif text-[#F5F5F5] mb-1 group-hover:text-[#F5B942] transition-colors">{fav.name}</h3>
+                                                            <div className="flex items-center text-sm text-[#A1A1A1]">
                                                                 <span className="mr-3">{fav.cuisine?.[0] || 'Gourmet'}</span>
                                                                 <span className="flex items-center"><MapPin size={12} className="mr-1" /> {fav.location?.city || fav.location?.state}</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button onClick={() => handleToggleFavorite(fav._id)} className="absolute top-4 right-4 p-2.5 bg-black/60 backdrop-blur-md rounded-full text-red-500 hover:bg-white/10 transition-colors border border-white/10 group/heart">
+                                                    <button onClick={() => handleToggleFavorite(fav._id)} className="absolute top-4 right-4 p-2.5 bg-black/60 backdrop-blur-md rounded-full text-red-500 hover:bg-white/10 transition-colors border border-[#1F1F1F] group/heart">
                                                         <Heart size={20} className="fill-current group-hover/heart:scale-110 transition-transform" />
                                                     </button>
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="col-span-full py-20 text-center border border-dashed border-white/10 rounded-2xl">
+                                            <div className="col-span-full py-20 text-center border border-dashed border-[#1F1F1F] rounded-2xl">
                                                 <Heart size={40} className="mx-auto text-zinc-800 mb-4" />
-                                                <p className="text-zinc-500 font-serif">You haven't saved any restaurants yet.</p>
-                                                <button onClick={() => navigate('/restaurants')} className="mt-4 text-amber-500 hover:text-white transition-colors text-sm font-medium">Explore Restaurants</button>
+                                                <p className="text-[#A1A1A1] font-serif">You haven't saved any restaurants yet.</p>
+                                                <button onClick={() => navigate('/restaurants')} className="mt-4 text-[#F5B942] hover:text-[#F5F5F5] transition-colors text-sm font-medium">Explore Restaurants</button>
                                             </div>
                                         )}
                                     </div>
@@ -707,50 +707,50 @@ const UserDashboard = () => {
                             {activeTab === 'support' && (
                                 <div>
                                     <div className="flex justify-between items-center mb-6">
-                                        <h2 className="text-2xl font-serif text-white">Support Center</h2>
-                                        <button onClick={() => setIsTicketModalOpen(true)} className="bg-amber-500 text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-500-hover transition-colors shadow-[0_0_10px_rgba(212,175,55,0.3)]">
+                                        <h2 className="text-2xl font-serif text-[#F5F5F5]">Support Center</h2>
+                                        <button onClick={() => setIsTicketModalOpen(true)} className="bg-[#F5B942] text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#F5B942]-hover transition-colors shadow-[0_0_10px_rgba(245,185,66,0.3)]">
                                             New Ticket
                                         </button>
                                     </div>
                                     <div className="space-y-4">
                                         {supportLoading ? (
-                                            <p className="text-zinc-400">Loading tickets...</p>
+                                            <p className="text-[#A1A1A1]">Loading tickets...</p>
                                         ) : tickets?.length > 0 ? (
                                             tickets.map(ticket => (
-                                                <div key={ticket._id} className="p-5 border border-white/10 rounded-xl bg-black/20 hover:border-white/30 transition-colors">
+                                                <div key={ticket._id} className="p-5 border border-[#1F1F1F] rounded-xl bg-[#0B0B0B] hover:border-white/30 transition-colors">
                                                     <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
                                                         <div>
                                                             <div className="flex items-center gap-3 mb-1">
-                                                                <h4 className="text-white font-medium">{ticket.ticketId}</h4>
-                                                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${ticket.status === 'Open' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : ticket.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}>
+                                                                <h4 className="text-[#F5F5F5] font-medium">{ticket.ticketId}</h4>
+                                                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${ticket.status === 'Open' ? 'bg-[#F5B942]/10 text-[#F5B942] border border-[#F5B942]/20' : ticket.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}>
                                                                     {ticket.status}
                                                                 </span>
                                                             </div>
-                                                            <div className="text-xs text-zinc-400 flex items-center gap-3">
-                                                                <span className="text-amber-500 font-medium">{ticket.category}</span>
+                                                            <div className="text-xs text-[#A1A1A1] flex items-center gap-3">
+                                                                <span className="text-[#F5B942] font-medium">{ticket.category}</span>
                                                                 <span>•</span>
                                                                 <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <p className="mt-4 text-zinc-300 text-sm bg-black/30 p-4 rounded-lg">
+                                                    <p className="mt-4 text-[#F5F5F5] text-sm bg-black/30 p-4 rounded-lg">
                                                         {ticket.description}
                                                     </p>
                                                     {ticket.image && (
                                                         <div className="mt-4">
                                                             <a href={`http://localhost:5000${ticket.image}`} target="_blank" rel="noopener noreferrer">
-                                                                <img src={`http://localhost:5000${ticket.image}`} alt="Attachment" className="max-w-xs h-32 object-cover rounded-lg border border-white/10 hover:opacity-80 transition-opacity" />
+                                                                <img src={`http://localhost:5000${ticket.image}`} alt="Attachment" className="max-w-xs h-32 object-cover rounded-lg border border-[#1F1F1F] hover:opacity-80 transition-opacity" />
                                                             </a>
                                                         </div>
                                                     )}
 
                                                     {ticket.messages && ticket.messages.length > 1 && (
-                                                        <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
-                                                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Conversation</p>
+                                                        <div className="mt-4 pt-4 border-t border-[#1F1F1F] space-y-3">
+                                                            <p className="text-[10px] text-[#A1A1A1] uppercase tracking-widest font-bold">Conversation</p>
                                                             {ticket.messages.slice(1).map((msg, i) => (
-                                                                <div key={i} className={`p-3 rounded-lg text-sm ${msg.senderId === user?._id ? 'bg-white/5 text-zinc-300 ml-8' : 'bg-amber-500/5 border border-amber-500/10 text-amber-200 mr-8'}`}>
+                                                                <div key={i} className={`p-3 rounded-lg text-sm ${msg.senderId === user?._id ? 'bg-white/5 text-[#F5F5F5] ml-8' : 'bg-[#F5B942]/5 border border-[#F5B942]/10 text-amber-200 mr-8'}`}>
                                                                     <p>{msg.message}</p>
-                                                                    <p className="text-[10px] text-zinc-600 mt-1">{new Date(msg.timestamp).toLocaleString()}</p>
+                                                                    <p className="text-[10px] text-[#3a3a3a] mt-1">{new Date(msg.timestamp).toLocaleString()}</p>
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -758,7 +758,7 @@ const UserDashboard = () => {
                                                 </div>
                                             ))
                                         ) : (
-                                            <p className="text-zinc-500 text-center py-10 border border-dashed border-white/10 rounded-2xl">No support tickets found.</p>
+                                            <p className="text-[#A1A1A1] text-center py-10 border border-dashed border-[#1F1F1F] rounded-2xl">No support tickets found.</p>
                                         )}
                                     </div>
                                 </div>
@@ -767,7 +767,7 @@ const UserDashboard = () => {
                             {/* Settings Tab */}
                             {activeTab === 'settings' && (
                                 <div>
-                                    <h2 className="text-2xl font-serif text-white mb-6 flex items-center"><Settings className="mr-3 text-amber-500" /> Account Settings</h2>
+                                    <h2 className="text-2xl font-serif text-[#F5F5F5] mb-6 flex items-center"><Settings className="mr-3 text-[#F5B942]" /> Account Settings</h2>
 
                                     {updateMessage.text && (
                                         <div className={`mb-6 p-4 rounded-lg font-medium ${updateMessage.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}>
@@ -775,49 +775,49 @@ const UserDashboard = () => {
                                         </div>
                                     )}
 
-                                    <form onSubmit={handleProfileUpdate} className="space-y-6 max-w-2xl bg-black/20 p-8 rounded-xl border border-white/10">
+                                    <form onSubmit={handleProfileUpdate} className="space-y-6 max-w-2xl bg-[#0B0B0B] p-8 rounded-xl border border-[#1F1F1F]">
 
-                                        <div className="flex flex-col md:flex-row items-center gap-6 pb-6 border-b border-white/10">
-                                            <div className="w-24 h-24 rounded-full bg-zinc-800 overflow-hidden shadow-[0_0_15px_rgba(212,175,55,0.1)] border-2 border-white/10 relative group">
+                                        <div className="flex flex-col md:flex-row items-center gap-6 pb-6 border-b border-[#1F1F1F]">
+                                            <div className="w-24 h-24 rounded-full bg-[#121212] overflow-hidden shadow-[0_0_15px_rgba(245,185,66,0.1)] border-2 border-[#1F1F1F] relative group">
                                                 {previewImage ? (
                                                     <img src={previewImage} alt="Profile Preview" className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-3xl font-serif text-zinc-500">{user?.name?.charAt(0) || 'U'}</div>
+                                                    <div className="w-full h-full flex items-center justify-center text-3xl font-serif text-[#A1A1A1]">{user?.name?.charAt(0) || 'U'}</div>
                                                 )}
                                                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                                    <span className="text-white text-xs font-medium">Change</span>
+                                                    <span className="text-[#F5F5F5] text-xs font-medium">Change</span>
                                                 </div>
                                                 <input type="file" onChange={handleImageChange} accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-medium text-white mb-1">Profile Picture</h3>
-                                                <p className="text-sm text-zinc-400">Upload a new avatar. Recommended size: 256x256px.</p>
+                                                <h3 className="text-lg font-medium text-[#F5F5F5] mb-1">Profile Picture</h3>
+                                                <p className="text-sm text-[#A1A1A1]">Upload a new avatar. Recommended size: 256x256px.</p>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
-                                                <label className="block text-sm font-medium text-zinc-400 mb-2">Full Name</label>
+                                                <label className="block text-sm font-medium text-[#A1A1A1] mb-2">Full Name</label>
                                                 <input
                                                     type="text"
                                                     value={formData.name}
                                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                    className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                                                    className="w-full bg-[#050505] border border-[#1F1F1F] rounded-lg px-4 py-3 text-[#F5F5F5] focus:outline-none focus:border-[#F5B942] transition-colors"
                                                     required
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-zinc-400 mb-2">Email Address</label>
+                                                <label className="block text-sm font-medium text-[#A1A1A1] mb-2">Email Address</label>
                                                 <input
                                                     type="email"
                                                     value={formData.email}
                                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                    className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                                                    className="w-full bg-[#050505] border border-[#1F1F1F] rounded-lg px-4 py-3 text-[#F5F5F5] focus:outline-none focus:border-[#F5B942] transition-colors"
                                                     required
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-zinc-400 mb-2">Mobile Number</label>
+                                                <label className="block text-sm font-medium text-[#A1A1A1] mb-2">Mobile Number</label>
                                                 <input
                                                     type="tel"
                                                     value={formData.mobileNumber}
@@ -827,7 +827,7 @@ const UserDashboard = () => {
                                                         else if (val === '+91' || val.length < 4) setFormData({ ...formData, mobileNumber: '+91 ' });
                                                         else setFormData({ ...formData, mobileNumber: val });
                                                     }}
-                                                    className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                                                    className="w-full bg-[#050505] border border-[#1F1F1F] rounded-lg px-4 py-3 text-[#F5F5F5] focus:outline-none focus:border-[#F5B942] transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -836,18 +836,18 @@ const UserDashboard = () => {
                                             <button
                                                 type="submit"
                                                 disabled={authLoading}
-                                                className="bg-amber-500 text-black px-8 py-3 rounded-lg font-medium hover:bg-amber-400 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-50"
+                                                className="bg-[#F5B942] text-black px-8 py-3 rounded-lg font-medium hover:bg-amber-400 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-50"
                                             >
                                                 {authLoading ? 'Saving...' : 'Save Changes'}
                                             </button>
                                         </div>
                                     </form>
 
-                                    <h3 className="text-xl font-serif text-white mt-12 mb-6 border-b border-white/10 pb-4 flex items-center gap-3">
+                                    <h3 className="text-xl font-serif text-[#F5F5F5] mt-12 mb-6 border-b border-[#1F1F1F] pb-4 flex items-center gap-3">
                                         🔐 Security & Password
                                     </h3>
-                                    <form onSubmit={handleChangePassword} className="space-y-5 max-w-2xl bg-black/20 p-8 rounded-xl border border-white/10">
-                                        <p className="text-sm text-zinc-400">Regularly updating your password ensures your account remains secure.</p>
+                                    <form onSubmit={handleChangePassword} className="space-y-5 max-w-2xl bg-[#0B0B0B] p-8 rounded-xl border border-[#1F1F1F]">
+                                        <p className="text-sm text-[#A1A1A1]">Regularly updating your password ensures your account remains secure.</p>
                                         {passwordMsg.text && (
                                             <div className={`p-3 rounded-lg text-sm font-medium ${passwordMsg.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}>
                                                 {passwordMsg.text}
@@ -855,33 +855,33 @@ const UserDashboard = () => {
                                         )}
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-zinc-400 mb-1">Current Password</label>
+                                                <label className="block text-sm font-medium text-[#A1A1A1] mb-1">Current Password</label>
                                                 <input
                                                     type="password"
                                                     value={passwordData.currentPassword}
                                                     onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                                                    className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                                                    className="w-full bg-[#050505] border border-[#1F1F1F] rounded-lg px-4 py-3 text-[#F5F5F5] focus:outline-none focus:border-[#F5B942] transition-colors"
                                                     required
                                                 />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-zinc-400 mb-1">New Password</label>
+                                                    <label className="block text-sm font-medium text-[#A1A1A1] mb-1">New Password</label>
                                                     <input
                                                         type="password"
                                                         value={passwordData.newPassword}
                                                         onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                                        className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                                                        className="w-full bg-[#050505] border border-[#1F1F1F] rounded-lg px-4 py-3 text-[#F5F5F5] focus:outline-none focus:border-[#F5B942] transition-colors"
                                                         required
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-medium text-zinc-400 mb-1">Confirm New Password</label>
+                                                    <label className="block text-sm font-medium text-[#A1A1A1] mb-1">Confirm New Password</label>
                                                     <input
                                                         type="password"
                                                         value={passwordData.confirmPassword}
                                                         onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                                                        className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                                                        className="w-full bg-[#050505] border border-[#1F1F1F] rounded-lg px-4 py-3 text-[#F5F5F5] focus:outline-none focus:border-[#F5B942] transition-colors"
                                                         required
                                                     />
                                                 </div>
@@ -889,7 +889,7 @@ const UserDashboard = () => {
                                         </div>
                                         <div className="pt-2 flex justify-end">
                                             <button type="submit"
-                                                className="bg-white/10 text-white px-8 py-3 rounded-lg font-medium hover:bg-white/20 transition-colors border border-white/10"
+                                                className="bg-white/10 text-[#F5F5F5] px-8 py-3 rounded-lg font-medium hover:bg-white/20 transition-colors border border-[#1F1F1F]"
                                             >
                                                 Update Password
                                             </button>
@@ -911,16 +911,16 @@ const UserDashboard = () => {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="bg-zinc-900 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
+                            className="bg-[#0B0B0B] border border-[#1F1F1F] rounded-2xl p-6 w-full max-w-md shadow-2xl"
                         >
-                            <h3 className="text-2xl font-serif text-white mb-4">Create Support Ticket</h3>
+                            <h3 className="text-2xl font-serif text-[#F5F5F5] mb-4">Create Support Ticket</h3>
                             <form onSubmit={handleCreateTicket} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-400 mb-1">Issue Category</label>
+                                    <label className="block text-sm font-medium text-[#A1A1A1] mb-1">Issue Category</label>
                                     <select
                                         value={ticketData.category}
                                         onChange={(e) => setTicketData({ ...ticketData, category: e.target.value })}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                                        className="w-full bg-black/50 border border-[#1F1F1F] rounded-lg px-4 py-2 text-[#F5F5F5] focus:outline-none focus:border-[#F5B942]"
                                     >
                                         <option value="Booking Issue">Booking Issue</option>
                                         <option value="Payment Issue">Payment Issue</option>
@@ -931,28 +931,28 @@ const UserDashboard = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-400 mb-1">Description</label>
+                                    <label className="block text-sm font-medium text-[#A1A1A1] mb-1">Description</label>
                                     <textarea
                                         required
                                         rows="4"
                                         value={ticketData.description}
                                         onChange={(e) => setTicketData({ ...ticketData, description: e.target.value })}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500 resize-none"
+                                        className="w-full bg-black/50 border border-[#1F1F1F] rounded-lg px-4 py-2 text-[#F5F5F5] focus:outline-none focus:border-[#F5B942] resize-none"
                                         placeholder="Provide detailed information..."
                                     ></textarea>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-400 mb-1">Attachment (Optional)</label>
+                                    <label className="block text-sm font-medium text-[#A1A1A1] mb-1">Attachment (Optional)</label>
                                     <input
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => setTicketData({ ...ticketData, ticketImage: e.target.files[0] })}
-                                        className="w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-500 hover:file:bg-amber-500/20"
+                                        className="w-full text-sm text-[#A1A1A1] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#F5B942]/10 file:text-[#F5B942] hover:file:bg-[#F5B942]/20"
                                     />
                                 </div>
                                 <div className="flex gap-4 pt-2">
-                                    <button type="button" onClick={() => setIsTicketModalOpen(false)} className="flex-1 py-2 rounded-lg border border-white/10 text-zinc-400 hover:text-white hover:bg-white/5 transition-colors">Cancel</button>
-                                    <button type="submit" disabled={supportLoading} className="flex-1 py-2 rounded-lg bg-amber-500 text-black font-medium hover:bg-amber-400 transition-colors disabled:opacity-50">
+                                    <button type="button" onClick={() => setIsTicketModalOpen(false)} className="flex-1 py-2 rounded-lg border border-[#1F1F1F] text-[#A1A1A1] hover:text-[#F5F5F5] hover:bg-white/5 transition-colors">Cancel</button>
+                                    <button type="submit" disabled={supportLoading} className="flex-1 py-2 rounded-lg bg-[#F5B942] text-black font-medium hover:bg-amber-400 transition-colors disabled:opacity-50">
                                         {supportLoading ? 'Submitting...' : 'Submit Ticket'}
                                     </button>
                                 </div>

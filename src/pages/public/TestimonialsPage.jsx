@@ -53,12 +53,12 @@ const TestimonialsPage = () => {
 
     const renderStars = (rating) => {
         return [...Array(5)].map((_, i) => (
-            <Star key={i} size={14} className={i < rating ? "fill-amber-500 text-amber-500" : "text-zinc-700"} />
+            <Star key={i} size={14} className={i < rating ? "fill-[#F5B942] text-[#F5B942]" : "text-[#1F1F1F]"} />
         ));
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-white pt-32 pb-20">
+        <div className="min-h-screen bg-[#050505] text-[#F5F5F5] pt-32 pb-20">
             {/* 1. Hero Section */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-24">
                 <motion.div
@@ -66,15 +66,15 @@ const TestimonialsPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <nav className="flex justify-center items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-zinc-500 mb-8">
-                        <a href="/" className="hover:text-amber-500 transition-colors">Home</a>
+                    <nav className="flex justify-center items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-[#A1A1A1] mb-8">
+                        <a href="/" className="hover:text-[#F5B942] transition-colors">Home</a>
                         <span>/</span>
-                        <span className="text-amber-500">Testimonials</span>
+                        <span className="text-[#F5B942]">Testimonials</span>
                     </nav>
                     <h1 className="text-6xl md:text-7xl font-serif mb-8 tracking-tight">
-                        What Our <span className="text-amber-500 italic">Diners</span> are Saying
+                        What Our <span className="text-[#F5B942] italic">Diners</span> are Saying
                     </h1>
-                    <p className="max-w-2xl mx-auto text-zinc-400 font-light text-lg leading-relaxed">
+                    <p className="max-w-2xl mx-auto text-[#A1A1A1] font-light text-lg leading-relaxed">
                         Every dining experience is celebrated by our guests who have reserved through Reserve.
                         Real experiences, real feedback, and memorable dining moments.
                     </p>
@@ -86,41 +86,41 @@ const TestimonialsPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
 
                     {/* Overall Summary */}
-                    <div className="bg-zinc-900/40 border border-white/5 p-10 rounded-3xl text-center flex flex-col items-center justify-center h-full min-h-[400px]">
+                    <div className="bg-[#0B0B0B]/40 border border-[#1F1F1F] p-10 rounded-3xl text-center flex flex-col items-center justify-center h-full min-h-[400px]">
                         <div className="flex items-end gap-2 mb-4">
                             <span className="text-7xl font-serif">{stats.averageRating}</span>
                             <div className="flex gap-1 mb-4">
                                 {[...Array(5)].map((_, i) => (
-                                    <Star key={i} size={24} className="fill-amber-500 text-amber-500" />
+                                    <Star key={i} size={24} className="fill-[#F5B942] text-[#F5B942]" />
                                 ))}
                             </div>
                         </div>
                         <h3 className="text-2xl font-serif mb-2">Exceptional Dining Experience</h3>
-                        <p className="text-zinc-500 text-sm tracking-wide">Based on {stats.totalReviews.toLocaleString()} verified reviews</p>
+                        <p className="text-[#A1A1A1] text-sm tracking-wide">Based on {stats.totalReviews.toLocaleString()} verified reviews</p>
 
-                        <div className="mt-12 w-full pt-8 border-t border-white/5">
-                            <Quote className="text-amber-500/20 w-12 h-12 mx-auto" />
+                        <div className="mt-12 w-full pt-8 border-t border-[#1F1F1F]">
+                            <Quote className="text-[#F5B942]/20 w-12 h-12 mx-auto" />
                         </div>
                     </div>
 
                     {/* Rating Breakdown */}
-                    <div className="bg-zinc-900/40 border border-white/5 p-10 rounded-3xl h-full min-h-[400px]">
+                    <div className="bg-[#0B0B0B]/40 border border-[#1F1F1F] p-10 rounded-3xl h-full min-h-[400px]">
                         <h4 className="text-lg font-serif mb-8 flex items-center gap-3">
-                            <Filter size={18} className="text-amber-500" /> Rating Breakdown
+                            <Filter size={18} className="text-[#F5B942]" /> Rating Breakdown
                         </h4>
                         <div className="space-y-6">
                             {stats.breakdown.map((item, idx) => (
                                 <div key={idx} className="space-y-2">
-                                    <div className="flex justify-between text-xs uppercase tracking-widest text-zinc-400">
+                                    <div className="flex justify-between text-xs uppercase tracking-widest text-[#A1A1A1]">
                                         <span>{item.stars} Stars</span>
                                         <span>{item.percentage}%</span>
                                     </div>
-                                    <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                                    <div className="h-1.5 w-full bg-[#121212] rounded-full overflow-hidden">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             whileInView={{ width: `${item.percentage}%` }}
                                             transition={{ duration: 1, delay: idx * 0.1 }}
-                                            className="h-full bg-amber-500"
+                                            className="h-full bg-[#F5B942]"
                                         />
                                     </div>
                                 </div>
@@ -129,23 +129,23 @@ const TestimonialsPage = () => {
                     </div>
 
                     {/* Review Metrics */}
-                    <div className="bg-zinc-900/40 border border-white/5 p-10 rounded-3xl h-full min-h-[400px]">
+                    <div className="bg-[#0B0B0B]/40 border border-[#1F1F1F] p-10 rounded-3xl h-full min-h-[400px]">
                         <h4 className="text-lg font-serif mb-8 flex items-center gap-3">
-                            <Star size={18} className="text-amber-500" /> Review Metrics
+                            <Star size={18} className="text-[#F5B942]" /> Review Metrics
                         </h4>
                         <div className="space-y-8">
                             {stats.metrics.map((metric, idx) => (
                                 <div key={idx} className="space-y-3">
                                     <div className="flex justify-between items-center text-sm">
-                                        <span className="text-zinc-300 font-light">{metric.label}</span>
-                                        <span className="text-amber-500 font-serif">{metric.score}</span>
+                                        <span className="text-[#F5F5F5] font-light">{metric.label}</span>
+                                        <span className="text-[#F5B942] font-serif">{metric.score}</span>
                                     </div>
-                                    <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                    <div className="h-1 bg-[#121212] rounded-full overflow-hidden">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             whileInView={{ width: `${(metric.score / 5) * 100}%` }}
                                             transition={{ duration: 1.5, ease: "easeOut" }}
-                                            className="h-full bg-gradient-to-r from-amber-700 to-amber-500"
+                                            className="h-full bg-gradient-to-r from-[#D4A017] to-[#F5B942]"
                                         />
                                     </div>
                                 </div>
@@ -158,36 +158,27 @@ const TestimonialsPage = () => {
 
             {/* 3. Filters Section */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-                <div className="bg-zinc-900/60 border border-white/5 p-6 rounded-3xl space-y-6">
+                <div className="bg-[#0B0B0B]/60 border border-[#1F1F1F] p-6 rounded-3xl space-y-6">
                     <div className="flex flex-col md:flex-row gap-4 items-center">
-                        <div className="relative flex-grow w-full md:w-auto">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Search reviews..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="bg-zinc-950 border border-white/10 w-full pl-12 pr-4 py-3.5 rounded-2xl focus:outline-none focus:border-amber-500 transition-all placeholder:text-zinc-700 font-light text-sm shadow-inner"
-                            />
-                        </div>
+
                         <div className="flex gap-3 w-full md:w-auto">
                             <div className="relative group w-full md:w-48">
-                                <select className="w-full bg-zinc-950 border border-white/10 px-4 py-3.5 rounded-2xl appearance-none text-xs uppercase tracking-widest text-zinc-400 focus:outline-none focus:border-amber-500 cursor-pointer">
+                                <select className="w-full bg-[#050505] border border-[#1F1F1F] px-4 py-3.5 rounded-2xl appearance-none text-xs uppercase tracking-widest text-[#A1A1A1] focus:outline-none focus:border-[#F5B942] cursor-pointer">
                                     <option>Select Restaurant</option>
                                     <option>Eka</option>
                                     <option>Southern Spice</option>
                                     <option>Dakshin</option>
                                 </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-600 group-hover:text-amber-500 transition-colors pointer-events-none" size={14} />
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#3a3a3a] group-hover:text-[#F5B942] transition-colors pointer-events-none" size={14} />
                             </div>
                             <div className="relative group w-full md:w-48">
-                                <select className="w-full bg-zinc-950 border border-white/10 px-4 py-3.5 rounded-2xl appearance-none text-xs uppercase tracking-widest text-zinc-400 focus:outline-none focus:border-amber-500 cursor-pointer">
+                                <select className="w-full bg-[#050505] border border-[#1F1F1F] px-4 py-3.5 rounded-2xl appearance-none text-xs uppercase tracking-widest text-[#A1A1A1] focus:outline-none focus:border-[#F5B942] cursor-pointer">
                                     <option>Filter by Date</option>
                                     <option>Last 7 Days</option>
                                     <option>Last 30 Days</option>
                                     <option>All Time</option>
                                 </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-600 group-hover:text-amber-500 transition-colors pointer-events-none" size={14} />
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#3a3a3a] group-hover:text-[#F5B942] transition-colors pointer-events-none" size={14} />
                             </div>
                         </div>
                     </div>
@@ -197,7 +188,7 @@ const TestimonialsPage = () => {
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
-                                className={`whitespace-nowrap px-8 py-3.5 rounded-2xl border text-[10px] uppercase tracking-[0.2em] font-bold transition-all duration-300 ${filter === f ? 'bg-amber-500 border-amber-500 text-black shadow-[0_0_20px_rgba(212,175,55,0.2)]' : 'border-white/5 text-zinc-500 hover:border-white/20 hover:text-zinc-300 bg-zinc-950/50'}`}
+                                className={`whitespace-nowrap px-8 py-3.5 rounded-2xl border text-[10px] uppercase tracking-[0.2em] font-bold transition-all duration-300 ${filter === f ? 'bg-[#F5B942] border-[#F5B942] text-black shadow-[0_0_20px_rgba(245,185,66,0.2)]' : 'border-[#1F1F1F] text-[#A1A1A1] hover:border-white/20 hover:text-[#F5F5F5] bg-[#050505]/50'}`}
                             >
                                 {f}
                             </button>
@@ -209,48 +200,63 @@ const TestimonialsPage = () => {
             {/* 4. Testimonial Grid */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="bg-zinc-900/40 border border-white/5 aspect-[4/3] rounded-3xl animate-pulse" />
+                    <div className="flex flex-col gap-12 max-w-5xl mx-auto">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="bg-[#0B0B0B]/40 border border-[#1F1F1F] h-64 md:h-80 rounded-[40px] animate-pulse" />
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {testimonials.map((t, idx) => (
-                            <motion.div
-                                key={t._id || idx}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: idx * 0.1 }}
-                                className="group bg-zinc-900/40 border border-white/5 p-8 rounded-3xl hover:bg-zinc-900/60 hover:border-amber-500/20 transition-all duration-500 relative overflow-hidden"
-                            >
-                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <MessageSquare size={80} />
-                                </div>
-                                <div className="flex gap-1 mb-6">
-                                    {renderStars(t.rating)}
-                                </div>
-                                <p className="text-zinc-400 font-light leading-relaxed mb-8 relative z-10 min-h-[80px]">
-                                    "{t.content}"
-                                </p>
-                                <div className="flex items-center gap-4 relative z-10 pt-6 border-t border-white/5">
-                                    <div className="w-12 h-12 rounded-full overflow-hidden border border-amber-500/20 bg-zinc-800">
-                                        <img
-                                            src={t.image || `https://randomuser.me/api/portraits/${idx % 2 === 0 ? 'men' : 'women'}/${idx + 20}.jpg`}
-                                            alt={t.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div>
-                                        <h5 className="font-serif text-white">{t.name}</h5>
-                                        <div className="flex items-center gap-1.5 text-zinc-500 text-[10px] uppercase tracking-widest mt-1">
-                                            <MapPin size={10} className="text-amber-500" />
-                                            {t.location || 'Chennai'}
+                    <div className="flex flex-col gap-12 max-w-5xl mx-auto">
+                        {testimonials.map((t, idx) => {
+                            const isEven = idx % 2 === 0;
+                            return (
+                                <motion.div
+                                    key={t._id || idx}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.1, duration: 0.5 }}
+                                    className="bg-[#0B0B0B]/80 backdrop-blur-md border border-[#1F1F1F] rounded-[40px] p-8 md:p-12 flex flex-col md:flex-row items-center gap-12 hover:border-[#F5B942]/30 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)]"
+                                >
+                                    <div className={`w-full md:w-3/5 flex flex-col justify-center ${isEven ? 'md:order-1' : 'md:order-2'}`}>
+                                        <div className="flex items-center gap-4 mb-8">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4A017] to-[#F5B942] flex items-center justify-center text-black font-serif font-bold text-lg shadow-[0_0_15px_rgba(245,185,66,0.3)]">
+                                                {t.name.charAt(0)}
+                                            </div>
+                                            <div className="text-xl font-serif text-[#F5F5F5] tracking-wide">
+                                                {t.location || 'Chennai'}
+                                            </div>
+                                        </div>
+                                        <p className="text-2xl md:text-3xl font-light text-[#F5F5F5] leading-snug mb-8 relative">
+                                            {t.content}
+                                        </p>
+                                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end w-full border-t border-[#1F1F1F]/50 pt-6">
+                                            <div className="mb-4 md:mb-0">
+                                                <h5 className="font-sans text-[#F5F5F5] font-semibold text-sm flex items-center gap-2 uppercase tracking-widest">
+                                                    <span className="w-6 h-[1px] bg-[#3a3a3a]"></span>
+                                                    {t.name}
+                                                </h5>
+                                                <div className="text-[#A1A1A1] text-xs mt-1 ml-8">
+                                                    Verified Diner
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-1 ml-8 md:ml-0">
+                                                {renderStars(t.rating)}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
+
+                                    <div className={`w-full md:w-2/5 flex justify-center items-center ${isEven ? 'md:order-2' : 'md:order-1'}`}>
+                                        <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border border-[#1F1F1F] shadow-[0_0_40px_rgba(0,0,0,0.5)] hover:border-[#F5B942]/50 transition-all duration-700">
+                                            <img
+                                                src={t.image || `https://randomuser.me/api/portraits/${idx % 2 === 0 ? 'men' : 'women'}/${idx + 20}.jpg`}
+                                                alt={t.name}
+                                                className="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700 scale-105 hover:scale-100"
+                                            />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 )}
             </section>
