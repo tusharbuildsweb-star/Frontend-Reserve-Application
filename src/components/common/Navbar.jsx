@@ -106,7 +106,11 @@ const Navbar = () => {
                         onClick={() => navigate('/')}
                         className="flex items-center gap-2.5 group"
                     >
-                        <span className="text-[#F5B942] text-lg leading-none">✦</span>
+                        <img
+                            src="/reserve-logo.svg"
+                            alt="Reserve Logo"
+                            className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-110"
+                        />
                         <span
                             className="font-serif text-[#F5F5F5] text-lg tracking-[0.22em] uppercase"
                             style={{ fontWeight: 500, letterSpacing: '0.22em' }}
