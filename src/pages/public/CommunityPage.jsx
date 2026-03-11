@@ -43,7 +43,7 @@ const CommunityPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-7xl font-serif text-white mb-8"
+                        className="text-4xl md:text-5xl lg:text-7xl font-serif text-white mb-6 md:mb-8 text-balance mx-auto"
                     >
                         Voices of Reserve
                     </motion.h1>
@@ -51,7 +51,7 @@ const CommunityPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="text-zinc-400 font-light max-w-3xl mx-auto text-lg leading-relaxed"
+                        className="text-zinc-400 font-light max-w-3xl mx-auto text-base md:text-lg leading-relaxed text-balance"
                     >
                         Discover why thousands of food enthusiasts and elite restaurateurs choose Reserve for their most precious dining moments.
                     </motion.p>

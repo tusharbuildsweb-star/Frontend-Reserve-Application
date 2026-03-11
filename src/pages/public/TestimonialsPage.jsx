@@ -71,10 +71,10 @@ const TestimonialsPage = () => {
                         <span>/</span>
                         <span className="text-[#F5B942]">Testimonials</span>
                     </nav>
-                    <h1 className="text-6xl md:text-7xl font-serif mb-8 tracking-tight">
+                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif mb-6 md:mb-8 tracking-tight text-balance mx-auto">
                         What Our <span className="text-[#F5B942] italic">Diners</span> are Saying
                     </h1>
-                    <p className="max-w-2xl mx-auto text-[#A1A1A1] font-light text-lg leading-relaxed">
+                    <p className="max-w-2xl mx-auto text-[#A1A1A1] font-light text-base md:text-lg leading-relaxed text-balance px-4">
                         Every dining experience is celebrated by our guests who have reserved through Reserve.
                         Real experiences, real feedback, and memorable dining moments.
                     </p>

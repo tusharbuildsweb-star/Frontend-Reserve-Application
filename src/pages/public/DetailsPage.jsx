@@ -417,7 +417,7 @@ const DetailsPage = () => {
                     <div className="w-full lg:w-2/3 order-2 lg:order-1">
 
                         {/* Header Details */}
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                             <div>
                                 <h1 className="text-4xl md:text-5xl font-serif text-white mb-3">{restaurant.name}</h1>
                                 <div className="flex items-center text-zinc-400 text-sm flex-wrap gap-4">
@@ -450,7 +450,7 @@ const DetailsPage = () => {
                         </div>
 
                         {/* Crowd Status Glow Widget */}
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 bg-black/40 border border-white/10 p-6 rounded-2xl relative overflow-hidden group">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 bg-black/40 border border-white/10 p-6 rounded-2xl relative overflow-hidden group gap-6">
                             <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                             <div className="relative z-10 flex items-center gap-6">
                                 <div className="relative flex items-center justify-center w-14 h-14 bg-black rounded-full border border-green-500/30">
@@ -517,7 +517,7 @@ const DetailsPage = () => {
                         </div>
 
                         {/* Tabs content: Menu, Packages, Reviews */}
-                        <div className="border-b border-white/10 mb-8 flex gap-8">
+                        <div className="border-b border-white/10 mb-8 flex gap-4 md:gap-8 overflow-x-auto custom-scrollbar whitespace-nowrap pb-1">
                             <button
                                 onClick={() => setActiveTab('menu')}
                                 className={`pb-4 px-2 text-lg font-medium transition-colors relative ${activeTab === 'menu' ? 'text-amber-500' : 'text-zinc-400 hover:text-white'}`}
@@ -608,7 +608,7 @@ const DetailsPage = () => {
                         {/* Reviews Tab */}
                         {activeTab === 'reviews' && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                <div className="flex items-center justify-between mb-6 bg-white/[0.02] p-4 rounded-xl border border-white/5">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 bg-white/[0.02] p-4 rounded-xl border border-white/5 gap-4">
                                     <div className="flex items-center gap-6">
                                         <div className="text-center">
                                             <div className="text-3xl font-serif text-white leading-none">{avgRating || restaurant.rating || 0}</div>

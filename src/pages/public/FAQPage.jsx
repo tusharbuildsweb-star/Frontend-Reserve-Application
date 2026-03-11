@@ -49,7 +49,7 @@ const FAQPage = () => {
                     >
                         <HelpCircle className="text-amber-500" size={32} />
                     </motion.div>
-                    <h1 className="text-5xl font-serif text-white mb-6">How can we assist you?</h1>
+                    <h1 className="text-4xl md:text-5xl font-serif text-white mb-6 text-balance">How can we assist you?</h1>
                     <p className="text-zinc-400 font-light mb-12">Everything you need to know about the Reserve experience.</p>
 
                     <div className="relative group max-w-xl mx-auto">

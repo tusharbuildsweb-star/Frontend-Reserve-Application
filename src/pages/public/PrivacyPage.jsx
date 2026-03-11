@@ -12,7 +12,7 @@ const PrivacyPage = () => {
                     className="mb-16"
                 >
                     <span className="text-amber-500 font-medium tracking-[0.3em] uppercase text-[10px] mb-4 block">Last Updated: March 2026</span>
-                    <h1 className="text-5xl font-serif text-white mb-8">Privacy Policy</h1>
+                    <h1 className="text-4xl md:text-5xl font-serif text-white mb-8 text-balance">Privacy Policy</h1>
                     <p className="text-zinc-400 font-light text-lg">Your privacy is paramount to us at Reserve. This policy outlines how we handle your personal data with the utmost discretion and security.</p>
                 </motion.div>
 

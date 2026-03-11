@@ -12,7 +12,7 @@ const AboutPage = () => {
                     transition={{ duration: 0.8 }}
                     className="text-center"
                 >
-                    <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 tracking-tight">
+                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-white mb-6 tracking-tight text-balance">
                         About <span className="text-amber-500">RESERVE</span>
                     </h1>
                     <p className="text-zinc-400 text-lg md:text-xl max-w-3xl mx-auto font-light leading-relaxed">

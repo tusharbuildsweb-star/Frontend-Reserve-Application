@@ -130,7 +130,7 @@ const Navbar = () => {
                         {(!isAuthenticated || user?.role === 'user') && (
                             <button
                                 onClick={() => navigate('/become-partner')}
-                                className="hidden md:inline-flex btn-luxury-outline !py-2 !px-5 !text-[10px]"
+                                className="!hidden md:!inline-flex btn-luxury-outline !py-2 !px-5 !text-[10px]"
                             >
                                 Partner With Us
                             </button>
@@ -209,16 +209,16 @@ const Navbar = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="hidden md:flex items-center gap-1">
+                            <div className="flex items-center gap-1 md:gap-2">
                                 <button
                                     onClick={() => navigate('/login')}
-                                    className="px-5 py-2 text-[11px] uppercase tracking-[0.12em] text-[#A1A1A1] hover:text-[#F5F5F5] transition-colors font-medium"
+                                    className="px-2 md:px-5 py-2 text-[9px] sm:text-[11px] uppercase tracking-[0.05em] sm:tracking-[0.12em] text-[#A1A1A1] hover:text-[#F5F5F5] transition-colors font-medium"
                                 >
                                     Sign In
                                 </button>
                                 <button
                                     onClick={() => navigate('/register')}
-                                    className="btn-luxury !py-2 !px-5 !text-[10px]"
+                                    className="btn-luxury !py-1.5 !px-3 sm:!py-2 sm:!px-5 !text-[8.5px] sm:!text-[10px]"
                                 >
                                     Join Now
                                 </button>
@@ -265,28 +265,13 @@ const Navbar = () => {
                                     </button>
                                 )}
                                 <div className="pt-4 mt-4 border-t border-[#1F1F1F] flex flex-col gap-2">
-                                    {isAuthenticated ? (
+                                    {isAuthenticated && (
                                         <button
                                             onClick={() => { handleLogout(); setMobileOpen(false); }}
                                             className="w-full text-left px-4 py-3 text-[11px] uppercase tracking-widest text-red-400/80 hover:text-red-400 transition-colors"
                                         >
                                             Sign Out
                                         </button>
-                                    ) : (
-                                        <>
-                                            <button
-                                                onClick={() => { navigate('/login'); setMobileOpen(false); }}
-                                                className="w-full text-center py-3 text-[11px] uppercase tracking-widest text-[#A1A1A1] border border-[#1F1F1F] hover:border-[#F5B942]/30 hover:text-[#F5F5F5] transition-all"
-                                            >
-                                                Sign In
-                                            </button>
-                                            <button
-                                                onClick={() => { navigate('/register'); setMobileOpen(false); }}
-                                                className="btn-luxury w-full"
-                                            >
-                                                Join Now
-                                            </button>
-                                        </>
                                     )}
                                 </div>
                             </div>

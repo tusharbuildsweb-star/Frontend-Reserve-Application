@@ -139,7 +139,7 @@ const HomePage = () => {
           {/* Central gold ambient glow */}
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ width: 700, height: 460, background: 'radial-gradient(ellipse, rgba(245,185,66,0.07) 0%, transparent 70%)' }}
+            style={{ width: '100%', maxWidth: 700, height: 460, background: 'radial-gradient(ellipse, rgba(245,185,66,0.07) 0%, transparent 70%)' }}
           />
         </div>
 
@@ -161,8 +161,8 @@ const HomePage = () => {
             </p>
 
             <h1
-              className="font-serif text-[#F5F5F5] leading-[1.04] mb-8"
-              style={{ fontSize: 'clamp(48px, 8vw, 92px)', fontWeight: 500, letterSpacing: '0.3px' }}
+              className="font-serif text-[#F5F5F5] leading-[1.04] mb-8 text-balance mx-auto"
+              style={{ fontSize: 'clamp(48px, 8vw, 92px)', fontWeight: 500, letterSpacing: '0.3px', maxWidth: '100vw' }}
             >
               Reserve<br />
               {/* ── Cinematic shimmer on "Extraordinary" ── */}
@@ -182,8 +182,8 @@ const HomePage = () => {
             </h1>
 
             <p
-              className="font-light max-w-lg mx-auto mb-16 leading-relaxed"
-              style={{ color: '#A1A1A1', fontSize: '1.05rem' }}
+              className="font-light max-w-lg mx-auto mb-16 leading-relaxed text-balance"
+              style={{ color: '#A1A1A1', fontSize: '1.05rem', padding: '0 1rem' }}
             >
               Discover and secure tables at the world's most prestigious restaurants — curated for the discerning guest.
             </p>
@@ -308,14 +308,13 @@ const HomePage = () => {
                 {/* ─── CTA ─── */}
                 <button
                   onClick={handleSubmit}
-                  className="flex items-center justify-center gap-2"
+                  className="flex items-center justify-center gap-2 rounded-b-[14px] lg:rounded-bl-none lg:rounded-r-[14px]"
                   style={{
                     height: 64,
                     padding: '0 28px',
                     background: 'linear-gradient(135deg, #F5B942, #D4A017)',
                     color: '#050505',
                     minWidth: 152,
-                    borderRadius: '0 12px 12px 0',
                     fontSize: 13,
                     fontWeight: 500,
                     letterSpacing: '0.5px',
@@ -511,7 +510,7 @@ const HomePage = () => {
         {/* Gold ambient centred glow */}
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-          style={{ width: 900, height: 500, background: 'radial-gradient(ellipse, rgba(245,185,66,0.055) 0%, transparent 70%)' }}
+          style={{ width: '100%', maxWidth: 900, height: 500, background: 'radial-gradient(ellipse, rgba(245,185,66,0.055) 0%, transparent 70%)' }}
         />
         <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
           <motion.div

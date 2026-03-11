@@ -131,8 +131,8 @@ const BecomePartnerPage = () => {
 
                 {/* Informational Hero Section */}
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl md:text-6xl font-serif text-white mb-6">Partner with RESERVE</h1>
-                    <p className="text-zinc-400 max-w-3xl mx-auto font-light leading-relaxed text-lg mb-10">
+                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif text-white mb-6 text-balance mx-auto">Partner with RESERVE</h1>
+                    <p className="text-zinc-400 max-w-3xl mx-auto font-light leading-relaxed text-base md:text-lg mb-10 text-balance px-4">
                         Join our exclusive network of premium dining experiences. Gain access to luxury clientele, utilize our world-class reservation engine, and manage your culinary empire with grace.
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left max-w-5xl mx-auto">

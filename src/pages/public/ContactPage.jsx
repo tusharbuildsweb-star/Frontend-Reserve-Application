@@ -35,7 +35,7 @@ const ContactPage = () => {
                         className="space-y-12"
                     >
                         <div>
-                            <h1 className="text-5xl font-serif font-bold text-white mb-6 tracking-tight">
+                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6 tracking-tight text-balance">
                                 Get in <span className="text-amber-500">Touch</span>
                             </h1>
                             <p className="text-zinc-400 text-lg font-light leading-relaxed max-w-md">

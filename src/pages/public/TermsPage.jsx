@@ -12,7 +12,7 @@ const TermsPage = () => {
                     className="mb-16"
                 >
                     <span className="text-amber-500 font-medium tracking-[0.3em] uppercase text-[10px] mb-4 block">Effective Date: March 2026</span>
-                    <h1 className="text-5xl font-serif text-white mb-8">Terms of Service</h1>
+                    <h1 className="text-4xl md:text-5xl font-serif text-white mb-8 text-balance">Terms of Service</h1>
                     <p className="text-zinc-400 font-light text-lg">Acceptance of these terms ensures a standard of excellence and mutual respect within the Reserve community.</p>
                 </motion.div>
 
